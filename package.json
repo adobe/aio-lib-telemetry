@@ -1,0 +1,120 @@
+{
+  "name": "@adobe/aio-lib-telemetry",
+  "version": "1.0.0",
+  "author": "Adobe Inc.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "A utility module for easy instrumentation of Adobe I/O Runtime actions via OpenTelemetry.",
+  "keywords": [
+    "aio",
+    "adobe-io",
+    "aio-telemetry",
+    "aio-opentelemetry"
+  ],
+  "bugs": {
+    "url": "https://github.com/adobe/aio-lib-telemetry/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/aio-lib-telemetry.git"
+  },
+  "engines": {
+    "node": ">=20 <=24"
+  },
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/es/index.js",
+  "types": "./dist/cjs/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/es/index.js",
+      "types": "./dist/cjs/index.d.cts",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./otel": {
+      "import": "./dist/es/otel.js",
+      "types": "./dist/cjs/otel.d.cts",
+      "require": "./dist/cjs/otel.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "README.md",
+    "docs",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "assist": "biome check --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
+    "assist:apply": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
+    "build": "tsdown",
+    "check:ci": "biome ci --formatter-enabled=true --linter-enabled=true --assist-enabled=true --no-errors-on-unmatched",
+    "docs": "typedoc",
+    "format": "biome format --write --no-errors-on-unmatched",
+    "format:markdown": "prettier --no-error-on-unmatched-pattern --write '**/*.md' \"!**/{CODE_OF_CONDUCT.md,COPYRIGHT,LICENSE,SECURITY.md,CONTRIBUTING.md}\"",
+    "format:check": "biome format --no-errors-on-unmatched",
+    "knip": "knip",
+    "lint": "biome lint --no-errors-on-unmatched",
+    "lint:fix": "biome lint --write --no-errors-on-unmatched",
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit && echo '✅ No type errors found'"
+  },
+  "dependencies": {
+    "@adobe/aio-lib-core-logging": "^3.0.2",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.200.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.58.1",
+    "@opentelemetry/exporter-logs-otlp-grpc": "^0.200.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.200.0",
+    "@opentelemetry/exporter-logs-otlp-proto": "^0.200.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.200.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.200.0",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.200.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.200.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.200.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.200.0",
+    "@opentelemetry/instrumentation-graphql": "^0.48.0",
+    "@opentelemetry/instrumentation-http": "^0.200.0",
+    "@opentelemetry/instrumentation-undici": "^0.11.0",
+    "@opentelemetry/instrumentation-winston": "^0.45.0",
+    "@opentelemetry/otlp-exporter-base": "^0.200.0",
+    "@opentelemetry/otlp-grpc-exporter-base": "^0.200.0",
+    "@opentelemetry/resources": "^2.0.1",
+    "@opentelemetry/sdk-logs": "^0.200.0",
+    "@opentelemetry/sdk-metrics": "^2.0.0",
+    "@opentelemetry/sdk-node": "^0.200.0",
+    "@opentelemetry/sdk-trace-node": "^2.0.0",
+    "@opentelemetry/semantic-conventions": "^1.33.0",
+    "@opentelemetry/winston-transport": "^0.11.0",
+    "winston-transport": "^4.9.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@tsconfig/node-lts": "^22.0.2",
+    "@tsconfig/node-ts": "^23.6.1",
+    "@tsconfig/recommended": "^1.0.10",
+    "@types/node": "^24.0.12",
+    "husky": "^9.1.7",
+    "knip": "^5.61.3",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.11.1",
+    "typedoc": "^0.28.5",
+    "typedoc-plugin-markdown": "^4.6.3",
+    "typescript": "^5.8.3",
+    "ultracite": "5.0.32",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  },
+  "sideEffects": false,
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"
+    ],
+    "*.md": [
+      "prettier --no-error-on-unmatched-pattern --write '**/*.md' \"!**/{CODE_OF_CONDUCT.md,COPYRIGHT,LICENSE,SECURITY.md,CONTRIBUTING.md}\""
+    ],
+    "*": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
+  }
+}

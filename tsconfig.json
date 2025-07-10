@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": [
+    "@tsconfig/recommended/tsconfig.json",
+    "@tsconfig/node-lts/tsconfig.json",
+    "@tsconfig/node-ts/tsconfig.json"
+  ],
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "outDir": "./dist",
+
+    "strict": true,
+    "incremental": true,
+
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    "noFallthroughCasesInSwitch": true,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+
+    "useUnknownInCatchVariables": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "verbatimModuleSyntax": true,
+
+    "paths": {
+      "~/*": ["source/*"]
+    }
+  },
+
+  "exclude": ["node_modules", "dist"],
+  "include": ["source/**/*.ts", "global.d.ts", "tsdown.config.ts"]
+}

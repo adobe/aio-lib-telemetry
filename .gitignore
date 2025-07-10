@@ -1,0 +1,11 @@
+node_modules/
+dist/
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+.cursor/*
+!.cursor/rules

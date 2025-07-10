@@ -1,0 +1,72 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "extends": ["ultracite"],
+
+  "files": {
+    "ignoreUnknown": true
+  },
+
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": true,
+      "jsxQuoteStyle": "double",
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "performance": {
+        // This rule states tree-shaking may won't work with namespace imports.
+        // Truth is, most of modern bundlers can handle namespace imports just fine.
+        "noNamespaceImport": "off"
+      },
+
+      "style": {
+        "useExportType": "error",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        }
+      }
+    }
+  },
+
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              { "type": true, "source": ":NODE:" },
+              ":BLANK_LINE:",
+              {
+                "type": true,
+                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
+              },
+              ":BLANK_LINE:",
+              { "type": true, "source": ":ALIAS:" },
+              ":BLANK_LINE:",
+              { "type": true, "source": ":PATH:" },
+              ":BLANK_LINE:",
+              { "type": false, "source": ":NODE:" },
+              {
+                "type": false,
+                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
+              },
+              { "type": false, "source": ":ALIAS:" },
+              { "type": false, "source": ":PATH:" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
