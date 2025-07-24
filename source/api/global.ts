@@ -10,9 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
-import type { Attributes } from "@opentelemetry/api";
-
 import { context, trace } from "@opentelemetry/api";
+
+import type { Attributes } from "@opentelemetry/api";
 
 /**
  * Gets the active span from the given context.

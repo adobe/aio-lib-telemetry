@@ -11,6 +11,7 @@
  */
 
 import { readdir, rename } from "node:fs/promises";
+
 import { defineConfig } from "tsdown";
 
 const OUT_DIR = "./dist";

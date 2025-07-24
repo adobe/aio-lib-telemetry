@@ -19,7 +19,6 @@ import type {
   Tracer,
 } from "@opentelemetry/api";
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-
 import type {
   AnyFunction,
   RecursiveStringRecord,

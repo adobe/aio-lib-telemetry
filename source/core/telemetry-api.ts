@@ -10,10 +10,11 @@
  * governing permissions and limitations under the License.
  */
 
-import type { TelemetryApi } from "~/types";
-
 import { diag, metrics, trace } from "@opentelemetry/api";
+
 import { getRuntimeActionMetadata } from "~/helpers/runtime";
+
+import type { TelemetryApi } from "~/types";
 
 /**
  * Gets the global telemetry API.

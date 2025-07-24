@@ -11,6 +11,7 @@
  */
 
 import { resourceFromAttributes } from "@opentelemetry/resources";
+
 import { inferTelemetryAttributesFromRuntimeMetadata } from "~/helpers/runtime";
 
 /**

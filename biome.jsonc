@@ -45,24 +45,24 @@
           "level": "on",
           "options": {
             "groups": [
-              { "type": true, "source": ":NODE:" },
-              ":BLANK_LINE:",
-              {
-                "type": true,
-                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
-              },
-              ":BLANK_LINE:",
-              { "type": true, "source": ":ALIAS:" },
-              ":BLANK_LINE:",
-              { "type": true, "source": ":PATH:" },
-              ":BLANK_LINE:",
               { "type": false, "source": ":NODE:" },
+              ":BLANK_LINE:",
               {
                 "type": false,
                 "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
               },
+              ":BLANK_LINE:",
               { "type": false, "source": ":ALIAS:" },
-              { "type": false, "source": ":PATH:" }
+              ":BLANK_LINE:",
+              { "type": false, "source": ":PATH:" },
+              ":BLANK_LINE:",
+              { "type": true, "source": ":NODE:" },
+              {
+                "type": true,
+                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
+              },
+              { "type": true, "source": ":ALIAS:" },
+              { "type": true, "source": ":PATH:" }
             ]
           }
         }

@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+import { getGlobalTelemetryApi } from "~/core/telemetry-api";
+
 import type {
   Attributes,
   Counter,
@@ -21,8 +23,6 @@ import type {
   ObservableUpDownCounter,
   UpDownCounter,
 } from "@opentelemetry/api";
-
-import { getGlobalTelemetryApi } from "~/core/telemetry-api";
 
 /** The different types of metrics you can create with the OpenTelemetry API. */
 export type MetricTypes =

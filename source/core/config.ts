@@ -10,12 +10,11 @@
  * governing permissions and limitations under the License.
  */
 
-import type { Meter } from "@opentelemetry/api";
+import { createMetricsProxy } from "~/core/metrics";
 
+import type { Meter } from "@opentelemetry/api";
 import type { MetricTypes } from "~/core/metrics";
 import type { EntrypointInstrumentationConfig } from "~/types";
-
-import { createMetricsProxy } from "~/core/metrics";
 
 /**
  * Helper to define the telemetry config for an entrypoint.

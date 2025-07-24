@@ -10,13 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
-import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-
-import type { TelemetryDiagnosticsConfig } from "~/types";
-
 import { diag } from "@opentelemetry/api";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+
 import { setOtelDiagLogger } from "~/core/logging";
+
+import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
+import type { TelemetryDiagnosticsConfig } from "~/types";
 
 /**
  * Get the global SDK instance.

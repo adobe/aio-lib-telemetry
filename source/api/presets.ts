@@ -10,16 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
-import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
-import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
-
-import type { TelemetryInstrumentationPreset } from "~/types";
-
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { GraphQLInstrumentation } from "@opentelemetry/instrumentation-graphql";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { WinstonInstrumentation } from "@opentelemetry/instrumentation-winston";
+
+import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
+import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
+import type { TelemetryInstrumentationPreset } from "~/types";
 
 const httpInstrumentationConfig = {
   // Prevent traces from being created by the un-managed logic of `aio app dev`.
