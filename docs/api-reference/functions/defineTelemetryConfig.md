@@ -14,7 +14,7 @@ function defineTelemetryConfig(
 };
 ```
 
-Defined in: [core/config.ts:24](https://github.com/adobe/aio-lib-telemetry/tree/main/source/core/config.ts#L24)
+Defined in: [core/config.ts:24](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/core/config.ts#L24)
 
 Helper to define the telemetry config for an entrypoint.
 

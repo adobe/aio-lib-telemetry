@@ -15,7 +15,7 @@ function getAioRuntimeAttributes(): {
 };
 ```
 
-Defined in: [api/attributes.ts:26](https://github.com/adobe/aio-lib-telemetry/tree/main/source/api/attributes.ts#L26)
+Defined in: [api/attributes.ts:26](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/api/attributes.ts#L26)
 
 Infers some useful attributes for the current action from the Adobe I/O Runtime
 and returns them as a record of key-value pairs.
