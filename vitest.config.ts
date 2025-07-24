@@ -21,6 +21,8 @@ export default defineConfig({
 
     coverage: {
       enabled: true,
+
+      reporter: ["html-spa"],
       provider: "v8",
     },
   },

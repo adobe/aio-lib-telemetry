@@ -35,5 +35,10 @@
   },
 
   "exclude": ["node_modules", "dist"],
-  "include": ["source/**/*.ts", "global.d.ts", "tsdown.config.ts"]
+  "include": [
+    "source/**/*.ts",
+    "tests/**/*.ts",
+    "global.d.ts",
+    "tsdown.config.ts"
+  ]
 }
