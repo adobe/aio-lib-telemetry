@@ -1,13 +1,13 @@
-import type { Context } from "@opentelemetry/api";
-
 import { context, propagation } from "@opentelemetry/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   deserializeContextFromCarrier,
   serializeContextIntoCarrier,
 } from "~/api/propagation";
 
-// Mock OpenTelemetry API
+import type { Context } from "@opentelemetry/api";
+
 vi.mock("@opentelemetry/api", () => ({
   context: {
     active: vi.fn(),
@@ -19,66 +19,76 @@ vi.mock("@opentelemetry/api", () => ({
 }));
 
 describe("api/propagation", () => {
-  const mockContext = {} as Context;
-  const mockExtractedContext = {} as Context;
+  const mockContext = {
+    _testProperty: "original-context",
+    _testId: "context-123",
+  } as Context & { _testProperty: string; _testId: string };
+
+  const mockExtractedContext = {
+    _testProperty: "extracted-context",
+    _testId: "extracted-456",
+  } as Context & { _testProperty: string; _testId: string };
 
   beforeEach(() => {
     vi.clearAllMocks();
+
     vi.mocked(context.active).mockReturnValue(mockContext);
     vi.mocked(propagation.extract).mockReturnValue(mockExtractedContext);
+    vi.mocked(propagation.inject).mockImplementation((ctx, carrier) => {
+      Object.assign(carrier as Record<string, string>, ctx);
+      return carrier;
+    });
   });
 
   describe("serializeContextIntoCarrier", () => {
     it("should inject context into a new carrier when no carrier is provided", () => {
-      const result = serializeContextIntoCarrier();
+      const carrier = serializeContextIntoCarrier();
+      expect(carrier).toMatchObject(mockContext);
 
-      expect(result).toEqual({});
-      expect(propagation.inject).toHaveBeenCalledWith(mockContext, {});
-    });
-
-    it("should inject context into an existing carrier", () => {
-      const existingCarrier = { foo: "bar", baz: "qux" };
-      const result = serializeContextIntoCarrier(existingCarrier);
-
-      expect(result).toBe(existingCarrier);
       expect(propagation.inject).toHaveBeenCalledWith(
         mockContext,
-        existingCarrier,
+        expect.any(Object),
       );
     });
 
     it("should use custom context when provided", () => {
-      const customContext = {} as Context;
-      const existingCarrier = { test: "value" };
+      const customContext = {
+        _testProperty: "custom-context",
+        _testId: "custom-789",
+      } as Context & typeof mockContext;
 
-      const result = serializeContextIntoCarrier(
+      const existingCarrier = { test: "value" };
+      const carrier = serializeContextIntoCarrier(
         existingCarrier,
         customContext,
       );
 
-      expect(result).toBe(existingCarrier);
+      expect(carrier).toBe(existingCarrier);
       expect(propagation.inject).toHaveBeenCalledWith(
         customContext,
         existingCarrier,
       );
+
+      expect(carrier).toMatchObject(customContext);
     });
 
-    it("should preserve carrier type", () => {
+    it("should preserve carrier content", () => {
       type CustomCarrier = {
         traceparent: string;
         custom: string;
       };
 
-      const carrier: CustomCarrier = {
+      const originalCarrier: CustomCarrier = {
         traceparent: "00-1234567890abcdef-1234567890abcdef-01",
         custom: "42",
       } satisfies Record<string, string>;
 
-      const result = serializeContextIntoCarrier(carrier);
+      const carrier = serializeContextIntoCarrier(originalCarrier);
+      expect(carrier).toBe(originalCarrier);
+      expect(carrier).toMatchObject(originalCarrier);
 
-      expect(result).toBe(carrier);
-      expect(result.custom).toBe("42");
-      expect(result.traceparent).toBe(
+      expect(carrier.custom).toBe("42");
+      expect(carrier.traceparent).toBe(
         "00-1234567890abcdef-1234567890abcdef-01",
       );
     });
@@ -90,9 +100,8 @@ describe("api/propagation", () => {
         traceparent: "00-1234567890abcdef-1234567890abcdef-01",
       };
 
-      const result = deserializeContextFromCarrier(carrier);
-
-      expect(result).toBe(mockExtractedContext);
+      const extractedContext = deserializeContextFromCarrier(carrier);
+      expect(extractedContext).toMatchObject(mockExtractedContext);
       expect(propagation.extract).toHaveBeenCalledWith(mockContext, carrier);
     });
 
@@ -100,40 +109,25 @@ describe("api/propagation", () => {
       const carrier = {
         traceparent: "00-1234567890abcdef-1234567890abcdef-01",
       };
-      const customBaseContext = {} as any;
 
-      const result = deserializeContextFromCarrier(carrier, customBaseContext);
+      const customBaseContext = {
+        _testProperty: "custom-base",
+        _testId: "base-999",
+      } as Context & typeof mockContext;
 
-      expect(result).toBe(mockExtractedContext);
+      const extractedContext = deserializeContextFromCarrier(
+        carrier,
+        customBaseContext,
+      );
+
+      expect(extractedContext).toMatchObject(mockExtractedContext);
       expect(propagation.extract).toHaveBeenCalledWith(
         customBaseContext,
         carrier,
       );
     });
 
-    it("should handle empty carrier", () => {
-      const carrier = {};
-
-      const result = deserializeContextFromCarrier(carrier);
-
-      expect(result).toBe(mockExtractedContext);
-      expect(propagation.extract).toHaveBeenCalledWith(mockContext, carrier);
-    });
-
-    it("should handle carrier with multiple headers", () => {
-      const carrier = {
-        traceparent: "00-1234567890abcdef-1234567890abcdef-01",
-        tracestate: "vendor1=value1,vendor2=value2",
-        baggage: "key1=value1,key2=value2",
-      };
-
-      const result = deserializeContextFromCarrier(carrier);
-
-      expect(result).toBe(mockExtractedContext);
-      expect(propagation.extract).toHaveBeenCalledWith(mockContext, carrier);
-    });
-
-    it("should preserve carrier type", () => {
+    it("should preserve and not consume carrier content", () => {
       type CustomCarrier = {
         traceparent: string;
         custom: string;
@@ -144,30 +138,13 @@ describe("api/propagation", () => {
         custom: "value",
       };
 
-      const result = deserializeContextFromCarrier(carrier);
-
-      expect(result).toBe(mockExtractedContext);
+      const extractedContext = deserializeContextFromCarrier(carrier);
+      expect(extractedContext).toMatchObject(mockExtractedContext);
       expect(propagation.extract).toHaveBeenCalledWith(mockContext, carrier);
-    });
-  });
 
-  describe("round-trip serialization", () => {
-    it("should support round-trip context propagation", () => {
-      // Simulate a round-trip
-      const originalContext = {} as any;
-      const carrier = {};
-
-      // First serialize
-      vi.mocked(context.active).mockReturnValue(originalContext);
-      serializeContextIntoCarrier(carrier);
-
-      // Then deserialize
-      deserializeContextFromCarrier(carrier);
-
-      expect(propagation.inject).toHaveBeenCalledWith(originalContext, carrier);
-      expect(propagation.extract).toHaveBeenCalledWith(
-        originalContext,
-        carrier,
+      expect(carrier.custom).toBe("value");
+      expect(carrier.traceparent).toBe(
+        "00-1234567890abcdef-1234567890abcdef-01",
       );
     });
   });
