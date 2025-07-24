@@ -6,7 +6,7 @@ function getAioRuntimeResourceWithAttributes(
 ): Resource;
 ```
 
-Defined in: [api/attributes.ts:58](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/api/attributes.ts#L58)
+Defined in: [api/attributes.ts:59](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/api/attributes.ts#L59)
 
 Creates a [resource](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.resources.Resource.html)
 that combines the attributes inferred from the Adobe I/O Runtime with the provided attributes.

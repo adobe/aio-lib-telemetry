@@ -4,6 +4,6 @@
 type TelemetryInstrumentationPreset = "simple" | "full";
 ```
 
-Defined in: [types.ts:33](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/types.ts#L33)
+Defined in: [types.ts:32](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/types.ts#L32)
 
 Defines the names of available instrumentation presets.

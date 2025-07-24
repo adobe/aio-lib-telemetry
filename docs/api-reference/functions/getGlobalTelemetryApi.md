@@ -4,7 +4,7 @@
 function getGlobalTelemetryApi(): TelemetryApi;
 ```
 
-Defined in: [core/telemetry-api.ts:32](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/core/telemetry-api.ts#L32)
+Defined in: [core/telemetry-api.ts:33](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/core/telemetry-api.ts#L33)
 
 Gets the global telemetry API.
 

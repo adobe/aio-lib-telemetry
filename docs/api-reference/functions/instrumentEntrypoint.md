@@ -7,7 +7,7 @@ function instrumentEntrypoint<T>(
 ): (params: RecursiveStringRecord) => Promise<Awaited<ReturnType<T>>>;
 ```
 
-Defined in: [core/instrumentation.ts:254](https://github.com/adobe/aio-lib-telemetry/blob/62a2891c310a2377adc467291b72c2e0696970c1/source/core/instrumentation.ts#L254)
+Defined in: [core/instrumentation.ts:255](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/core/instrumentation.ts#L255)
 
 Instruments the entrypoint of a runtime action.
 Needs to be used ONLY with the `main` function of a runtime action.
