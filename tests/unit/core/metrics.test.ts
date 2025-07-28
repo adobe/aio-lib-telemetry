@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { createMetricsProxy } from "~/core/metrics";
 import * as telemetryApi from "~/core/telemetry-api";
@@ -26,14 +26,14 @@ describe("core/metrics", () => {
       });
     });
 
-    it("should create a proxy object", () => {
+    test("should create a proxy object", () => {
       const proxy = createMetricsProxy(() => ({}));
 
       expect(proxy).toBeDefined();
       expect(typeof proxy).toBe("object");
     });
 
-    it("should lazily initialize metrics on first access", () => {
+    test("should lazily initialize metrics on first access", () => {
       const mockCounter = { add: vi.fn() };
       mockMeter.createCounter.mockReturnValue(mockCounter);
 
@@ -51,7 +51,7 @@ describe("core/metrics", () => {
       expect(counter).toBe(mockCounter);
     });
 
-    it("should cache initialized metrics", () => {
+    test("should cache initialized metrics", () => {
       const mockCounter = { add: vi.fn() };
       mockMeter.createCounter.mockReturnValue(mockCounter);
 
@@ -70,7 +70,7 @@ describe("core/metrics", () => {
       expect(counter2).toBe(counter3);
     });
 
-    it("should handle symbol property access", () => {
+    test("should handle symbol property access", () => {
       const proxy = createMetricsProxy(
         () =>
           ({
@@ -82,7 +82,7 @@ describe("core/metrics", () => {
       expect(proxy[symbolProp]).toBeUndefined();
     });
 
-    it("should throw error when accessing metrics during initialization", () => {
+    test("should throw error when accessing metrics during initialization", () => {
       let proxyRef: Record<PropertyKey, MetricTypes> = {};
       const proxy = createMetricsProxy((meter: Meter) => {
         // Try to access proxy during initialization
@@ -99,7 +99,7 @@ describe("core/metrics", () => {
       expect(() => proxy.requestCount).not.toThrow();
     });
 
-    it("should throw descriptive error when telemetry API is not initialized", () => {
+    test("should throw descriptive error when telemetry API is not initialized", () => {
       vi.mocked(telemetryApi.getGlobalTelemetryApi).mockImplementation(() => {
         throw new Error("Telemetry API not initialized");
       });
@@ -113,7 +113,7 @@ describe("core/metrics", () => {
       );
     });
 
-    it("should throw descriptive error when metric creation fails", () => {
+    test("should throw descriptive error when metric creation fails", () => {
       mockMeter.createCounter.mockImplementation(() => {
         throw new Error("Counter creation failed");
       });
@@ -127,7 +127,7 @@ describe("core/metrics", () => {
       );
     });
 
-    it("should handle non-Error exceptions", () => {
+    test("should handle non-Error exceptions", () => {
       vi.mocked(telemetryApi.getGlobalTelemetryApi).mockImplementation(() => {
         // biome-ignore lint/style/useThrowOnlyError: This is for testing purposes.
         throw "String error";
@@ -142,7 +142,7 @@ describe("core/metrics", () => {
       );
     });
 
-    it("should not reinitialize after successful initialization", () => {
+    test("should not reinitialize after successful initialization", () => {
       const mockCounter = { add: vi.fn() };
       mockMeter.createCounter.mockReturnValue(mockCounter);
 

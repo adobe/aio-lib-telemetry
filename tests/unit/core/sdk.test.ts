@@ -1,6 +1,6 @@
 import { diag } from "@opentelemetry/api";
 import { NodeSDK } from "@opentelemetry/sdk-node";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import * as loggingModule from "~/core/logging";
 import {
@@ -58,20 +58,20 @@ describe("core/sdk", () => {
   });
 
   describe("ensureSdkInitialized", () => {
-    it("should throw error if SDK is not initialized", () => {
+    test("should throw error if SDK is not initialized", () => {
       expect(() => ensureSdkInitialized()).toThrow(
         "Telemetry SDK not initialized",
       );
     });
 
-    it("should not throw if SDK is initialized", () => {
+    test("should not throw if SDK is initialized", () => {
       globalThis.__OTEL_SDK__ = mockSdkInstance as NodeSDK;
       expect(() => ensureSdkInitialized()).not.toThrow();
     });
   });
 
   describe("initializeDiagnostics", () => {
-    it("should initialize diagnostics when SDK is not initialized", () => {
+    test("should initialize diagnostics when SDK is not initialized", () => {
       const diagnosticsConfig = {
         logLevel: "debug",
         loggerName: "test-logger",
@@ -86,7 +86,7 @@ describe("core/sdk", () => {
       );
     });
 
-    it("should skip initialization and warn when SDK is already initialized", () => {
+    test("should skip initialization and warn when SDK is already initialized", () => {
       const diagnosticsConfig = {
         logLevel: "info",
       } as const;
@@ -102,7 +102,7 @@ describe("core/sdk", () => {
   });
 
   describe("initializeSdk", () => {
-    it("should initialize SDK with default config", () => {
+    test("should initialize SDK with default config", () => {
       initializeSdk();
 
       expect(NodeSDK).toHaveBeenCalledWith(undefined);
@@ -113,7 +113,7 @@ describe("core/sdk", () => {
       );
     });
 
-    it("should initialize SDK with custom config", () => {
+    test("should initialize SDK with custom config", () => {
       const customConfig = {
         instrumentations: [],
         serviceName: "test-service",
@@ -126,7 +126,7 @@ describe("core/sdk", () => {
       expect(globalThis.__OTEL_SDK__).toBe(mockSdkInstance);
     });
 
-    it("should skip initialization and warn when SDK is already initialized", () => {
+    test("should skip initialization and warn when SDK is already initialized", () => {
       globalThis.__OTEL_SDK__ = mockSdkInstance as NodeSDK;
       initializeSdk();
 
@@ -136,7 +136,7 @@ describe("core/sdk", () => {
       );
     });
 
-    it("should handle SDK start errors", () => {
+    test("should handle SDK start errors", () => {
       const error = new Error("Failed to start SDK");
       mockSdkInstance.start = vi.fn().mockImplementation(() => {
         throw error;
@@ -151,7 +151,7 @@ describe("core/sdk", () => {
       expect(globalThis.__OTEL_SDK__).toBe(mockSdkInstance);
     });
 
-    it("should register shutdown handlers for process signals", () => {
+    test("should register shutdown handlers for process signals", () => {
       const processOnSpy = vi.spyOn(process, "on");
       initializeSdk();
 
@@ -169,7 +169,7 @@ describe("core/sdk", () => {
       processOnSpy.mockRestore();
     });
 
-    it.each(["SIGTERM", "SIGINT", "beforeExit"] as const)(
+    test.each(["SIGTERM", "SIGINT", "beforeExit"] as const)(
       "should shutdown SDK on %s",
       async (signal) => {
         const [getShutdownHandler, restoreShutdownMock] = mockShutdown(signal);
@@ -200,7 +200,7 @@ describe("core/sdk", () => {
       },
     );
 
-    it("should handle shutdown errors gracefully", async () => {
+    test("should handle shutdown errors gracefully", async () => {
       const shutdownError = new Error("Shutdown failed");
       mockSdkInstance.shutdown = vi.fn().mockRejectedValue(shutdownError);
 
@@ -219,7 +219,7 @@ describe("core/sdk", () => {
       restoreShutdownMock();
     });
 
-    it("should not shutdown if SDK is not initialized", async () => {
+    test("should not shutdown if SDK is not initialized", async () => {
       const [getShutdownHandler, restoreShutdownMock] =
         mockShutdown("beforeExit");
 

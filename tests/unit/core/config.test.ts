@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { defineMetrics, defineTelemetryConfig } from "~/core/config";
 import * as metricsApi from "~/core/metrics";
@@ -12,7 +12,7 @@ vi.mock("~/core/metrics", () => ({
 
 describe("core/config", () => {
   describe("defineTelemetryConfig", () => {
-    it("should return an object with initializeTelemetry function", () => {
+    test("should return an object with initializeTelemetry function", () => {
       const initFn = vi.fn();
       const config = defineTelemetryConfig(initFn);
 
@@ -21,7 +21,7 @@ describe("core/config", () => {
       });
     });
 
-    it("should preserve the original function reference", () => {
+    test("should preserve the original function reference", () => {
       const initFn = vi.fn().mockReturnValue({
         sdkConfig: {},
         tracer: {} as Tracer,
@@ -32,7 +32,7 @@ describe("core/config", () => {
       expect(config.initializeTelemetry).toBe(initFn);
     });
 
-    it("should work with async initialization functions", () => {
+    test("should work with async initialization functions", () => {
       const asyncInitFn = vi.fn().mockImplementation(async () => ({
         sdkConfig: await new Promise((resolve) => resolve({})),
         tracer: {} as Tracer,
@@ -63,7 +63,7 @@ describe("core/config", () => {
       );
     });
 
-    it("should create a proxy that lazily initializes metrics", () => {
+    test("should create a proxy that lazily initializes metrics", () => {
       mockMeter.createCounter.mockReturnValue({
         add: vi.fn(),
       });

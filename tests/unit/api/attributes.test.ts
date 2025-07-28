@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
   getAioRuntimeAttributes,
@@ -28,7 +28,7 @@ describe("api/attributes", () => {
   });
 
   describe("getAioRuntimeAttributes", () => {
-    it("should return attributes inferred from runtime metadata", () => {
+    test("should return attributes inferred from runtime metadata", () => {
       const attributes = getAioRuntimeAttributes();
 
       expect(attributes).toEqual(mockAttributes);
@@ -37,7 +37,7 @@ describe("api/attributes", () => {
       );
     });
 
-    it("should return the same attributes on multiple calls", () => {
+    test("should return the same attributes on multiple calls", () => {
       const attributes1 = getAioRuntimeAttributes();
       const attributes2 = getAioRuntimeAttributes();
 
@@ -49,7 +49,7 @@ describe("api/attributes", () => {
   });
 
   describe("getAioRuntimeResource", () => {
-    it("should return a resource with runtime attributes", () => {
+    test("should return a resource with runtime attributes", () => {
       const resource = getAioRuntimeResource();
 
       expect(resource).toBeDefined();
@@ -62,7 +62,7 @@ describe("api/attributes", () => {
   });
 
   describe("getAioRuntimeResourceWithAttributes", () => {
-    it("should merge custom attributes with runtime attributes", () => {
+    test("should merge custom attributes with runtime attributes", () => {
       const customAttributes = {
         foo: "bar",
         baz: "qux",
@@ -79,7 +79,7 @@ describe("api/attributes", () => {
       );
     });
 
-    it("should override runtime attributes with custom attributes", () => {
+    test("should override runtime attributes with custom attributes", () => {
       const customAttributes = {
         "some.attribute": "custom-value",
         custom: "value",
@@ -92,7 +92,7 @@ describe("api/attributes", () => {
       expect(resource.attributes.custom).toBe("value");
     });
 
-    it("should handle empty custom attributes", () => {
+    test("should handle empty custom attributes", () => {
       const resource = getAioRuntimeResourceWithAttributes({});
       expect(resource.attributes).toMatchObject(mockAttributes);
     });

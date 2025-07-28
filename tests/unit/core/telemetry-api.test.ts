@@ -1,5 +1,5 @@
 import { diag, metrics, trace } from "@opentelemetry/api";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
   getGlobalTelemetryApi,
@@ -53,13 +53,13 @@ describe("core/telemetry-api", () => {
   });
 
   describe("getGlobalTelemetryApi", () => {
-    it("should throw error if telemetry API is not initialized", () => {
+    test("should throw error if telemetry API is not initialized", () => {
       expect(() => getGlobalTelemetryApi()).toThrow(
         "Telemetry API not initialized",
       );
     });
 
-    it("should return the global telemetry API when initialized", () => {
+    test("should return the global telemetry API when initialized", () => {
       const api = { tracer: mockTracer, meter: mockMeter };
       globalThis.__OTEL_TELEMETRY_API__ = api as TelemetryApi;
 
@@ -71,7 +71,7 @@ describe("core/telemetry-api", () => {
   });
 
   describe("initializeGlobalTelemetryApi", () => {
-    it("should initialize with default tracer and meter", () => {
+    test("should initialize with default tracer and meter", () => {
       initializeGlobalTelemetryApi();
 
       const api = globalThis.__OTEL_TELEMETRY_API__;
@@ -84,7 +84,7 @@ describe("core/telemetry-api", () => {
       expect(metrics.getMeter).toHaveBeenCalledWith("test-action", "1.0.0");
     });
 
-    it("should use provided tracer and meter", () => {
+    test("should use provided tracer and meter", () => {
       const customTracer = { startActiveSpan: vi.fn() } as Partial<Tracer>;
       const customMeter = { createCounter: vi.fn() } as Partial<Meter>;
 
@@ -102,7 +102,7 @@ describe("core/telemetry-api", () => {
       expect(metrics.getMeter).not.toHaveBeenCalled();
     });
 
-    it("should use provided tracer with default meter", () => {
+    test("should use provided tracer with default meter", () => {
       const customTracer = { startActiveSpan: vi.fn() } as Partial<Tracer>;
 
       initializeGlobalTelemetryApi({
@@ -118,7 +118,7 @@ describe("core/telemetry-api", () => {
       expect(metrics.getMeter).toHaveBeenCalledWith("test-action", "1.0.0");
     });
 
-    it("should use provided meter with default tracer", () => {
+    test("should use provided meter with default tracer", () => {
       const customMeter = { createCounter: vi.fn() } as Partial<Meter>;
 
       initializeGlobalTelemetryApi({
@@ -134,7 +134,7 @@ describe("core/telemetry-api", () => {
       expect(metrics.getMeter).not.toHaveBeenCalled();
     });
 
-    it("should warn if already initialized", () => {
+    test("should warn if already initialized", () => {
       initializeGlobalTelemetryApi();
       initializeGlobalTelemetryApi();
 
@@ -143,7 +143,7 @@ describe("core/telemetry-api", () => {
       );
     });
 
-    it("should not override existing API when already initialized", () => {
+    test("should not override existing API when already initialized", () => {
       const firstTracer = { startActiveSpan: vi.fn() } as Partial<Tracer>;
       const firstMeter = { createCounter: vi.fn() } as Partial<Meter>;
       const secondTracer = { startActiveSpan: vi.fn() } as Partial<Tracer>;
@@ -168,7 +168,7 @@ describe("core/telemetry-api", () => {
       expect(api?.meter).toBe(firstMeter);
     });
 
-    it("should handle empty config object", () => {
+    test("should handle empty config object", () => {
       initializeGlobalTelemetryApi({});
       const api = globalThis.__OTEL_TELEMETRY_API__;
 
