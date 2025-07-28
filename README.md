@@ -3,12 +3,11 @@
 - [`@adobe/aio-lib-telemetry`](#adobeaio-lib-telemetry)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Resources](#resources)
   - [Contributing](#contributing)
   - [License](#license)
   - [Governance](#governance)
 
-A utility module for easy instrumentation of Adobe I/O Runtime actions via OpenTelemetry.
+A utility module for easy instrumentation of [Adobe App Builder](https://developer.adobe.com/app-builder/docs/overview/) runtime actions via OpenTelemetry.
 
 ## Installation
 
@@ -19,11 +18,6 @@ npm install @adobe/aio-lib-telemetry
 ## Usage
 
 See the [Usage Guide](./docs/usage.md) for more information.
-
-## Resources
-
-- [Adobe App Builder Documentation](https://developer.adobe.com/app-builder/docs/overview/)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
 
 ## Contributing
 
