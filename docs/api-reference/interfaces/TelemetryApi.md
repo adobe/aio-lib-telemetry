@@ -1,6 +1,6 @@
 # `TelemetryApi`
 
-Defined in: [types.ts:165](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/types.ts#L165)
+Defined in: [types.ts:165](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/types.ts#L165)
 
 Defines the global telemetry API. These items should be set once per-application.
 
@@ -12,7 +12,7 @@ Defines the global telemetry API. These items should be set once per-application
 meter: Meter;
 ```
 
-Defined in: [types.ts:170](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/types.ts#L170)
+Defined in: [types.ts:170](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/types.ts#L170)
 
 The meter used to create metrics.
 
@@ -24,6 +24,6 @@ The meter used to create metrics.
 tracer: Tracer;
 ```
 
-Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/types.ts#L167)
+Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/types.ts#L167)
 
 The tracer used to create spans.
