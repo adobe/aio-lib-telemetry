@@ -56,7 +56,14 @@ const helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
 const UNKNOWN_ERROR_CODE = -1;
 const UNKNOWN_ERROR_NAME = "Unknown Error";
 
-/** Access helpers for the current instrumented operation. */
+/**
+ * Access helpers for the current instrumented operation.
+ *
+ * @throws {Error} If the function is called in a runtime action that has not
+ * telemetry enabled or if it is called outside of an instrumented function.
+ *
+ * @since 0.1.0
+ */
 export function getInstrumentationHelpers(): InstrumentationHelpers {
   if (!isTelemetryEnabled()) {
     throw new Error(
@@ -78,10 +85,14 @@ export function getInstrumentationHelpers(): InstrumentationHelpers {
 
 /**
  * Instruments a function.
+ *
  * @param fn - The function to instrument.
  * @param config - The configuration for the instrumentation.
  * @returns A wrapped function with the same signature as the original function, but with telemetry instrumentation.
  *
+ * @throws {Error} If the span name is not provided and the function is not named.
+ *
+ * @since 0.1.0
  * @example
  * ```ts
  * const instrumentedFn = instrument(someFunction, {
@@ -238,10 +249,14 @@ export function instrument<T extends AnyFunction>(
 /**
  * Instruments the entrypoint of a runtime action.
  * Needs to be used ONLY with the `main` function of a runtime action.
+ *
  * @param fn - The entrypoint function to instrument.
  * @param config - The configuration for the entrypoint instrumentation.
  * @returns A wrapped function with the same signature as the original function, but with telemetry instrumentation.
  *
+ * @throws {Error} If the instrumentation or the execution of the entrypoint fails.
+ *
+ * @since 0.1.0
  * @example
  * ```ts
  * import { telemetryConfig } from "../telemetry";

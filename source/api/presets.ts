@@ -42,6 +42,7 @@ const undiciInstrumentationConfig = {
  *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
  *   [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * const instrumentations = getPresetInstrumentations("simple");

@@ -18,6 +18,7 @@ import { inferTelemetryAttributesFromRuntimeMetadata } from "~/helpers/runtime";
  * Infers some useful attributes for the current action from the Adobe I/O Runtime
  * and returns them as a record of key-value pairs.
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * const attributes = getAioRuntimeAttributes();
@@ -33,6 +34,8 @@ export function getAioRuntimeAttributes() {
  * from the attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
  *
  * @see https://opentelemetry.io/docs/languages/js/resources/
+ *
+ * @since 0.1.0
  * @example
  * ```ts
  * const resource = getAioRuntimeResource();
@@ -49,6 +52,8 @@ export function getAioRuntimeResource() {
  * @param attributes - The attributes to combine with the attributes inferred from the Adobe I/O Runtime.
  *
  * @see https://opentelemetry.io/docs/languages/js/resources/
+ *
+ * @since 0.1.0
  * @example
  * ```ts
  * const resource = getAioRuntimeResourceWithAttributes({ foo: "bar" });

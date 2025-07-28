@@ -20,6 +20,7 @@ import type { TelemetryApi } from "~/types";
  * Gets the global telemetry API.
  * @throws {Error} If the telemetry API is not initialized.
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * function someNonAutoInstrumentedFunction() {

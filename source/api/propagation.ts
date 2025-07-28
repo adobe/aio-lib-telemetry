@@ -14,9 +14,11 @@ import { context, propagation } from "@opentelemetry/api";
 
 /**
  * Serializes the current context into a carrier.
+ *
  * @param carrier - The carrier object to inject the context into.
  * @param ctx - The context to serialize. Defaults to the active context.
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * const carrier = serializeContextIntoCarrier();
@@ -42,9 +44,11 @@ export function serializeContextIntoCarrier<
 
 /**
  * Deserializes the context from a carrier and augments the given base context with it.
+ *
  * @param carrier - The carrier object to extract the context from.
  * @param baseCtx - The base context to augment. Defaults to the active context.
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * const carrier = { traceparent: "...00-069ea333a3d430..." };

@@ -25,13 +25,22 @@ import type {
 } from "~/core/instrumentation";
 import type { getLogger } from "~/core/logging";
 
-/** Available log levels for the OpenTelemetry DiagLogger. */
+/**
+ * Available log levels for the OpenTelemetry DiagLogger.
+ * @since 0.1.0
+ */
 export type DiagnosticsLogLevel = Lowercase<keyof typeof DiagLogLevel>;
 
-/** Defines the names of available instrumentation presets. */
+/**
+ * Defines the names of available instrumentation presets.
+ * @since 0.1.0
+ */
 export type TelemetryInstrumentationPreset = "simple" | "full";
 
-/** The configuration for the telemetry diagnostics. */
+/**
+ * The configuration for the telemetry diagnostics.
+ * @since 0.1.0
+ */
 export interface TelemetryDiagnosticsConfig {
   /** The log level to use for the diagnostics. */
   logLevel: DiagnosticsLogLevel;
@@ -50,7 +59,10 @@ export interface TelemetryDiagnosticsConfig {
   exportLogs?: boolean;
 }
 
-/** Configuration related to context propagation (for distributed tracing). */
+/**
+ * Configuration related to context propagation (for distributed tracing).
+ * @since 0.1.0
+ */
 export interface TelemetryPropagationConfig<T extends AnyFunction> {
   /**
    * By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
@@ -73,7 +85,10 @@ export interface TelemetryPropagationConfig<T extends AnyFunction> {
   };
 }
 
-/** The configuration for instrumentation. */
+/**
+ * The configuration for instrumentation.
+ * @since 0.1.0
+ */
 export interface InstrumentationConfig<T extends AnyFunction> {
   /**
    * Configuration options related to the span started by the instrumented function.
@@ -126,7 +141,10 @@ export interface InstrumentationConfig<T extends AnyFunction> {
   };
 }
 
-/** The configuration options for the telemetry module. */
+/**
+ * The configuration options for the telemetry module.
+ * @since 0.1.0
+ */
 export interface TelemetryConfig extends Partial<TelemetryApi> {
   /**
    * The configuration options for the OpenTelemetry SDK.
@@ -138,7 +156,10 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
   diagnostics?: false | TelemetryDiagnosticsConfig;
 }
 
-/** The configuration for entrypoint instrumentation. */
+/**
+ * The configuration for entrypoint instrumentation.
+ * @since 0.1.0
+ */
 export interface EntrypointInstrumentationConfig<
   T extends AnyFunction = AnyFunction,
 > extends InstrumentationConfig<T> {
@@ -161,7 +182,10 @@ export interface EntrypointInstrumentationConfig<
   ) => TelemetryConfig;
 }
 
-/** Defines the global telemetry API. These items should be set once per-application. */
+/**
+ * Defines the global telemetry API. These items should be set once per-application.
+ * @since 0.1.0
+ */
 export interface TelemetryApi {
   /** The tracer used to create spans. */
   tracer: Tracer;
@@ -170,7 +194,10 @@ export interface TelemetryApi {
   meter: Meter;
 }
 
-/** The context for the current operation. */
+/**
+ * The context for the current operation.
+ * @since 0.1.0
+ */
 export interface InstrumentationContext {
   /** The global (managed by the library) tracer instance used to create spans. */
   tracer: Tracer;

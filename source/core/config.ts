@@ -19,6 +19,8 @@ import type { EntrypointInstrumentationConfig } from "~/types";
 /**
  * Helper to define the telemetry config for an entrypoint.
  * @param init - The function to initialize the telemetry.
+ *
+ * @since 0.1.0
  */
 export function defineTelemetryConfig(
   init: EntrypointInstrumentationConfig["initializeTelemetry"],
@@ -30,8 +32,9 @@ export function defineTelemetryConfig(
 
 /**
  * Helper to define a record of metrics.
- *
  * @see https://opentelemetry.io/docs/concepts/signals/metrics/
+ *
+ * @since 0.1.0
  * @example
  * ```ts
  * const metrics = defineMetrics((meter) => {
