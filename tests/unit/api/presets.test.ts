@@ -1,6 +1,6 @@
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { getPresetInstrumentations } from "~/api/presets";
 
@@ -8,7 +8,7 @@ import type { TelemetryInstrumentationPreset } from "~/types";
 
 describe("api/presets", () => {
   describe("getPresetInstrumentations", () => {
-    it("should return simple instrumentations for 'simple' preset", () => {
+    test("should return simple instrumentations for 'simple' preset", () => {
       const instrumentations = getPresetInstrumentations("simple");
       expect(Array.isArray(instrumentations)).toBe(true);
       expect(instrumentations).toHaveLength(4);
@@ -27,14 +27,14 @@ describe("api/presets", () => {
       );
     });
 
-    it("should return auto instrumentations for 'full' preset", () => {
+    test("should return auto instrumentations for 'full' preset", () => {
       const instrumentations = getPresetInstrumentations("full");
 
       expect(Array.isArray(instrumentations)).toBe(true);
       expect(instrumentations.length).toBeGreaterThan(0);
     });
 
-    it.each(["unknown", undefined, null])(
+    test.each(["unknown", undefined, null])(
       "should return empty array for %s preset",
       (preset) => {
         const instrumentations = getPresetInstrumentations(
@@ -45,7 +45,7 @@ describe("api/presets", () => {
       },
     );
 
-    it.each(["simple", "full"] as const)(
+    test.each(["simple", "full"] as const)(
       "preset '%s' should configure http instrumentation with requireParentforIncomingSpans",
       (preset) => {
         const instrumentations = getPresetInstrumentations(preset);
@@ -62,7 +62,7 @@ describe("api/presets", () => {
       },
     );
 
-    it.each(["simple", "full"] as const)(
+    test.each(["simple", "full"] as const)(
       "preset '%s' should configure undici instrumentation with requireParentforSpans",
       (preset) => {
         const instrumentations = getPresetInstrumentations(preset);
@@ -82,7 +82,7 @@ describe("api/presets", () => {
       },
     );
 
-    it("full preset should configure http instrumentation with requireParentforIncomingSpans", () => {
+    test("full preset should configure http instrumentation with requireParentforIncomingSpans", () => {
       const instrumentations = getPresetInstrumentations("full");
       const httpInstrumentation = instrumentations.find(
         (i) => i.instrumentationName === "@opentelemetry/instrumentation-http",

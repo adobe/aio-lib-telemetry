@@ -1,5 +1,5 @@
 import { context, trace } from "@opentelemetry/api";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
   addEventToActiveSpan,
@@ -34,7 +34,7 @@ describe("api/global", () => {
   });
 
   describe("getActiveSpan", () => {
-    it("should return the active span when it exists", () => {
+    test("should return the active span when it exists", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const span = getActiveSpan();
@@ -42,7 +42,7 @@ describe("api/global", () => {
       expect(trace.getSpan).toHaveBeenCalledWith(mockContext);
     });
 
-    it("should use provided context when given", () => {
+    test("should use provided context when given", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const span = getActiveSpan(mockContext);
@@ -50,14 +50,14 @@ describe("api/global", () => {
       expect(trace.getSpan).toHaveBeenCalledWith(mockContext);
     });
 
-    it("should throw an error when no span is found", () => {
+    test("should throw an error when no span is found", () => {
       vi.mocked(trace.getSpan).mockReturnValue(undefined);
       expect(() => getActiveSpan()).toThrow("No active span found");
     });
   });
 
   describe("tryGetActiveSpan", () => {
-    it("should return the active span when it exists", () => {
+    test("should return the active span when it exists", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const span = tryGetActiveSpan();
@@ -65,7 +65,7 @@ describe("api/global", () => {
       expect(trace.getSpan).toHaveBeenCalledWith(mockContext);
     });
 
-    it("should use provided context when given", () => {
+    test("should use provided context when given", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const span = tryGetActiveSpan(mockContext);
@@ -73,7 +73,7 @@ describe("api/global", () => {
       expect(trace.getSpan).toHaveBeenCalledWith(mockContext);
     });
 
-    it("should return null when no span is found", () => {
+    test("should return null when no span is found", () => {
       vi.mocked(trace.getSpan).mockReturnValue(undefined);
 
       const span = tryGetActiveSpan();
@@ -82,14 +82,14 @@ describe("api/global", () => {
   });
 
   describe("addEventToActiveSpan", () => {
-    it("should add an event to the active span", () => {
+    test("should add an event to the active span", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       addEventToActiveSpan("test-event");
       expect(mockSpan.addEvent).toHaveBeenCalledWith("test-event", undefined);
     });
 
-    it("should add an event with attributes to the active span", () => {
+    test("should add an event with attributes to the active span", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const attributes = { foo: "bar", baz: 42 };
@@ -98,7 +98,7 @@ describe("api/global", () => {
       expect(mockSpan.addEvent).toHaveBeenCalledWith("test-event", attributes);
     });
 
-    it("should throw an error when no span is found", () => {
+    test("should throw an error when no span is found", () => {
       vi.mocked(trace.getSpan).mockReturnValue(undefined);
       expect(() => addEventToActiveSpan("test-event")).toThrow(
         "No active span found",
@@ -107,7 +107,7 @@ describe("api/global", () => {
   });
 
   describe("tryAddEventToActiveSpan", () => {
-    it("should add an event to the active span and return true", () => {
+    test("should add an event to the active span and return true", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const result = tryAddEventToActiveSpan("test-event");
@@ -115,7 +115,7 @@ describe("api/global", () => {
       expect(mockSpan.addEvent).toHaveBeenCalledWith("test-event", undefined);
     });
 
-    it("should add an event with attributes and return true", () => {
+    test("should add an event with attributes and return true", () => {
       vi.mocked(trace.getSpan).mockReturnValue(mockSpan);
 
       const attributes = { foo: "bar", baz: 42 };
@@ -125,7 +125,7 @@ describe("api/global", () => {
       expect(mockSpan.addEvent).toHaveBeenCalledWith("test-event", attributes);
     });
 
-    it("should return false when no span is found", () => {
+    test("should return false when no span is found", () => {
       vi.mocked(trace.getSpan).mockReturnValue(undefined);
 
       const result = tryAddEventToActiveSpan("test-event");

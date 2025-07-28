@@ -1,5 +1,5 @@
 import { context, propagation } from "@opentelemetry/api";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
   deserializeContextFromCarrier,
@@ -41,7 +41,7 @@ describe("api/propagation", () => {
   });
 
   describe("serializeContextIntoCarrier", () => {
-    it("should inject context into a new carrier when no carrier is provided", () => {
+    test("should inject context into a new carrier when no carrier is provided", () => {
       const carrier = serializeContextIntoCarrier();
       expect(carrier).toMatchObject(mockContext);
 
@@ -51,7 +51,7 @@ describe("api/propagation", () => {
       );
     });
 
-    it("should use custom context when provided", () => {
+    test("should use custom context when provided", () => {
       const customContext = {
         _testProperty: "custom-context",
         _testId: "custom-789",
@@ -72,7 +72,7 @@ describe("api/propagation", () => {
       expect(carrier).toMatchObject(customContext);
     });
 
-    it("should preserve carrier content", () => {
+    test("should preserve carrier content", () => {
       type CustomCarrier = {
         traceparent: string;
         custom: string;
@@ -95,7 +95,7 @@ describe("api/propagation", () => {
   });
 
   describe("deserializeContextFromCarrier", () => {
-    it("should extract context from carrier using active context as base", () => {
+    test("should extract context from carrier using active context as base", () => {
       const carrier = {
         traceparent: "00-1234567890abcdef-1234567890abcdef-01",
       };
@@ -105,7 +105,7 @@ describe("api/propagation", () => {
       expect(propagation.extract).toHaveBeenCalledWith(mockContext, carrier);
     });
 
-    it("should use custom base context when provided", () => {
+    test("should use custom base context when provided", () => {
       const carrier = {
         traceparent: "00-1234567890abcdef-1234567890abcdef-01",
       };
@@ -127,7 +127,7 @@ describe("api/propagation", () => {
       );
     });
 
-    it("should preserve and not consume carrier content", () => {
+    test("should preserve and not consume carrier content", () => {
       type CustomCarrier = {
         traceparent: string;
         custom: string;
