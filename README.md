@@ -3,8 +3,8 @@
 - [`@adobe/aio-lib-telemetry`](#adobeaio-lib-telemetry)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Contributing](#contributing)
   - [Resources](#resources)
+  - [Contributing](#contributing)
   - [License](#license)
   - [Governance](#governance)
 
@@ -20,14 +20,14 @@ npm install @adobe/aio-lib-telemetry
 
 See the [Usage Guide](./docs/usage.md) for more information.
 
-## Contributing
-
-This package is part of the Adobe Commerce SDK monorepo. See the [Contributing Guide](https://github.com/adobe/aio-commerce-sdk/blob/main/.github/CONTRIBUTING.md).
-
 ## Resources
 
 - [Adobe App Builder Documentation](https://developer.adobe.com/app-builder/docs/overview/)
 - [Code of Conduct](./CODE_OF_CONDUCT.md)
+
+## Contributing
+
+See the [Contributing Guide](https://github.com/adobe/aio-commerce-sdk/blob/main/.github/CONTRIBUTING.md).
 
 ## License
 
