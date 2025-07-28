@@ -21,16 +21,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup-ci-environment.yml
         with:
+          install-deps: true
           node-version: lts/*
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Build artifacts
         run: npm run build
