@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup environment
-        uses: ./.github/actions/setup-ci-env.yml
+        uses: ./.github/actions/setup-ci-env
         with:
           install-deps: false
           node-version: "lts/*"
@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup environment
-        uses: ./.github/actions/setup-ci-env.yml
+        uses: ./.github/actions/setup-ci-env
         with:
           install-deps: true
           node-version: ${{ matrix.node-version }}
@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup environment
-        uses: ./.github/actions/setup-ci-env.yml
+        uses: ./.github/actions/setup-ci-env
         with:
           install-deps: true
           node-version: ${{ matrix.node-version }}
