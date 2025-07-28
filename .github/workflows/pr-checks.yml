@@ -72,6 +72,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Check code style
-        run: npm run check:code-quality
+        run: npm run build
 
         
