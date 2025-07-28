@@ -72,6 +72,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Check code style
-        run: npx concurrently "npm run check:ci" "npm run typecheck"
+        run: npm run check:code-quality
 
         
