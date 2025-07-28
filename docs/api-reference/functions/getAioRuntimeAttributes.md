@@ -15,7 +15,7 @@ function getAioRuntimeAttributes(): {
 };
 ```
 
-Defined in: [api/attributes.ts:27](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/api/attributes.ts#L27)
+Defined in: [api/attributes.ts:28](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/attributes.ts#L28)
 
 Infers some useful attributes for the current action from the Adobe I/O Runtime
 and returns them as a record of key-value pairs.
@@ -96,6 +96,10 @@ name: string = serviceName;
 ```ts
 version: string = meta.actionVersion;
 ```
+
+## Since
+
+0.1.0
 
 ## Example
 

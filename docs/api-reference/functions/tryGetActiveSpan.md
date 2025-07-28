@@ -4,7 +4,7 @@
 function tryGetActiveSpan(ctx: Context): null | Span;
 ```
 
-Defined in: [api/global.ts:49](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/api/global.ts#L49)
+Defined in: [api/global.ts:52](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/global.ts#L52)
 
 Tries to get the active span from the given context.
 
@@ -17,6 +17,10 @@ Tries to get the active span from the given context.
 ## Returns
 
 `null` \| `Span`
+
+## Since
+
+0.1.0
 
 ## Example
 

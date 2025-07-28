@@ -4,7 +4,7 @@
 function defineMetrics<T>(createMetrics: (meter: Meter) => T): T;
 ```
 
-Defined in: [core/config.ts:45](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/core/config.ts#L45)
+Defined in: [core/config.ts:48](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/config.ts#L48)
 
 Helper to define a record of metrics.
 
@@ -27,6 +27,10 @@ Helper to define a record of metrics.
 ## See
 
 https://opentelemetry.io/docs/concepts/signals/metrics/
+
+## Since
+
+0.1.0
 
 ## Example
 

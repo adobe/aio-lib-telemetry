@@ -4,7 +4,7 @@
 function getLogger(name: string, config?: AioLoggerConfig): AioLogger;
 ```
 
-Defined in: [core/logging.ts:82](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/core/logging.ts#L82)
+Defined in: [core/logging.ts:83](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/logging.ts#L83)
 
 Get a logger instance.
 
@@ -18,6 +18,10 @@ Get a logger instance.
 ## Returns
 
 `AioLogger`
+
+## Since
+
+0.1.0
 
 ## Example
 

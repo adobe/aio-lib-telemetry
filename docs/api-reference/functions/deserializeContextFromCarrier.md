@@ -7,7 +7,7 @@ function deserializeContextFromCarrier<Carrier>(
 ): Context;
 ```
 
-Defined in: [api/propagation.ts:55](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/api/propagation.ts#L55)
+Defined in: [api/propagation.ts:59](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/propagation.ts#L59)
 
 Deserializes the context from a carrier and augments the given base context with it.
 
@@ -27,6 +27,10 @@ Deserializes the context from a carrier and augments the given base context with
 ## Returns
 
 `Context`
+
+## Since
+
+0.1.0
 
 ## Example
 

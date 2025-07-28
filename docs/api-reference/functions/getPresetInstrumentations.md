@@ -13,7 +13,7 @@ function getPresetInstrumentations(
   | Instrumentation<InstrumentationConfig>[];
 ```
 
-Defined in: [api/presets.ts:51](https://github.com/adobe/aio-lib-telemetry/blob/705ee9c1d1db27539c2bb0122590608defceced2/source/api/presets.ts#L51)
+Defined in: [api/presets.ts:52](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/presets.ts#L52)
 
 Get the instrumentations for a given preset.
 
@@ -40,6 +40,10 @@ The instrumentations for the given preset:
   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql),
   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
   [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
+
+## Since
+
+0.1.0
 
 ## Example
 
