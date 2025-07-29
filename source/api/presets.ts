@@ -33,7 +33,7 @@ const undiciInstrumentationConfig = {
 /**
  * Get the instrumentations for a given preset.
  *
- * @param preset - The preset to get the instrumentations for.
+ * @param preset - The preset to get the instrumentations for. *
  * @returns The instrumentations for the given preset:
  * - `full`: All the Node.js [auto-instrumentations](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
  * - `simple`: Instrumentations for:
@@ -41,6 +41,8 @@ const undiciInstrumentationConfig = {
  *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql),
  *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
  *   [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
+ *
+ * @throws {Error} If the preset is unknown.
  *
  * @since 0.1.0
  * @example
@@ -70,7 +72,7 @@ export function getPresetInstrumentations(
     }
 
     default: {
-      return [];
+      throw new Error(`Unknown instrumentation preset: ${preset}`);
     }
   }
 }
