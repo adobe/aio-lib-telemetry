@@ -72,7 +72,7 @@ function retrieveBasicMetadata() {
     transactionId: process.env.__OW_TRANSACTION_ID ?? "unknown",
     actionVersion: process.env.__OW_ACTION_VERSION ?? "0.0.0 (development)",
     deadline: process.env.__OW_DEADLINE
-      ? new Date(Number(process.env.__OW_DEADLINE) * 1000)
+      ? new Date(Number(process.env.__OW_DEADLINE))
       : null,
   };
 }
