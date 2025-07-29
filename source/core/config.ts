@@ -45,7 +45,7 @@ export function defineTelemetryConfig(
  * ```
  * @param createMetrics - A function that receives a meter which can be used to create the metrics.
  */
-export function defineMetrics<T extends Record<string, MetricTypes>>(
+export function defineMetrics<T extends Record<PropertyKey, MetricTypes>>(
   createMetrics: (meter: Meter) => T,
 ): T {
   return createMetricsProxy(createMetrics);

@@ -38,7 +38,7 @@ export type MetricTypes =
  * Creates a metrics proxy that lazily initializes metrics when accessed for the first time.
  * @param createMetrics - A factory function that receives an initialized meter and returns a metric record.
  */
-export function createMetricsProxy<T extends Record<string, MetricTypes>>(
+export function createMetricsProxy<T extends Record<PropertyKey, MetricTypes>>(
   createMetrics: (meter: Meter) => T,
 ): T {
   let initializedMetrics: T | null = null;
@@ -47,11 +47,7 @@ export function createMetricsProxy<T extends Record<string, MetricTypes>>(
   // Return a proxy that will lazy-initialize the metrics when accessed.
   // This way we can defer the initialization of the metrics until the telemetry API (meter) is initialized.
   return new Proxy({} as T, {
-    get(_, prop: string | symbol) {
-      if (typeof prop === "symbol") {
-        return;
-      }
-
+    get(_, prop: PropertyKey) {
       if (isInitializing) {
         // Would happen if using a metric inside the `defineMetrics` function.
         throw new Error(
