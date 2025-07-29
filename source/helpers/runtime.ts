@@ -128,6 +128,7 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
     "deployment.cloud": meta.cloud,
     "deployment.environment": meta.isDevelopment ? "development" : "production",
 
+    "action.name": meta.actionName,
     "action.package_name": meta.packageName,
     "action.namespace": meta.namespace,
     "action.activation_id": meta.activationId,
