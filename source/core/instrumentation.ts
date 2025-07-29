@@ -45,11 +45,6 @@ import type {
 // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
 export type AnyFunction = (...args: any[]) => any | Promise<any>;
 
-/** A map of key-value pairs where the values are either strings or other maps. */
-export type RecursiveStringRecord = {
-  [key: string]: string | RecursiveStringRecord;
-};
-
 /** AsyncLocalStorage for helpers context. */
 const helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
 
@@ -269,10 +264,10 @@ export function instrument<T extends AnyFunction>(
  */
 export function instrumentEntrypoint<
   // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
-  T extends (params: RecursiveStringRecord) => any,
+  T extends (params: Record<string, unknown>) => any,
 >(fn: T, config: EntrypointInstrumentationConfig<T>) {
   /** Sets a global process.env.ENABLE_TELEMETRY variable. */
-  function setTelemetryEnv(params: RecursiveStringRecord) {
+  function setTelemetryEnv(params: Record<string, unknown>) {
     const { ENABLE_TELEMETRY = false } = params;
     const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
     process.env = {
@@ -286,7 +281,7 @@ export function instrumentEntrypoint<
   }
 
   /** Callback that will be used to retrieve the base context for the entrypoint. */
-  function getPropagatedContext(params: RecursiveStringRecord) {
+  function getPropagatedContext(params: Record<string, unknown>) {
     function inferContextCarrier() {
       // Try to infer the parent context from the following (in order):
       // 1. A `x-telemetry-context` header.
@@ -296,7 +291,7 @@ export function instrumentEntrypoint<
       const telemetryContext =
         headers["x-telemetry-context"] ??
         params.__telemetryContext ??
-        (params.data as RecursiveStringRecord)?.__telemetryContext ??
+        (params.data as Record<string, unknown>)?.__telemetryContext ??
         null;
 
       return {
@@ -328,7 +323,7 @@ export function instrumentEntrypoint<
   }
 
   /** Initializes the Telemetry SDK and API. */
-  function setupTelemetry(params: RecursiveStringRecord) {
+  function setupTelemetry(params: Record<string, unknown>) {
     const { initializeTelemetry, ...instrumentationConfig } = config;
 
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
@@ -379,7 +374,7 @@ export function instrumentEntrypoint<
   /** Runs the entrypoint and shuts down the Telemetry SDK. */
   function runEntrypoint(
     instrumentedHandler: T,
-    params: RecursiveStringRecord,
+    params: Record<string, unknown>,
   ) {
     try {
       const result = instrumentedHandler(params);
@@ -392,7 +387,7 @@ export function instrumentEntrypoint<
   }
 
   return async (
-    params: RecursiveStringRecord,
+    params: Record<string, unknown>,
   ): Promise<Awaited<ReturnType<T>>> => {
     setTelemetryEnv(params);
 

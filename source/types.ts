@@ -19,10 +19,7 @@ import type {
   Tracer,
 } from "@opentelemetry/api";
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-import type {
-  AnyFunction,
-  RecursiveStringRecord,
-} from "~/core/instrumentation";
+import type { AnyFunction } from "~/core/instrumentation";
 import type { getLogger } from "~/core/logging";
 
 /**
@@ -177,7 +174,7 @@ export interface EntrypointInstrumentationConfig<
    * @returns The telemetry configuration to use for the action.
    */
   initializeTelemetry: (
-    params: RecursiveStringRecord,
+    params: Record<string, unknown>,
     isDevelopment: boolean,
   ) => TelemetryConfig;
 }
