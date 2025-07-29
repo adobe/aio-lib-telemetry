@@ -80,7 +80,7 @@ export interface TelemetryPropagationConfig<T extends AnyFunction> {
    * @returns The carrier of the context to retrieve and an optional base context to use for the started span (defaults to the active context).
    */
   getContextCarrier?: (...args: Parameters<T>) => {
-    carrier: Record<string, string>;
+    carrier: Record<PropertyKey, string>;
     baseCtx?: Context;
   };
 }
@@ -212,5 +212,5 @@ export interface InstrumentationContext {
   currentSpan: Span;
 
   /** Holds a carrier that can be used to propagate the active context. */
-  contextCarrier: Record<string, string>;
+  contextCarrier: Record<PropertyKey, string>;
 }
