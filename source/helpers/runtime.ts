@@ -79,10 +79,17 @@ function retrieveBasicMetadata() {
 
 /** Parses the action name from the runtime environment. */
 function parseActionName() {
-  if (process.env.__OW_ACTION_NAME?.includes("/")) {
-    const [, _, packageName, ...action] =
-      process.env.__OW_ACTION_NAME?.split("/") ?? [];
+  const actionName = process.env.__OW_ACTION_NAME;
 
+  if (!actionName) {
+    return {
+      packageName: "unknown",
+      actionName: "unknown",
+    };
+  }
+
+  if (actionName.includes("/")) {
+    const [, _, packageName, ...action] = actionName.split("/");
     return {
       packageName,
       actionName: action.join("/"),
