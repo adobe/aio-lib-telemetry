@@ -19,15 +19,6 @@ import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
 import type { TelemetryDiagnosticsConfig } from "~/types";
 
 /**
- * Get the global SDK instance.
- * @throws {Error} An error if the telemetry SDK is not initialized.
- */
-function getGlobalSdk() {
-  ensureSdkInitialized();
-  return global.__OTEL_SDK__;
-}
-
-/**
  * Set the global SDK instance.
  * @param sdkInstance - The SDK instance to set.
  */
