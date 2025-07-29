@@ -47,6 +47,7 @@
     "assist": "biome check --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
     "assist:apply": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
     "build": "tsdown",
+    "changeset": "changeset",
     "check:ci": "biome ci --formatter-enabled=true --linter-enabled=true --assist-enabled=true --no-errors-on-unmatched",
     "docs": "typedoc",
     "format": "biome format --write --no-errors-on-unmatched",
@@ -85,10 +86,13 @@
     "@opentelemetry/sdk-trace-node": "^2.0.0",
     "@opentelemetry/semantic-conventions": "^1.33.0",
     "@opentelemetry/winston-transport": "^0.11.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "winston-transport": "^4.9.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
+    "@changesets/changelog-github": "0.5.1",
+    "@changesets/cli": "2.29.5",
     "@tsconfig/node-lts": "^22.0.2",
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/recommended": "^1.0.10",

@@ -1,0 +1,78 @@
+name: PR/Push Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Automatically cancel in-progress jobs in the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request_target' && github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  knip:
+    name: Run Knip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-ci-env
+        with:
+          install-deps: false
+          node-version: "lts/*"
+
+        # This is installed as a dev dependency, but because we don't
+        # need the other dependencies we can run directly via npx
+      - name: Run Knip
+        run: npx knip
+
+  code-quality:
+    name: Check Code Quality (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      # We want to run checks on all versions, even if some fail.
+      fail-fast: false
+      matrix:
+        # Previous LTS (Maintenance), Current LTS, Latest stable
+        node-version: ["lts/-1", "lts/*", "current"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-ci-env
+        with:
+          install-deps: true
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check code style
+        run: npm run check:ci
+
+      - name: Check types
+        run: npm run typecheck
+
+  build:
+    name: Build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["lts/-1", "lts/*", "current"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-ci-env
+        with:
+          install-deps: true
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run Build
+        run: npm run build
