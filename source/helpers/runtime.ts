@@ -116,8 +116,8 @@ export function getRuntimeActionMetadata(): RuntimeMetadata {
 export function inferTelemetryAttributesFromRuntimeMetadata() {
   const meta = getRuntimeActionMetadata();
   const serviceName = meta.isDevelopment
-    ? // The package name is not available in development
-      `${meta.namespace}-local-development/${meta.packageName !== "unknown" ? `${meta.packageName}` : ""}`
+    ? // The package name is not (always) available in development
+      `${meta.namespace}-local-development${meta.packageName !== "unknown" ? `/${meta.packageName}` : ""}`
     : `${meta.namespace}/${meta.packageName}`;
 
   return {
