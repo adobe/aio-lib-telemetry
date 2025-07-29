@@ -45,7 +45,7 @@
   ],
   "scripts": {
     "assist": "biome check --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
-    "assist:fix": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
+    "assist:apply": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
     "build": "tsdown",
     "changeset": "changeset",
     "check:ci": "biome ci --formatter-enabled=true --linter-enabled=true --assist-enabled=true --no-errors-on-unmatched",
