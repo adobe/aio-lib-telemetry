@@ -50,8 +50,8 @@ jobs:
           install-deps: true
           node-version: ${{ matrix.node-version }}
 
-      - name: Check code style
-        run: npx concurrently "npm run check:ci" "npm run typecheck"
+      - name: Check code quality
+        run: npm run check:code-quality
 
   build:
     name: Build (Node ${{ matrix.node-version }})
