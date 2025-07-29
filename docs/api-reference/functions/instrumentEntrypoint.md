@@ -4,19 +4,19 @@
 function instrumentEntrypoint<T>(
   fn: T,
   config: EntrypointInstrumentationConfig<T>,
-): (params: RecursiveStringRecord) => Promise<Awaited<ReturnType<T>>>;
+): (params: Record<string, unknown>) => Promise<Awaited<ReturnType<T>>>;
 ```
 
-Defined in: [core/instrumentation.ts:270](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/instrumentation.ts#L270)
+Defined in: [core/instrumentation.ts:265](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/core/instrumentation.ts#L265)
 
 Instruments the entrypoint of a runtime action.
 Needs to be used ONLY with the `main` function of a runtime action.
 
 ## Type Parameters
 
-| Type Parameter                                             |
-| ---------------------------------------------------------- |
-| `T` _extends_ (`params`: `RecursiveStringRecord`) => `any` |
+| Type Parameter                                                     |
+| ------------------------------------------------------------------ |
+| `T` _extends_ (`params`: `Record`\<`string`, `unknown`\>) => `any` |
 
 ## Parameters
 
@@ -30,14 +30,14 @@ Needs to be used ONLY with the `main` function of a runtime action.
 A wrapped function with the same signature as the original function, but with telemetry instrumentation.
 
 ```ts
-(params: RecursiveStringRecord): Promise<Awaited<ReturnType<T>>>;
+(params: Record<string, unknown>): Promise<Awaited<ReturnType<T>>>;
 ```
 
 ### Parameters
 
-| Parameter | Type                    |
-| --------- | ----------------------- |
-| `params`  | `RecursiveStringRecord` |
+| Parameter | Type                            |
+| --------- | ------------------------------- |
+| `params`  | `Record`\<`string`, `unknown`\> |
 
 ### Returns
 

@@ -1,6 +1,6 @@
 # `EntrypointInstrumentationConfig\<T\>`
 
-Defined in: [types.ts:163](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L163)
+Defined in: [types.ts:160](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L160)
 
 The configuration for entrypoint instrumentation.
 
@@ -29,7 +29,7 @@ optional hooks: {
 };
 ```
 
-Defined in: [types.ts:123](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L123)
+Defined in: [types.ts:120](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L120)
 
 Hooks that can be used to act on a span depending on the result of the function.
 
@@ -82,20 +82,22 @@ You can use it to do something with the Span.
 ### initializeTelemetry()
 
 ```ts
-initializeTelemetry: (params: RecursiveStringRecord, isDevelopment: boolean) =>
-  TelemetryConfig;
+initializeTelemetry: (
+  params: Record<string, unknown>,
+  isDevelopment: boolean,
+) => TelemetryConfig;
 ```
 
-Defined in: [types.ts:179](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L179)
+Defined in: [types.ts:176](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L176)
 
 This function is called at the start of the action.
 
 #### Parameters
 
-| Parameter       | Type                    | Description                                        |
-| --------------- | ----------------------- | -------------------------------------------------- |
-| `params`        | `RecursiveStringRecord` | The parameters of the action.                      |
-| `isDevelopment` | `boolean`               | Whether the action is running in development mode. |
+| Parameter       | Type                            | Description                                        |
+| --------------- | ------------------------------- | -------------------------------------------------- |
+| `params`        | `Record`\<`string`, `unknown`\> | The parameters of the action.                      |
+| `isDevelopment` | `boolean`                       | Whether the action is running in development mode. |
 
 #### Returns
 
@@ -111,7 +113,7 @@ The telemetry configuration to use for the action.
 optional isSuccessful: (result: ReturnType<T>) => boolean;
 ```
 
-Defined in: [types.ts:120](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L120)
+Defined in: [types.ts:117](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L117)
 
 A function that will be called to determine if the instrumented function was successful.
 By default, the function is considered successful if it doesn't throw an error.
@@ -140,7 +142,7 @@ Whether the instrumented function was successful.
 optional propagation: TelemetryPropagationConfig<T>;
 ```
 
-Defined in: [types.ts:170](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L170)
+Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L167)
 
 Configuration options related to context propagation.
 See the [TelemetryPropagationConfig](TelemetryPropagationConfig.md) for the interface.
@@ -156,7 +158,7 @@ optional spanConfig: SpanOptions & {
 };
 ```
 
-Defined in: [types.ts:97](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L97)
+Defined in: [types.ts:94](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L94)
 
 Configuration options related to the span started by the instrumented function.
 See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
