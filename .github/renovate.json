@@ -8,7 +8,6 @@
     "group:monorepos",
     "group:definitelyTyped",
     "helpers:disableTypesNodeMajor",
-    "helpers:pinGitHubActionDigestsToSemver",
     "npm:unpublishSafe",
 
     ":automergeDisabled",
