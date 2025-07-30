@@ -24,6 +24,11 @@
   "automerge": false,
   "branchPrefix": "renovate/",
   "commitMessagePrefix": "chore(renovate): ",
+  "pinDigest": {
+    "github-actions": {
+      "enabled": false
+    }
+  },
 
   "labels": ["dependencies"],
   "postUpdateOptions": ["npmDedupe"]
