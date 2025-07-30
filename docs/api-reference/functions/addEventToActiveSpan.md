@@ -4,7 +4,7 @@
 function addEventToActiveSpan(event: string, attributes?: Attributes): void;
 ```
 
-Defined in: [api/global.ts:68](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/api/global.ts#L68)
+Defined in: [api/global.ts:72](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/global.ts#L72)
 
 Adds an event to the given span.
 
@@ -18,6 +18,10 @@ Adds an event to the given span.
 ## Returns
 
 `void`
+
+## Since
+
+0.1.0
 
 ## Example
 

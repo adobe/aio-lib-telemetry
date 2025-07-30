@@ -73,6 +73,7 @@ function __getLoggerInternal(
  * @param name - The name of the logger
  * @param config - The configuration for the logger
  *
+ * @since 0.1.0
  * @example
  * ```ts
  * const logger = getLogger("my-logger", { level: "debug" });

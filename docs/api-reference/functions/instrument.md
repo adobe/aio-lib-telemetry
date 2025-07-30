@@ -7,7 +7,7 @@ function instrument<T>(
 ): (...args: Parameters<T>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:97](https://github.com/adobe/aio-lib-telemetry/blob/ff54ba0c9f0266286f4859c4aab049b808a70c73/source/core/instrumentation.ts#L97)
+Defined in: [core/instrumentation.ts:108](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/instrumentation.ts#L108)
 
 Instruments a function.
 
@@ -41,6 +41,14 @@ A wrapped function with the same signature as the original function, but with te
 ### Returns
 
 `ReturnType`\<`T`\>
+
+## Throws
+
+If the span name is not provided and the function is not named.
+
+## Since
+
+0.1.0
 
 ## Example
 

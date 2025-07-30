@@ -8,7 +8,7 @@
 
   "out": "./docs/api-reference",
   "plugin": ["typedoc-plugin-markdown"],
-  "readme": "./docs/api-reference-intro.md",
+  "readme": "./docs/preamble/api-reference-intro.md",
 
   "hidePageHeader": true,
   "hideBreadcrumbs": true,
