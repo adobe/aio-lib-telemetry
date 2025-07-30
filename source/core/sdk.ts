@@ -32,7 +32,10 @@ function setGlobalSdk(sdkInstance: NodeSDK | null) {
  */
 export function ensureSdkInitialized() {
   if (!global.__OTEL_SDK__) {
-    throw new Error("Telemetry SDK not initialized");
+    throw new Error(
+      "You're trying to perform an operation that requires the telemetry SDK to be initialized. " +
+        "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
+    );
   }
 }
 
