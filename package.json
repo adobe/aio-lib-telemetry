@@ -26,20 +26,19 @@
   "types": "./dist/cjs/index.d.cts",
   "exports": {
     ".": {
-      "import": "./dist/es/index.js",
       "types": "./dist/cjs/index.d.cts",
+      "import": "./dist/es/index.js",
       "require": "./dist/cjs/index.cjs"
     },
     "./otel": {
-      "import": "./dist/es/otel.js",
       "types": "./dist/cjs/otel.d.cts",
+      "import": "./dist/es/otel.js",
       "require": "./dist/cjs/otel.cjs"
     },
     "./package.json": "./package.json"
   },
   "files": [
     "README.md",
-    "docs",
     "dist",
     "package.json"
   ],
