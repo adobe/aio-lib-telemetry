@@ -26,7 +26,8 @@ vi.mock("~/core/logging", () => ({
 }));
 
 function clearGlobalState() {
-  globalThis.__OTEL_SDK__ = null;
+  // biome-ignore lint/performance/noDelete: it's for testing purposes
+  delete globalThis.__OTEL_SDK__;
 }
 
 function mockShutdown(signal: "SIGTERM" | "SIGINT" | "beforeExit") {
@@ -60,7 +61,8 @@ describe("core/sdk", () => {
   describe("ensureSdkInitialized", () => {
     test("should throw error if SDK is not initialized", () => {
       expect(() => ensureSdkInitialized()).toThrow(
-        "Telemetry SDK not initialized",
+        "You're trying to perform an operation that requires the telemetry SDK to be initialized. " +
+          "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
       );
     });
 
