@@ -55,7 +55,8 @@ describe("core/telemetry-api", () => {
   describe("getGlobalTelemetryApi", () => {
     test("should throw error if telemetry API is not initialized", () => {
       expect(() => getGlobalTelemetryApi()).toThrow(
-        "Telemetry API not initialized",
+        "You're trying to perform an operation that requires the telemetry API to be initialized. " +
+          "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
       );
     });
 

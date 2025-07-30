@@ -11,7 +11,7 @@ describe("api/presets", () => {
     test("should return simple instrumentations for 'simple' preset", () => {
       const instrumentations = getPresetInstrumentations("simple");
       expect(Array.isArray(instrumentations)).toBe(true);
-      expect(instrumentations).toHaveLength(4);
+      expect(instrumentations).toHaveLength(3);
 
       const instrumentationNames = instrumentations.map(
         (i) => i.instrumentationName,
@@ -22,7 +22,6 @@ describe("api/presets", () => {
           "@opentelemetry/instrumentation-http",
           "@opentelemetry/instrumentation-graphql",
           "@opentelemetry/instrumentation-undici",
-          "@opentelemetry/instrumentation-winston",
         ]),
       );
     });
