@@ -34,14 +34,12 @@ describe("api/presets", () => {
       expect(instrumentations.length).toBeGreaterThan(0);
     });
 
-    test.each(["unknown", undefined, null])(
-      "should return empty array for %s preset",
+    test.each(["unknown", "invalid", undefined, null] as const)(
+      "should throw for invalid preset '%s'",
       (preset) => {
-        const instrumentations = getPresetInstrumentations(
-          preset as TelemetryInstrumentationPreset,
-        );
-
-        expect(instrumentations).toEqual([]);
+        expect(() =>
+          getPresetInstrumentations(preset as TelemetryInstrumentationPreset),
+        ).toThrow(`Unknown instrumentation preset: ${preset}`);
       },
     );
 

@@ -148,7 +148,7 @@ describe("core/sdk", () => {
         error,
       );
 
-      expect(globalThis.__OTEL_SDK__).toBe(mockSdkInstance);
+      expect(globalThis.__OTEL_SDK__).toBeNull();
     });
 
     test("should register shutdown handlers for process signals", () => {
@@ -189,7 +189,7 @@ describe("core/sdk", () => {
         );
 
         expect(diag.info).toHaveBeenCalledWith(
-          `Telemetry SDK shutdown reason: Terminating process: ${signal}`,
+          `Telemetry SDK shutdown reason -> "Terminating process: ${signal}"`,
         );
 
         expect(diag.info).toHaveBeenCalledWith(
@@ -235,12 +235,9 @@ describe("core/sdk", () => {
       await shutdownHandler?.();
 
       expect(mockSdkInstance.shutdown).not.toHaveBeenCalled();
-
-      // TODO: The current logic of shutdown makes it impossible for this diagnostic
-      // to be logged. We need to refactor it to allow for this. Uncomment when fixed.
-      /* expect(diag.warn).toHaveBeenCalledWith(
+      expect(diag.warn).toHaveBeenCalledWith(
         "Telemetry SDK not initialized, skipping telemetry shutdown",
-      ); */
+      );
 
       restoreShutdownMock();
     });
