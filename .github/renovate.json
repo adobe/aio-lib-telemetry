@@ -26,5 +26,12 @@
   "commitMessagePrefix": "chore(renovate): ",
 
   "labels": ["dependencies"],
-  "postUpdateOptions": ["npmDedupe"]
+  "postUpdateOptions": ["npmDedupe"],
+
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": false
+    }
+  ]
 }
