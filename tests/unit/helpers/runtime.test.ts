@@ -200,8 +200,8 @@ describe("helpers/runtime", () => {
   });
 
   describe("inferTelemetryAttributesFromRuntimeMetadata", () => {
-    // TODO: Uncomment this when we fix deadline calculation in lib.
-    // const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    // biome-ignore lint/performance/useTopLevelRegex: No major performance impact as this is a test.
+    const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
     test("should infer correct attributes for production", ({ deps }) => {
       const { inferTelemetryAttributesFromRuntimeMetadata } = deps;
@@ -209,19 +209,19 @@ describe("helpers/runtime", () => {
 
       const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
-        "service.name": "test-prod-namespace/test-prod-package-name",
         "service.version": "1.0.0",
+        "service.name": "test-prod-namespace/test-prod-package-name",
+
         "deployment.region": "test-prod-region",
         "deployment.cloud": "test-prod-cloud",
         "deployment.environment": "production",
+
+        "action.name": "test-prod-action-name",
         "action.package_name": "test-prod-package-name",
         "action.namespace": "test-prod-namespace",
         "action.activation_id": "test-prod-activation-id",
         "action.transaction_id": "test-prod-transaction-id",
-
-        "action.deadline": expect.any(String),
-        // TODO: Uncomment this when we fix deadline calculation in lib.
-        // "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
+        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
       });
     });
 
@@ -231,14 +231,15 @@ describe("helpers/runtime", () => {
 
       const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
+        "service.version": "0.0.0 (development)",
         "service.name":
           "test-dev-namespace-local-development/test-dev-package-name",
 
-        "service.version": "0.0.0 (development)",
         "deployment.region": "local",
         "deployment.cloud": "local",
         "deployment.environment": "development",
 
+        "action.name": "test-dev-action-name",
         "action.package_name": "test-dev-package-name",
         "action.namespace": "test-dev-namespace",
         "action.activation_id": "test-dev-activation-id",
@@ -254,13 +255,14 @@ describe("helpers/runtime", () => {
 
       const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
-        "service.name": "test-dev-namespace-local-development/",
-
         "service.version": "0.0.0 (development)",
+        "service.name": "test-dev-namespace-local-development",
+
         "deployment.region": "local",
         "deployment.cloud": "local",
         "deployment.environment": "development",
 
+        "action.name": "test-dev-action-name",
         "action.package_name": "unknown",
         "action.namespace": "test-dev-namespace",
         "action.activation_id": "test-dev-activation-id",
