@@ -14,7 +14,6 @@ import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentation
 import { GraphQLInstrumentation } from "@opentelemetry/instrumentation-graphql";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
-import { WinstonInstrumentation } from "@opentelemetry/instrumentation-winston";
 
 import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
 import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
@@ -38,9 +37,8 @@ const undiciInstrumentationConfig = {
  * - `full`: All the Node.js [auto-instrumentations](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
  * - `simple`: Instrumentations for:
  *   [Http](https://www.npmjs.com/package/@opentelemetry/instrumentation-http),
- *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql),
- *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
- *   [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
+ *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql), and
+ *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici)
  *
  * @throws {Error} If the preset is unknown.
  *
@@ -48,7 +46,7 @@ const undiciInstrumentationConfig = {
  * @example
  * ```ts
  * const instrumentations = getPresetInstrumentations("simple");
- * // instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation, WinstonInstrumentation]
+ * // instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation]
  * ```
  */
 export function getPresetInstrumentations(
@@ -60,7 +58,6 @@ export function getPresetInstrumentations(
         new HttpInstrumentation(httpInstrumentationConfig),
         new GraphQLInstrumentation(),
         new UndiciInstrumentation(undiciInstrumentationConfig),
-        new WinstonInstrumentation(),
       ];
     }
 
