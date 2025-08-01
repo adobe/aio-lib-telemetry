@@ -136,7 +136,6 @@ function createCoreAttributes(meta: RuntimeMetadata) {
     environment: meta.isDevelopment ? "development" : "production",
 
     "action.name": meta.actionName,
-    "action.package_name": meta.packageName,
     "action.namespace": meta.namespace,
     "action.activation_id": meta.activationId,
   };
