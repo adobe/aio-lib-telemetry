@@ -161,6 +161,8 @@ export function instrument<T extends AnyFunction>(
 
       span.recordException(exception);
     }
+
+    return error;
   }
 
   /** Sets up the context for the current operation. */
@@ -214,10 +216,9 @@ export function instrument<T extends AnyFunction>(
 
         if (result instanceof Promise) {
           return result
-            .then((r) => handleResult(r, span))
-            .finally(() => {
-              span.end();
-            });
+            .then((r) => Promise.resolve(handleResult(r, span)))
+            .catch((e) => Promise.reject(handleError(e, span)))
+            .finally(() => span.end());
         }
 
         const handledResult = handleResult(result, span);
