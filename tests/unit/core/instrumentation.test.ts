@@ -5,7 +5,7 @@ import {
   beforeEach,
   describe,
   expect,
-  it,
+  test,
   vi,
 } from "vitest";
 
@@ -121,7 +121,7 @@ describe("core/instrumentation", () => {
   });
 
   describe("getInstrumentationHelpers", () => {
-    it("should throw different errors when telemetry is not enabled or called outside instrumented function", () => {
+    test("should throw different errors when telemetry is not enabled or called outside instrumented function", () => {
       // This should throw because telemetry is not enabled
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(false);
       expect(() => instrumentation.getInstrumentationHelpers()).toThrow();
@@ -153,7 +153,7 @@ describe("core/instrumentation", () => {
       );
     });
 
-    it("should return helpers when called within instrumented function", () => {
+    test("should return helpers when called within instrumented function", () => {
       let capturedHelpers: InstrumentationContext | null = null;
 
       const testFn = instrumentation.instrument(function testFunction() {
@@ -179,7 +179,7 @@ describe("core/instrumentation", () => {
   });
 
   describe("instrument", () => {
-    it("should wrap a function and return the same result", () => {
+    test("should wrap a function and return the same result", () => {
       const originalFn = vi.fn((a: number, b: number) => a + b);
       const instrumentedFn = instrumentation.instrument(originalFn);
       const result = instrumentedFn(2, 3);
@@ -188,7 +188,7 @@ describe("core/instrumentation", () => {
       expect(originalFn).toHaveBeenCalledWith(2, 3);
     });
 
-    it("should use function name as span name by default", () => {
+    test("should use function name as span name by default", () => {
       const namedFunction = vi.fn(function myFunction() {
         return "result";
       });
@@ -199,7 +199,7 @@ describe("core/instrumentation", () => {
       expect(mockSpan.registerName).toHaveBeenCalledWith("myFunction");
     });
 
-    it("should use provided span name", () => {
+    test("should use provided span name", () => {
       const fn = vi.fn(function testFn() {
         return "result";
       });
@@ -219,11 +219,11 @@ describe("core/instrumentation", () => {
       expect(mockSpan.registerName).toHaveBeenCalledWith("anonymous-span");
     });
 
-    it("should throw error when no span name available", () => {
+    test("should throw error when no span name available", () => {
       expect(() => instrumentation.instrument(() => "nothing")).toThrow();
     });
 
-    it("should handle async functions correctly", async () => {
+    test("should handle async functions correctly", async () => {
       const asyncFn = vi.fn().mockResolvedValue("async result");
       const instrumentedFn = instrumentation.instrument(asyncFn);
 
@@ -234,7 +234,7 @@ describe("core/instrumentation", () => {
       expect(resolvedResult).toBe("async result");
     });
 
-    it("should handle sync errors and propagate them", () => {
+    test("should handle sync errors and propagate them", () => {
       const error = new Error("sync error");
       const errorFn = vi.fn(() => {
         throw error;
@@ -244,7 +244,7 @@ describe("core/instrumentation", () => {
       expect(() => instrumentedFn()).toThrow(error);
     });
 
-    it("should handle async errors and propagate them", async () => {
+    test("should handle async errors and propagate them", async () => {
       const error = new Error("async error");
       const errorFn = vi.fn(async () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
@@ -264,7 +264,7 @@ describe("core/instrumentation", () => {
       await expect(instrumentedFn2()).rejects.toThrow(error);
     });
 
-    it("non-throwing functions should use isSuccessful predicate to determine success", () => {
+    test("non-throwing functions should use isSuccessful predicate to determine success", () => {
       const fn = vi.fn(() => {
         return { success: false, data: "test" };
       });
@@ -283,7 +283,7 @@ describe("core/instrumentation", () => {
       });
     });
 
-    it("should call onResult hook", () => {
+    test("should call onResult hook", () => {
       const onResult = vi.fn();
       const fn = vi.fn().mockReturnValue("result");
 
@@ -308,7 +308,7 @@ describe("core/instrumentation", () => {
       expect(onResult).toHaveBeenCalledWith("result", mockSpan);
     });
 
-    it("should call onError hook", () => {
+    test("should call onError hook", () => {
       const error = new Error("test error");
       const customError = new Error("custom error");
       const onError = vi.fn().mockReturnValue(customError);
@@ -327,7 +327,7 @@ describe("core/instrumentation", () => {
       expect(mockSpan.recordException).toHaveBeenCalledWith(customError);
     });
 
-    it("should handle non-Error exceptions", () => {
+    test("should handle non-Error exceptions", () => {
       const error = "string error";
       const fn = vi.fn(() => {
         throw error;
@@ -361,7 +361,7 @@ describe("core/instrumentation", () => {
       });
     });
 
-    it("should pass through when telemetry is disabled", async () => {
+    test("should pass through when telemetry is disabled", async () => {
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(false);
 
       const fn = vi.fn((x: number) => x * 2);
@@ -377,7 +377,7 @@ describe("core/instrumentation", () => {
       expect(sdk.ensureSdkInitialized).not.toHaveBeenCalled();
     });
 
-    it("should maintain separate contexts for concurrent operations", async () => {
+    test("should maintain separate contexts for concurrent operations", async () => {
       const contexts: InstrumentationContext[] = [];
 
       const fn1 = instrumentation.instrument(async function op1() {
@@ -404,7 +404,7 @@ describe("core/instrumentation", () => {
       expect(ctx1).not.toBe(ctx2);
     });
 
-    it("should propagate context through inner non-instrumented functions", () => {
+    test("should propagate context through inner non-instrumented functions", () => {
       const contexts: InstrumentationContext[] = [];
 
       // Non-instrumented inner function
@@ -434,7 +434,7 @@ describe("core/instrumentation", () => {
       expect(ctx2.meter).toBeDefined();
     });
 
-    it("inner instrumented functions should have their own context", () => {
+    test("inner instrumented functions should have their own context", () => {
       const contexts: InstrumentationContext[] = [];
 
       const inner = instrumentation.instrument(function innerFn() {
@@ -469,7 +469,7 @@ describe("core/instrumentation", () => {
       }));
     });
 
-    it("should instrument entrypoint function and preserve behavior", async () => {
+    test("should instrument entrypoint function and preserve behavior", async () => {
       const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
         initializeTelemetry: mockInitializeTelemetry,
       });
@@ -482,7 +482,7 @@ describe("core/instrumentation", () => {
       expect(mockInitializeTelemetry).toHaveBeenCalled();
     });
 
-    it.each([
+    test.each([
       { ENABLE_TELEMETRY: "true", LOG_LEVEL: "debug" },
       { ENABLE_TELEMETRY: "false", LOG_LEVEL: "info" },
     ])("should always set telemetry environment variables", (params) => {
@@ -495,7 +495,7 @@ describe("core/instrumentation", () => {
       expect(process.env.__LOG_LEVEL).toBe(params.LOG_LEVEL);
     });
 
-    it.each([
+    test.each([
       { isDevelopment: true, logLevel: "debug" },
       { isDevelopment: false, logLevel: "info" },
     ])(
@@ -515,7 +515,7 @@ describe("core/instrumentation", () => {
       },
     );
 
-    it("should pass through when telemetry is disabled", async () => {
+    test("should pass through when telemetry is disabled", async () => {
       // Temporarily override the telemetry enabled mock.
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(false);
 
@@ -533,7 +533,7 @@ describe("core/instrumentation", () => {
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(true);
     });
 
-    it.each([
+    test.each([
       {
         __ow_headers: {
           "x-telemetry-context": JSON.stringify({
@@ -565,7 +565,7 @@ describe("core/instrumentation", () => {
       );
     });
 
-    it("should skip propagation if no context is provided", () => {
+    test("should skip propagation if no context is provided", () => {
       const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
         initializeTelemetry: mockInitializeTelemetry,
       });
@@ -574,7 +574,7 @@ describe("core/instrumentation", () => {
       expect(propagation.deserializeContextFromCarrier).not.toHaveBeenCalled();
     });
 
-    it("should skip propagation when configured", () => {
+    test("should skip propagation when configured", () => {
       const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
         initializeTelemetry: mockInitializeTelemetry,
         propagation: { skip: true },
@@ -588,7 +588,7 @@ describe("core/instrumentation", () => {
       expect(propagation.deserializeContextFromCarrier).not.toHaveBeenCalled();
     });
 
-    it("should use custom base context if provided", () => {
+    test("should use custom base context if provided", () => {
       const baseContext = {} as Context;
 
       const mockDeserializeContextFromCarrier = vi.fn();
@@ -610,7 +610,7 @@ describe("core/instrumentation", () => {
       );
     });
 
-    it("should use default context if no base context is provided", () => {
+    test("should use default context if no base context is provided", () => {
       const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
         initializeTelemetry: mockInitializeTelemetry,
         propagation: {
@@ -630,7 +630,7 @@ describe("core/instrumentation", () => {
       );
     });
 
-    it.each([new Error("Unexpected error"), "Unexpected string error"])(
+    test.each([new Error("Unexpected error"), "Unexpected string error"])(
       "should throw if there's some unexpected error during instrumentation",
       (error) => {
         vi.mocked(mockInitializeTelemetry).mockImplementation(() => {
@@ -648,7 +648,7 @@ describe("core/instrumentation", () => {
       },
     );
 
-    it("should bubble up sync runtime errors", () => {
+    test("should bubble up sync runtime errors", () => {
       const error = new Error("Runtime error");
       mockMain.mockImplementation(() => {
         throw error;
@@ -661,7 +661,7 @@ describe("core/instrumentation", () => {
       expect(() => instrumentedMain({})).toThrow(error);
     });
 
-    it("should bubble up async runtime errors", async () => {
+    test("should bubble up async runtime errors", async () => {
       const error = new Error("Runtime error");
       mockMain.mockRejectedValueOnce(error);
 
@@ -672,7 +672,7 @@ describe("core/instrumentation", () => {
       await expect(instrumentedMain({})).rejects.toThrow(error);
     });
 
-    it("should provide instrumentation context to entrypoint", () => {
+    test("should provide instrumentation context to entrypoint", () => {
       let capturedContext: InstrumentationContext | null = null;
 
       const mainWithInstrumentation = vi.fn(() => {
@@ -701,7 +701,7 @@ describe("core/instrumentation", () => {
       expect(context.meter).toBeDefined();
     });
 
-    it("should handle async entrypoints", async () => {
+    test("should handle async entrypoints", async () => {
       const asyncMain = vi.fn().mockResolvedValue({ statusCode: 200 });
 
       const instrumentedMain = instrumentation.instrumentEntrypoint(asyncMain, {
