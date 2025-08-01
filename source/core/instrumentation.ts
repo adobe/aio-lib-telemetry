@@ -355,40 +355,18 @@ export function instrumentEntrypoint<
     handler: T,
     { spanConfig, ...instrumentationConfig }: InstrumentationConfig<T> = {},
   ) {
-    try {
-      const { actionName } = getRuntimeActionMetadata();
-      return instrument(handler, {
-        ...instrumentationConfig,
-        spanConfig: {
-          spanName: `${actionName}/${fn.name}`,
-          ...spanConfig,
-        },
-      }) as T;
-    } catch (error) {
-      throw new Error(`Failed to instrument entrypoint: ${error}`, {
-        cause: error,
-      });
-    }
+    const { actionName } = getRuntimeActionMetadata();
+    return instrument(handler, {
+      ...instrumentationConfig,
+      spanConfig: {
+        spanName: `${actionName}/${fn.name}`,
+        ...spanConfig,
+      },
+    }) as T;
   }
 
-  /** Runs the entrypoint and shuts down the Telemetry SDK. */
-  function runEntrypoint(
-    instrumentedHandler: T,
-    params: Record<string, unknown>,
-  ) {
-    try {
-      const result = instrumentedHandler(params);
-      return result;
-    } catch (error) {
-      throw new Error(`Failed to run entrypoint: ${error}`, {
-        cause: error,
-      });
-    }
-  }
-
-  return async (
-    params: Record<string, unknown>,
-  ): Promise<Awaited<ReturnType<T>>> => {
+  return (params: Record<string, unknown>): ReturnType<T> => {
+    let instrumentedHandler: T;
     setTelemetryEnv(params);
 
     if (!isTelemetryEnabled()) {
@@ -396,11 +374,21 @@ export function instrumentEntrypoint<
       return fn(params);
     }
 
-    // Instrumentation of the entrypoint (and telemetry setup) needs to happen at runtime (inside the wrapper).
-    // Otherwise we can't access runtime metadata or the received parameters.
-    const instrumentConfig = setupTelemetry(params);
-    const instrumentedHandler = await instrumentHandler(fn, instrumentConfig);
+    try {
+      // Instrumentation of the entrypoint (and telemetry setup) needs to happen at runtime (inside the wrapper).
+      // Otherwise we can't access runtime metadata or the received parameters.
+      const instrumentConfig = setupTelemetry(params);
+      instrumentedHandler = instrumentHandler(fn, instrumentConfig);
+    } catch (error) {
+      throw new Error(
+        `Failed to instrument entrypoint: ${error instanceof Error ? error.message : error}`,
+        {
+          cause: error,
+        },
+      );
+    }
 
-    return runEntrypoint(instrumentedHandler, params);
+    // If there's an error during execution, it will just bubble up.
+    return instrumentedHandler(params);
   };
 }
