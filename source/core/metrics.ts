@@ -25,7 +25,7 @@ import type {
 } from "@opentelemetry/api";
 
 /** The different types of metrics you can create with the OpenTelemetry API. */
-type MetricTypes =
+export type MetricTypes =
   | Counter<Attributes>
   | UpDownCounter<Attributes>
   | Gauge<Attributes>

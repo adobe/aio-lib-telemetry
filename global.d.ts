@@ -17,8 +17,8 @@ import type { TelemetryApi } from "~/types";
 // Otherwise their values are lost, and the underlying OpenTelemetry singletons are initialized twice (which leads to errors).
 declare global {
   /** The global OpenTelemetry SDK instance. */
-  var __OTEL_SDK__: NodeSDK | null;
+  var __OTEL_SDK__: NodeSDK | null | undefined;
 
   /** The global OpenTelemetry telemetry API instance. */
-  var __OTEL_TELEMETRY_API__: TelemetryApi | null;
+  var __OTEL_TELEMETRY_API__: TelemetryApi | null | undefined;
 }

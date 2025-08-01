@@ -11,7 +11,7 @@
  */
 
 import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import { coverageConfigDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
@@ -22,6 +22,14 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: "v8",
+      reporter: ["html-spa", "html", "text"],
+
+      reportOnFailure: true,
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        "source/{index,otel,types}.ts",
+        "tsdown.config.ts",
+      ],
     },
   },
 });
