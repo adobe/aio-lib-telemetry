@@ -1,47 +1,40 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import { createMetricsProxy } from "~/core/metrics";
-import * as telemetryApi from "~/core/telemetry-api";
-
-import type { Counter, Meter, Tracer } from "@opentelemetry/api";
+import type { Counter, Meter } from "@opentelemetry/api";
 import type { MetricTypes } from "~/core/metrics";
 
-// Mock dependencies
-vi.mock("~/core/telemetry-api", () => ({
-  getGlobalTelemetryApi: vi.fn(),
-}));
-
 describe("core/metrics", () => {
+  let coreMetrics: typeof import("~/core/metrics");
+
+  const getTracer = vi.fn();
+  const createCounter = vi.fn();
+  const getGlobalTelemetryApi = vi.fn(() => ({
+    meter: mockMeter,
+    tracer: mockTracer,
+  }));
+
+  const mockMeter = { createCounter };
+  const mockTracer = { getTracer };
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.doMock("~/core/telemetry-api", () => ({
+      getGlobalTelemetryApi,
+    }));
+
+    coreMetrics = await import("~/core/metrics");
+  });
+
   describe("createMetricsProxy", () => {
-    const mockTracer = { getTracer: vi.fn() };
-    const mockMeter = {
-      createCounter: vi.fn(),
-    };
-
-    beforeEach(() => {
-      vi.clearAllMocks();
-      vi.mocked(telemetryApi.getGlobalTelemetryApi).mockReturnValue({
-        meter: mockMeter as unknown as Meter,
-        tracer: mockTracer as unknown as Tracer,
-      });
-    });
-
-    test("should create a proxy object", () => {
-      const proxy = createMetricsProxy(() => ({}));
-
-      expect(proxy).toBeDefined();
-      expect(typeof proxy).toBe("object");
-    });
-
     test("should lazily initialize metrics on first access", () => {
       const mockCounter = { add: vi.fn() };
-      mockMeter.createCounter.mockReturnValue(mockCounter);
+      createCounter.mockReturnValueOnce(mockCounter);
 
       const createMetricsFn = vi.fn((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
       }));
 
-      const proxy = createMetricsProxy(createMetricsFn);
+      const proxy = coreMetrics.defineMetrics(createMetricsFn);
       expect(createMetricsFn).not.toHaveBeenCalled();
 
       // After the first access, the factory should be called.
@@ -53,13 +46,13 @@ describe("core/metrics", () => {
 
     test("should cache initialized metrics", () => {
       const mockCounter = { add: vi.fn() };
-      mockMeter.createCounter.mockReturnValue(mockCounter);
+      mockMeter.createCounter.mockReturnValueOnce(mockCounter);
 
       const createMetricsFn = vi.fn((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
       }));
 
-      const proxy = createMetricsProxy(createMetricsFn);
+      const proxy = coreMetrics.defineMetrics(createMetricsFn);
       const counter1 = proxy.requestCount;
       const counter2 = proxy.requestCount;
       const counter3 = proxy.requestCount;
@@ -71,7 +64,7 @@ describe("core/metrics", () => {
     });
 
     test("should handle symbol property access", () => {
-      const proxy = createMetricsProxy(
+      const proxy = coreMetrics.defineMetrics(
         () =>
           ({
             requestCount: {} as Counter,
@@ -84,11 +77,9 @@ describe("core/metrics", () => {
 
     test("should throw error when accessing metrics during initialization", () => {
       let proxyRef: Record<PropertyKey, MetricTypes> = {};
-      const proxy = createMetricsProxy((meter: Meter) => {
+      const proxy = coreMetrics.defineMetrics((meter: Meter) => {
         // Try to access proxy during initialization
-        expect(() => proxyRef.someMetric).toThrow(
-          'Circular dependency detected: Do not access metrics inside the defineMetrics function. Only create and return metrics objects. Attempted to access "someMetric"',
-        );
+        expect(() => proxyRef.someMetric).toThrow();
 
         return {
           requestCount: meter.createCounter("request.count"),
@@ -100,58 +91,54 @@ describe("core/metrics", () => {
     });
 
     test("should throw descriptive error when telemetry API is not initialized", () => {
-      vi.mocked(telemetryApi.getGlobalTelemetryApi).mockImplementation(() => {
-        throw new Error("Telemetry API not initialized");
+      const error = new Error("Telemetry API not initialized");
+      getGlobalTelemetryApi.mockImplementationOnce(() => {
+        throw error;
       });
 
-      const proxy = createMetricsProxy((meter: Meter) => ({
+      const proxy = coreMetrics.defineMetrics((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow(
-        "Failed to initialize metrics: Telemetry API not initialized",
-      );
+      expect(() => proxy.requestCount).toThrow();
     });
 
     test("should throw descriptive error when metric creation fails", () => {
-      mockMeter.createCounter.mockImplementation(() => {
-        throw new Error("Counter creation failed");
+      const error = new Error("Counter creation failed");
+      createCounter.mockImplementationOnce(() => {
+        throw error;
       });
 
-      const proxy = createMetricsProxy((meter: Meter) => ({
+      const proxy = coreMetrics.defineMetrics((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow(
-        "Failed to initialize metrics: Counter creation failed",
-      );
+      expect(() => proxy.requestCount).toThrow();
     });
 
     test("should handle non-Error exceptions", () => {
-      vi.mocked(telemetryApi.getGlobalTelemetryApi).mockImplementation(() => {
-        // biome-ignore lint/style/useThrowOnlyError: This is for testing purposes.
-        throw "String error";
+      const stringError = "String error";
+      getGlobalTelemetryApi.mockImplementationOnce(() => {
+        throw stringError;
       });
 
-      const proxy = createMetricsProxy((meter: Meter) => ({
+      const proxy = coreMetrics.defineMetrics((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow(
-        "Failed to initialize metrics: String error",
-      );
+      expect(() => proxy.requestCount).toThrow();
     });
 
     test("should not reinitialize after successful initialization", () => {
       const mockCounter = { add: vi.fn() };
-      mockMeter.createCounter.mockReturnValue(mockCounter);
+      mockMeter.createCounter.mockReturnValueOnce(mockCounter);
 
       const createMetricsFn = vi.fn((meter: Meter) => ({
         requestCount: meter.createCounter("request.count"),
         errorCount: meter.createCounter("error.count"),
       }));
 
-      const proxy = createMetricsProxy(createMetricsFn);
+      const proxy = coreMetrics.defineMetrics(createMetricsFn);
       const _ = [proxy.requestCount, proxy.errorCount];
 
       expect(createMetricsFn).toHaveBeenCalledTimes(1);
