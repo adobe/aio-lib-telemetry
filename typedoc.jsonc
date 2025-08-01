@@ -24,5 +24,7 @@
     "index": "`{projectName}`: `{version}`",
     "module": "`{name}`: {kind}",
     "member": "`{name}`"
-  }
+  },
+
+  "intentionallyNotExported": ["AnyFunction", "MetricTypes"]
 }

@@ -14,7 +14,6 @@ import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentation
 import { GraphQLInstrumentation } from "@opentelemetry/instrumentation-graphql";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
-import { WinstonInstrumentation } from "@opentelemetry/instrumentation-winston";
 
 import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
 import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
@@ -33,20 +32,21 @@ const undiciInstrumentationConfig = {
 /**
  * Get the instrumentations for a given preset.
  *
- * @param preset - The preset to get the instrumentations for.
+ * @param preset - The preset to get the instrumentations for. *
  * @returns The instrumentations for the given preset:
  * - `full`: All the Node.js [auto-instrumentations](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
  * - `simple`: Instrumentations for:
  *   [Http](https://www.npmjs.com/package/@opentelemetry/instrumentation-http),
- *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql),
- *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
- *   [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
+ *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql), and
+ *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici)
+ *
+ * @throws {Error} If the preset is unknown.
  *
  * @since 0.1.0
  * @example
  * ```ts
  * const instrumentations = getPresetInstrumentations("simple");
- * // instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation, WinstonInstrumentation]
+ * // instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation]
  * ```
  */
 export function getPresetInstrumentations(
@@ -58,7 +58,6 @@ export function getPresetInstrumentations(
         new HttpInstrumentation(httpInstrumentationConfig),
         new GraphQLInstrumentation(),
         new UndiciInstrumentation(undiciInstrumentationConfig),
-        new WinstonInstrumentation(),
       ];
     }
 
@@ -70,7 +69,7 @@ export function getPresetInstrumentations(
     }
 
     default: {
-      return [];
+      throw new Error(`Unknown instrumentation preset: ${preset}`);
     }
   }
 }
