@@ -359,7 +359,7 @@ export function instrumentEntrypoint<
     return instrument(handler, {
       ...instrumentationConfig,
       spanConfig: {
-        spanName: `${actionName}/${fn.name}`,
+        spanName: `${actionName}/${fn.name || "entrypoint"}`,
         ...spanConfig,
       },
     }) as T;
