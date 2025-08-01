@@ -11,15 +11,7 @@
  */
 
 import { SpanStatusCode } from "@opentelemetry/api";
-import {
-  afterEach,
-  assert,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from "vitest";
+import { assert, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Context } from "@opentelemetry/api";
 import type { InstrumentationContext } from "~/types";
@@ -121,15 +113,6 @@ describe("core/instrumentation", () => {
     instrumentation = await import("~/core/instrumentation");
     runtimeHelpers = await import("~/helpers/runtime");
     propagation = await import("~/api/propagation");
-  });
-
-  afterEach(() => {
-    vi.doUnmock("~/helpers/runtime");
-    vi.doUnmock("~/core/sdk");
-    vi.doUnmock("~/core/telemetry-api");
-    vi.doUnmock("~/core/logging");
-    vi.doUnmock("~/api/propagation");
-    vi.resetModules();
   });
 
   describe("getInstrumentationHelpers", () => {
@@ -724,6 +707,44 @@ describe("core/instrumentation", () => {
       expect(result).toBeInstanceOf(Promise);
 
       await expect(result).resolves.toEqual({ statusCode: 200 });
+    });
+
+    test("should set correct span name for entrypoint", () => {
+      // For unnamed functions the span name is set to actionName/entrypoint
+      const unnamedEntrypoint = instrumentation.instrumentEntrypoint(
+        () => "dummy",
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+        },
+      );
+
+      unnamedEntrypoint({});
+      expect(mockSpan.registerName).toHaveBeenCalledWith(
+        "test-action/entrypoint",
+      );
+
+      const spanConfigNamedEntrypoint = instrumentation.instrumentEntrypoint(
+        () => "dummy",
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+          spanConfig: { spanName: "custom-span" },
+        },
+      );
+
+      spanConfigNamedEntrypoint({});
+      expect(mockSpan.registerName).toHaveBeenCalledWith("custom-span");
+
+      const namedEntrypoint = instrumentation.instrumentEntrypoint(
+        function main() {
+          return "dummy";
+        },
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+        },
+      );
+
+      namedEntrypoint({});
+      expect(mockSpan.registerName).toHaveBeenCalledWith("test-action/main");
     });
   });
 });
