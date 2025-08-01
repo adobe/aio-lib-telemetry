@@ -1,68 +1,107 @@
-import { context, propagation, ROOT_CONTEXT } from "@opentelemetry/api";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import {
-  deserializeContextFromCarrier,
-  serializeContextIntoCarrier,
-} from "~/api/propagation";
+import type { Context } from "@opentelemetry/api";
 
 describe("api/propagation", () => {
+  let propagationApi: typeof import("~/api/propagation");
   const testKey = Symbol("x-test-key");
 
-  beforeEach(() => {
-    propagation.setGlobalPropagator({
-      inject(ctx, carrier) {
-        carrier["x-test"] = ctx.getValue(testKey) ?? "";
+  const createMockContext = (initialValue?: string) => {
+    const state = new Map<symbol, string>();
+    if (initialValue) {
+      state.set(testKey, initialValue);
+    }
+
+    return {
+      getValue: vi.fn((key) => state.get(key)),
+      setValue: vi.fn((key, value) => {
+        const newState = new Map(state);
+        newState.set(key, value);
+
+        return createMockContext(value);
+      }),
+
+      deleteValue: vi.fn((key) => {
+        const newState = new Map(state);
+        newState.delete(key);
+
+        return createMockContext();
+      }),
+    } as Context;
+  };
+
+  const mockContext = createMockContext();
+  const mockActiveContextGetter = vi.fn(() => mockContext);
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+
+    vi.doMock("@opentelemetry/api", () => ({
+      propagation: {
+        inject: vi.fn((ctx, carrier) => {
+          carrier["x-test"] = ctx.getValue(testKey) ?? "";
+        }),
+
+        extract: vi.fn((ctx, carrier) => {
+          return ctx.setValue(testKey, carrier["x-test"]);
+        }),
+
+        fields: vi.fn(() => ["x-test"]),
       },
 
-      extract(ctx, carrier) {
-        return ctx.setValue(testKey, carrier["x-test"]);
+      context: {
+        active: mockActiveContextGetter,
       },
+    }));
 
-      fields: () => ["x-test"],
-    });
+    propagationApi = await import("~/api/propagation");
   });
 
   describe("serializeContextIntoCarrier", () => {
     test("injects into a new carrier when none provided", () => {
-      const ctx = ROOT_CONTEXT.setValue(testKey, "from-default-ctx");
-      vi.spyOn(context, "active").mockReturnValueOnce(ctx);
+      const ctx = createMockContext("from-default-ctx");
+      mockActiveContextGetter.mockReturnValueOnce(ctx);
 
-      const carrier = serializeContextIntoCarrier();
+      const carrier = propagationApi.serializeContextIntoCarrier();
       expect(carrier).toHaveProperty("x-test", "from-default-ctx");
     });
 
     test("injects into the provided carrier and preserves content", () => {
-      const ctx = ROOT_CONTEXT.setValue(testKey, "from-custom-ctx");
+      const ctx = createMockContext("from-custom-ctx");
       const existingCarrier: Record<string, string> = { custom: "value" };
 
-      const carrier = serializeContextIntoCarrier(existingCarrier, ctx);
-      const activeSpy = vi.spyOn(context, "active");
+      const carrier = propagationApi.serializeContextIntoCarrier(
+        existingCarrier,
+        ctx,
+      );
 
       expect(carrier).toBe(existingCarrier);
       expect(carrier.custom).toBe("value");
       expect(carrier["x-test"]).toBe("from-custom-ctx");
-
-      expect(activeSpy).not.toHaveBeenCalled();
+      expect(mockActiveContextGetter).not.toHaveBeenCalled();
     });
   });
 
   describe("deserializeContextFromCarrier", () => {
     test("extracts context from carrier using active context by default", () => {
-      const baseCtx = ROOT_CONTEXT;
-      vi.spyOn(context, "active").mockReturnValueOnce(baseCtx);
+      const baseCtx = createMockContext();
+      mockActiveContextGetter.mockReturnValueOnce(baseCtx);
 
       const carrier = { "x-test": "hello" };
-      const resultCtx = deserializeContextFromCarrier(carrier);
+      const resultCtx = propagationApi.deserializeContextFromCarrier(carrier);
 
       expect(resultCtx.getValue(testKey)).toBe("hello");
     });
 
     test("uses custom base context when provided", () => {
-      const baseCtx = ROOT_CONTEXT.setValue(testKey, "from-base");
+      const baseCtx = createMockContext("from-base");
       const carrier = { "x-test": "from-carrier" };
 
-      const resultCtx = deserializeContextFromCarrier(carrier, baseCtx);
+      const resultCtx = propagationApi.deserializeContextFromCarrier(
+        carrier,
+        baseCtx,
+      );
+
       expect(resultCtx.getValue(testKey)).toBe("from-carrier");
     });
 
@@ -72,10 +111,9 @@ describe("api/propagation", () => {
         untouched: "yes",
       };
 
-      const resultCtx = deserializeContextFromCarrier(carrier);
+      const resultCtx = propagationApi.deserializeContextFromCarrier(carrier);
       expect(carrier.untouched).toBe("yes");
       expect(carrier["x-test"]).toBe("original");
-
       expect(resultCtx.getValue(testKey)).toBe("original");
     });
   });
