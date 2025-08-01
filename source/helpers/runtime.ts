@@ -105,30 +105,34 @@ function parseActionName() {
 }
 
 /** Gets the runtime metadata for the currently running action. */
-export function getRuntimeActionMetadata(): RuntimeMetadata {
-  if (runtimeMetadata) {
-    // Data should not change across invocations.
-    return runtimeMetadata;
+export function getRuntimeActionMetadata() {
+  if (!runtimeMetadata) {
+    runtimeMetadata = {
+      ...retrieveBasicMetadata(),
+      ...parseActionName(),
+    };
   }
-
-  runtimeMetadata = {
-    ...retrieveBasicMetadata(),
-    ...parseActionName(),
-  };
 
   return runtimeMetadata;
 }
 
-/** Tries to infer the telemetry attributes from the runtime metadata. */
-export function inferTelemetryAttributesFromRuntimeMetadata() {
-  const meta = getRuntimeActionMetadata();
-  const serviceName = meta.isDevelopment
-    ? // The package name is not (always) available in development
-      `${meta.namespace}-local-development${meta.packageName !== "unknown" ? `/${meta.packageName}` : ""}`
-    : `${meta.namespace}/${meta.packageName}`;
+/** Creates the service name based on environment and metadata. */
+function createServiceName(meta: RuntimeMetadata) {
+  if (meta.isDevelopment) {
+    // The package name is not (always) available in development
+    const packageSuffix =
+      meta.packageName !== "unknown" ? `/${meta.packageName}` : "";
 
-  const attributes: Record<string, string> = {
-    [ATTR_SERVICE_NAME]: serviceName,
+    return `${meta.namespace}-local-development${packageSuffix}`;
+  }
+
+  return `${meta.namespace}/${meta.packageName}`;
+}
+
+/** Creates core telemetry attributes that are always present. */
+function createCoreAttributes(meta: RuntimeMetadata) {
+  return {
+    [ATTR_SERVICE_NAME]: createServiceName(meta),
     environment: meta.isDevelopment ? "development" : "production",
 
     "action.name": meta.actionName,
@@ -136,16 +140,30 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
     "action.namespace": meta.namespace,
     "action.activation_id": meta.activationId,
   };
+}
 
-  // Not much useful attribute is always constant in development.
-  if (meta.actionVersion !== "0.0.0 (development)") {
+/** Adds conditional attributes that may not always be present. */
+function addConditionalAttributes(
+  attributes: Record<string, string>,
+  meta: RuntimeMetadata,
+) {
+  // Only add service version if not in development
+  const isProductionVersion = meta.actionVersion !== "0.0.0 (development)";
+  if (isProductionVersion) {
     attributes[ATTR_SERVICE_VERSION] = meta.actionVersion;
   }
 
+  // Add deadline if present
   if (meta.deadline) {
     attributes["action.deadline"] = meta.deadline.toISOString();
   }
+}
 
+/** Adds attributes that should be excluded if they have "unknown" values. */
+function addKnownValueAttributes(
+  attributes: Record<string, string>,
+  meta: RuntimeMetadata,
+) {
   const potentiallyUnknownAttributes = {
     "action.transaction_id": meta.transactionId,
     "action.package_name": meta.packageName,
@@ -156,6 +174,15 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
       attributes[name] = value;
     }
   }
+}
+
+/** Tries to infer the telemetry attributes from the runtime metadata. */
+export function inferTelemetryAttributesFromRuntimeMetadata() {
+  const meta = getRuntimeActionMetadata();
+  const attributes = createCoreAttributes(meta);
+
+  addConditionalAttributes(attributes, meta);
+  addKnownValueAttributes(attributes, meta);
 
   return attributes;
 }
