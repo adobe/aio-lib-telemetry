@@ -151,12 +151,19 @@ export function instrument<T extends AnyFunction>(
       span.recordException(givenError);
     } else if (error instanceof Error) {
       span.recordException(error);
-    } else {
+    } else if (error) {
+      const stackCarrier: { stack?: string } = new Error("Unhandled error");
+
+      if (Error.captureStackTrace) {
+        // This will capture and override the default stack trace.
+        Error.captureStackTrace(stackCarrier);
+      }
+
       const exception = {
         code: UNKNOWN_ERROR_CODE,
         name: UNKNOWN_ERROR_NAME,
-        message: `Unhandled error at "${fn.name ?? spanName}": ${error}`,
-        stack: new Error("Unhandled error").stack,
+        message: `Unhandled error at span "${spanName}": ${error}`,
+        stack: stackCarrier.stack,
       };
 
       span.recordException(exception);
