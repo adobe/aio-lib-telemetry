@@ -3,20 +3,14 @@
 ```ts
 function getAioRuntimeAttributes(): {
   action.activation_id: string;
-  action.deadline?: string;
   action.name: string;
   action.namespace: string;
-  action.package_name: string;
-  action.transaction_id: string;
-  deployment.cloud: string;
-  deployment.environment: string;
-  deployment.region: string;
+  environment: string;
   service.name: string;
-  service.version: string;
 };
 ```
 
-Defined in: [api/attributes.ts:28](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/api/attributes.ts#L28)
+Defined in: [api/attributes.ts:28](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/api/attributes.ts#L28)
 
 Infers some useful attributes for the current action from the Adobe I/O Runtime
 and returns them as a record of key-value pairs.
@@ -26,83 +20,41 @@ and returns them as a record of key-value pairs.
 ```ts
 {
   action.activation_id: string;
-  action.deadline?: string;
   action.name: string;
   action.namespace: string;
-  action.package_name: string;
-  action.transaction_id: string;
-  deployment.cloud: string;
-  deployment.environment: string;
-  deployment.region: string;
+  environment: string;
   service.name: string;
-  service.version: string;
 }
 ```
 
 #### action.activation_id
 
 ```ts
-activation_id: string = meta.activationId;
-```
-
-#### action.deadline?
-
-```ts
-optional deadline: string;
+action.activation_id: string = meta.activationId;
 ```
 
 #### action.name
 
 ```ts
-name: string = meta.actionName;
+action.name: string = meta.actionName;
 ```
 
 #### action.namespace
 
 ```ts
-namespace: string = meta.namespace;
+action.namespace: string = meta.namespace;
 ```
 
-#### action.package_name
-
-```ts
-package_name: string = meta.packageName;
-```
-
-#### action.transaction_id
-
-```ts
-transaction_id: string = meta.transactionId;
-```
-
-#### deployment.cloud
-
-```ts
-cloud: string = meta.cloud;
-```
-
-#### deployment.environment
+### environment
 
 ```ts
 environment: string;
 ```
 
-#### deployment.region
-
-```ts
-region: string = meta.region;
-```
-
 #### service.name
 
 ```ts
-name: string = serviceName;
-```
-
-#### service.version
-
-```ts
-version: string = meta.actionVersion;
+service.name: string;
 ```
 
 ## Since

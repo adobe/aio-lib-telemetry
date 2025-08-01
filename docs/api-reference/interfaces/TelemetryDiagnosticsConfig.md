@@ -1,6 +1,6 @@
 # `TelemetryDiagnosticsConfig`
 
-Defined in: [types.ts:41](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L41)
+Defined in: [types.ts:41](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L41)
 
 The configuration for the telemetry diagnostics.
 
@@ -16,7 +16,7 @@ The configuration for the telemetry diagnostics.
 optional exportLogs: boolean;
 ```
 
-Defined in: [types.ts:56](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L56)
+Defined in: [types.ts:63](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L63)
 
 Whether to make OpenTelemetry also export the diagnostic logs to the configured exporters.
 Set to `false` if you don't want to see diagnostic logs in your observability platform.
@@ -27,6 +27,10 @@ Set to `false` if you don't want to see diagnostic logs in your observability pl
 true;
 ```
 
+#### Since
+
+0.1.0
+
 ---
 
 ### loggerName?
@@ -35,13 +39,17 @@ true;
 optional loggerName: string;
 ```
 
-Defined in: [types.ts:49](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L49)
+Defined in: [types.ts:54](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L54)
 
 The name of the logger to use for the diagnostics.
 
 #### Default
 
 `${actionName}/otel-diagnostics`
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -51,6 +59,10 @@ The name of the logger to use for the diagnostics.
 logLevel: "info" | "error" | "none" | "warn" | "debug" | "verbose" | "all";
 ```
 
-Defined in: [types.ts:43](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L43)
+Defined in: [types.ts:46](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L46)
 
 The log level to use for the diagnostics.
+
+#### Since
+
+0.1.0

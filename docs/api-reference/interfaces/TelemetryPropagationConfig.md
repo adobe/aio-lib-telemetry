@@ -1,6 +1,6 @@
 # `TelemetryPropagationConfig\<T\>`
 
-Defined in: [types.ts:63](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L63)
+Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L70)
 
 Configuration related to context propagation (for distributed tracing).
 
@@ -25,7 +25,7 @@ optional getContextCarrier: (...args: Parameters<T>) => {
 };
 ```
 
-Defined in: [types.ts:79](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L79)
+Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L89)
 
 A function that returns the carrier for the current context.
 Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
@@ -59,6 +59,10 @@ optional baseCtx: Context;
 carrier: Record<PropertyKey, string>;
 ```
 
+#### Since
+
+0.1.0
+
 ---
 
 ### skip?
@@ -67,7 +71,7 @@ carrier: Record<PropertyKey, string>;
 optional skip: boolean;
 ```
 
-Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L70)
+Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L78)
 
 By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
 Set to `true` if you want to skip this automatic context propagation.
@@ -77,3 +81,7 @@ Set to `true` if you want to skip this automatic context propagation.
 ```ts
 false;
 ```
+
+#### Since
+
+0.1.0

@@ -4,16 +4,11 @@
 function getPresetInstrumentations(
   preset: TelemetryInstrumentationPreset,
 ):
-  | (
-      | HttpInstrumentation
-      | GraphQLInstrumentation
-      | UndiciInstrumentation
-      | WinstonInstrumentation
-    )[]
+  | (HttpInstrumentation | GraphQLInstrumentation | UndiciInstrumentation)[]
   | Instrumentation<InstrumentationConfig>[];
 ```
 
-Defined in: [api/presets.ts:54](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/api/presets.ts#L54)
+Defined in: [api/presets.ts:52](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/api/presets.ts#L52)
 
 Get the instrumentations for a given preset.
 
@@ -25,11 +20,7 @@ Get the instrumentations for a given preset.
 
 ## Returns
 
-\| (
-\| `HttpInstrumentation`
-\| `GraphQLInstrumentation`
-\| `UndiciInstrumentation`
-\| `WinstonInstrumentation`)[]
+\| (`HttpInstrumentation` \| `GraphQLInstrumentation` \| `UndiciInstrumentation`)[]
 \| `Instrumentation`\<`InstrumentationConfig`\>[]
 
 The instrumentations for the given preset:
@@ -37,9 +28,8 @@ The instrumentations for the given preset:
 - `full`: All the Node.js [auto-instrumentations](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
 - `simple`: Instrumentations for:
   [Http](https://www.npmjs.com/package/@opentelemetry/instrumentation-http),
-  [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql),
-  [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici), and
-  [Winston](https://www.npmjs.com/package/@opentelemetry/instrumentation-winston)
+  [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql), and
+  [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici)
 
 ## Throws
 
@@ -53,5 +43,5 @@ If the preset is unknown.
 
 ```ts
 const instrumentations = getPresetInstrumentations("simple");
-// instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation, WinstonInstrumentation]
+// instrumentations = [HttpInstrumentation, GraphQLInstrumentation, UndiciInstrumentation]
 ```

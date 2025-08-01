@@ -1,6 +1,6 @@
 # `EntrypointInstrumentationConfig\<T\>`
 
-Defined in: [types.ts:160](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L160)
+Defined in: [types.ts:187](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L187)
 
 The configuration for entrypoint instrumentation.
 
@@ -29,7 +29,7 @@ optional hooks: {
 };
 ```
 
-Defined in: [types.ts:120](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L120)
+Defined in: [types.ts:138](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L138)
 
 Hooks that can be used to act on a span depending on the result of the function.
 
@@ -53,6 +53,10 @@ You can use it to do something with the Span.
 
 `undefined` \| `Error`
 
+##### Since
+
+0.1.0
+
 #### onResult()?
 
 ```ts
@@ -73,6 +77,10 @@ You can use it to do something with the Span.
 
 `void`
 
+##### Since
+
+0.1.0
+
 #### Inherited from
 
 [`InstrumentationConfig`](InstrumentationConfig.md).[`hooks`](InstrumentationConfig.md#hooks)
@@ -88,7 +96,7 @@ initializeTelemetry: (
 ) => TelemetryConfig;
 ```
 
-Defined in: [types.ts:176](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L176)
+Defined in: [types.ts:207](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L207)
 
 This function is called at the start of the action.
 
@@ -105,6 +113,10 @@ This function is called at the start of the action.
 
 The telemetry configuration to use for the action.
 
+#### Since
+
+0.1.0
+
 ---
 
 ### isSuccessful()?
@@ -113,7 +125,7 @@ The telemetry configuration to use for the action.
 optional isSuccessful: (result: ReturnType<T>) => boolean;
 ```
 
-Defined in: [types.ts:117](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L117)
+Defined in: [types.ts:135](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L135)
 
 A function that will be called to determine if the instrumented function was successful.
 By default, the function is considered successful if it doesn't throw an error.
@@ -130,6 +142,10 @@ By default, the function is considered successful if it doesn't throw an error.
 
 Whether the instrumented function was successful.
 
+#### Since
+
+0.1.0
+
 #### Inherited from
 
 [`InstrumentationConfig`](InstrumentationConfig.md).[`isSuccessful`](InstrumentationConfig.md#issuccessful)
@@ -142,10 +158,14 @@ Whether the instrumented function was successful.
 optional propagation: TelemetryPropagationConfig<T>;
 ```
 
-Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L167)
+Defined in: [types.ts:196](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L196)
 
 Configuration options related to context propagation.
 See the [TelemetryPropagationConfig](TelemetryPropagationConfig.md) for the interface.
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -158,7 +178,7 @@ optional spanConfig: SpanOptions & {
 };
 ```
 
-Defined in: [types.ts:94](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L94)
+Defined in: [types.ts:106](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L106)
 
 Configuration options related to the span started by the instrumented function.
 See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
@@ -185,6 +205,10 @@ The base context to use for the started span.
 
 The base context to use for the started span.
 
+###### Since
+
+0.1.0
+
 ##### spanName?
 
 ```ts
@@ -193,6 +217,14 @@ optional spanName: string;
 
 The name of the span. Defaults to the name of given function.
 You must use a named function or a provide a name here.
+
+###### Since
+
+0.1.0
+
+#### Since
+
+0.1.0
 
 #### Inherited from
 

@@ -1,6 +1,6 @@
 # `InstrumentationConfig\<T\>`
 
-Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L89)
+Defined in: [types.ts:99](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L99)
 
 The configuration for instrumentation.
 
@@ -29,7 +29,7 @@ optional hooks: {
 };
 ```
 
-Defined in: [types.ts:120](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L120)
+Defined in: [types.ts:138](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L138)
 
 Hooks that can be used to act on a span depending on the result of the function.
 
@@ -53,6 +53,10 @@ You can use it to do something with the Span.
 
 `undefined` \| `Error`
 
+##### Since
+
+0.1.0
+
 #### onResult()?
 
 ```ts
@@ -73,6 +77,10 @@ You can use it to do something with the Span.
 
 `void`
 
+##### Since
+
+0.1.0
+
 ---
 
 ### isSuccessful()?
@@ -81,7 +89,7 @@ You can use it to do something with the Span.
 optional isSuccessful: (result: ReturnType<T>) => boolean;
 ```
 
-Defined in: [types.ts:117](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L117)
+Defined in: [types.ts:135](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L135)
 
 A function that will be called to determine if the instrumented function was successful.
 By default, the function is considered successful if it doesn't throw an error.
@@ -98,6 +106,10 @@ By default, the function is considered successful if it doesn't throw an error.
 
 Whether the instrumented function was successful.
 
+#### Since
+
+0.1.0
+
 ---
 
 ### spanConfig?
@@ -109,7 +121,7 @@ optional spanConfig: SpanOptions & {
 };
 ```
 
-Defined in: [types.ts:94](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L94)
+Defined in: [types.ts:106](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L106)
 
 Configuration options related to the span started by the instrumented function.
 See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
@@ -136,6 +148,10 @@ The base context to use for the started span.
 
 The base context to use for the started span.
 
+###### Since
+
+0.1.0
+
 ##### spanName?
 
 ```ts
@@ -144,3 +160,11 @@ optional spanName: string;
 
 The name of the span. Defaults to the name of given function.
 You must use a named function or a provide a name here.
+
+###### Since
+
+0.1.0
+
+#### Since
+
+0.1.0

@@ -4,10 +4,10 @@
 function instrumentEntrypoint<T>(
   fn: T,
   config: EntrypointInstrumentationConfig<T>,
-): (params: Record<string, unknown>) => Promise<Awaited<ReturnType<T>>>;
+): (params: Record<string, unknown>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:265](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/core/instrumentation.ts#L265)
+Defined in: [core/instrumentation.ts:280](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/core/instrumentation.ts#L280)
 
 Instruments the entrypoint of a runtime action.
 Needs to be used ONLY with the `main` function of a runtime action.
@@ -30,7 +30,7 @@ Needs to be used ONLY with the `main` function of a runtime action.
 A wrapped function with the same signature as the original function, but with telemetry instrumentation.
 
 ```ts
-(params: Record<string, unknown>): Promise<Awaited<ReturnType<T>>>;
+(params: Record<string, unknown>): ReturnType<T>;
 ```
 
 ### Parameters
@@ -41,7 +41,7 @@ A wrapped function with the same signature as the original function, but with te
 
 ### Returns
 
-`Promise`\<`Awaited`\<`ReturnType`\<`T`\>\>\>
+`ReturnType`\<`T`\>
 
 ## Throws
 

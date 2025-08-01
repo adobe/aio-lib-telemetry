@@ -1,6 +1,6 @@
 # `TelemetryConfig`
 
-Defined in: [types.ts:145](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L145)
+Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L167)
 
 The configuration options for the telemetry module.
 
@@ -20,9 +20,13 @@ The configuration options for the telemetry module.
 optional diagnostics: false | TelemetryDiagnosticsConfig;
 ```
 
-Defined in: [types.ts:153](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L153)
+Defined in: [types.ts:180](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L180)
 
 The configuration options for the telemetry diagnostics.
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -32,15 +36,17 @@ The configuration options for the telemetry diagnostics.
 optional meter: Meter;
 ```
 
-Defined in: [types.ts:191](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L191)
+Defined in: [types.ts:228](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L228)
 
 The meter used to create metrics.
 
+#### Since
+
+0.1.0
+
 #### Inherited from
 
-```ts
-Partial.meter;
-```
+[`TelemetryApi`](TelemetryApi.md).[`meter`](TelemetryApi.md#meter)
 
 ---
 
@@ -50,10 +56,14 @@ Partial.meter;
 sdkConfig: Partial<NodeSDKConfiguration>;
 ```
 
-Defined in: [types.ts:150](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L150)
+Defined in: [types.ts:174](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L174)
 
 The configuration options for the OpenTelemetry SDK.
 See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) interface.
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -63,12 +73,14 @@ See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js
 optional tracer: Tracer;
 ```
 
-Defined in: [types.ts:188](https://github.com/adobe/aio-lib-telemetry/blob/b7459bc16d246bc755238cf4edba48b0006bfd42/source/types.ts#L188)
+Defined in: [types.ts:222](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L222)
 
 The tracer used to create spans.
 
+#### Since
+
+0.1.0
+
 #### Inherited from
 
-```ts
-Partial.tracer;
-```
+[`TelemetryApi`](TelemetryApi.md).[`tracer`](TelemetryApi.md#tracer)
