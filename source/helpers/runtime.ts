@@ -127,23 +127,35 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
       `${meta.namespace}-local-development${meta.packageName !== "unknown" ? `/${meta.packageName}` : ""}`
     : `${meta.namespace}/${meta.packageName}`;
 
-  return {
+  const attributes: Record<string, string> = {
     [ATTR_SERVICE_NAME]: serviceName,
-    [ATTR_SERVICE_VERSION]: meta.actionVersion,
-
-    "deployment.region": meta.region,
-    "deployment.cloud": meta.cloud,
-    "deployment.environment": meta.isDevelopment ? "development" : "production",
+    environment: meta.isDevelopment ? "development" : "production",
 
     "action.name": meta.actionName,
     "action.package_name": meta.packageName,
     "action.namespace": meta.namespace,
     "action.activation_id": meta.activationId,
-    "action.transaction_id": meta.transactionId,
-
-    // Potentially empty attributes.
-    ...(meta.deadline
-      ? { "action.deadline": meta.deadline.toISOString() }
-      : {}),
   };
+
+  // Not much useful attribute is always constant in development.
+  if (meta.actionVersion !== "0.0.0 (development)") {
+    attributes[ATTR_SERVICE_VERSION] = meta.actionVersion;
+  }
+
+  if (meta.deadline) {
+    attributes["action.deadline"] = meta.deadline.toISOString();
+  }
+
+  const potentiallyUnknownAttributes = {
+    "action.transaction_id": meta.transactionId,
+    "action.package_name": meta.packageName,
+  };
+
+  for (const [name, value] of Object.entries(potentiallyUnknownAttributes)) {
+    if (value !== "unknown") {
+      attributes[name] = value;
+    }
+  }
+
+  return attributes;
 }

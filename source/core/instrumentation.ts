@@ -292,6 +292,10 @@ export function instrumentEntrypoint<
       // This is due to to webpack automatic env inline replacement.
       __ENABLE_TELEMETRY: enableTelemetry,
       __LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
+
+      // Disable automatic resource detection to avoid leaking
+      // information about the runtime environment by default.
+      OTEL_NODE_RESOURCE_DETECTORS: "none",
     };
   }
 
