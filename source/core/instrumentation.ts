@@ -46,10 +46,19 @@ import type {
 export type AnyFunction = (...args: any[]) => any | Promise<any>;
 
 /** AsyncLocalStorage for helpers context. */
-const helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
+let helpersStorage: AsyncLocalStorage<InstrumentationHelpers> | null = null;
 
 const UNKNOWN_ERROR_CODE = -1;
 const UNKNOWN_ERROR_NAME = "Unknown Error";
+
+/** @internal Returns the module-level helpers storage. */
+function __getHelpersStorage() {
+  if (!helpersStorage) {
+    helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
+  }
+
+  return helpersStorage;
+}
 
 /**
  * Access helpers for the current instrumented operation.
@@ -67,7 +76,7 @@ export function getInstrumentationHelpers(): InstrumentationHelpers {
     );
   }
 
-  const ctx = helpersStorage.getStore();
+  const ctx = __getHelpersStorage().getStore();
 
   if (!ctx) {
     throw new Error(
@@ -203,7 +212,7 @@ export function instrument<T extends AnyFunction>(
   function runHandler(span: Span, ...args: Parameters<T>) {
     try {
       const ctx = setupContextHelpers(span);
-      return helpersStorage.run(ctx, () => {
+      return __getHelpersStorage().run(ctx, () => {
         const result = fn(...args);
 
         if (result instanceof Promise) {
