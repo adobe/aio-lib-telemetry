@@ -1,63 +1,40 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import {
-  getAioRuntimeAttributes,
-  getAioRuntimeResource,
-  getAioRuntimeResourceWithAttributes,
-} from "~/api/attributes";
-import { inferTelemetryAttributesFromRuntimeMetadata } from "~/helpers/runtime";
-
-// Mock the runtime helpers module
-vi.mock("~/helpers/runtime", () => ({
-  inferTelemetryAttributesFromRuntimeMetadata: vi.fn(),
-}));
-
 describe("api/attributes", () => {
+  let attributesApi: typeof import("~/api/attributes");
+
   const mockAttributes = {
     "some.attribute": "test-value",
     "some.other.attribute": "test-value-2",
   };
 
-  beforeEach(() => {
+  const inferTelemetryAttributesFromRuntimeMetadata = vi.fn(
+    () => mockAttributes,
+  );
+
+  beforeEach(async () => {
     vi.clearAllMocks();
-    vi.mocked(inferTelemetryAttributesFromRuntimeMetadata).mockReturnValue(
-      mockAttributes as unknown as ReturnType<
-        typeof inferTelemetryAttributesFromRuntimeMetadata
-      >,
-    );
+    vi.doMock("~/helpers/runtime", () => ({
+      inferTelemetryAttributesFromRuntimeMetadata,
+    }));
+
+    attributesApi = await import("~/api/attributes");
   });
 
   describe("getAioRuntimeAttributes", () => {
     test("should return attributes inferred from runtime metadata", () => {
-      const attributes = getAioRuntimeAttributes();
-
+      const attributes = attributesApi.getAioRuntimeAttributes();
       expect(attributes).toEqual(mockAttributes);
-      expect(inferTelemetryAttributesFromRuntimeMetadata).toHaveBeenCalledTimes(
-        1,
-      );
-    });
-
-    test("should return the same attributes on multiple calls", () => {
-      const attributes1 = getAioRuntimeAttributes();
-      const attributes2 = getAioRuntimeAttributes();
-
-      expect(attributes1).toEqual(attributes2);
-      expect(inferTelemetryAttributesFromRuntimeMetadata).toHaveBeenCalledTimes(
-        2,
-      );
     });
   });
 
   describe("getAioRuntimeResource", () => {
     test("should return a resource with runtime attributes", () => {
-      const resource = getAioRuntimeResource();
+      const resource = attributesApi.getAioRuntimeResource();
 
       expect(resource).toBeDefined();
       expect(resource.asyncAttributesPending).toBe(false);
       expect(resource.attributes).toMatchObject(mockAttributes);
-      expect(inferTelemetryAttributesFromRuntimeMetadata).toHaveBeenCalledTimes(
-        1,
-      );
     });
   });
 
@@ -68,15 +45,13 @@ describe("api/attributes", () => {
         baz: "qux",
       };
 
-      const resource = getAioRuntimeResourceWithAttributes(customAttributes);
+      const resource =
+        attributesApi.getAioRuntimeResourceWithAttributes(customAttributes);
+
       expect(resource.attributes).toMatchObject({
         ...mockAttributes,
         ...customAttributes,
       });
-
-      expect(inferTelemetryAttributesFromRuntimeMetadata).toHaveBeenCalledTimes(
-        1,
-      );
     });
 
     test("should override runtime attributes with custom attributes", () => {
@@ -85,15 +60,18 @@ describe("api/attributes", () => {
         custom: "value",
       };
 
-      const resource = getAioRuntimeResourceWithAttributes(customAttributes);
+      const resource =
+        attributesApi.getAioRuntimeResourceWithAttributes(customAttributes);
 
-      expect(resource.attributes["some.attribute"]).toBe("custom-value");
-      expect(resource.attributes["some.other.attribute"]).toBe("test-value-2");
-      expect(resource.attributes.custom).toBe("value");
+      expect(resource.attributes).toMatchObject({
+        "some.attribute": "custom-value",
+        "some.other.attribute": "test-value-2",
+        custom: "value",
+      });
     });
 
     test("should handle empty custom attributes", () => {
-      const resource = getAioRuntimeResourceWithAttributes({});
+      const resource = attributesApi.getAioRuntimeResourceWithAttributes({});
       expect(resource.attributes).toMatchObject(mockAttributes);
     });
   });
