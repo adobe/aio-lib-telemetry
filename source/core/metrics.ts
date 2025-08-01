@@ -35,10 +35,21 @@ export type MetricTypes =
   | ObservableGauge<Attributes>;
 
 /**
- * Creates a metrics proxy that lazily initializes metrics when accessed for the first time.
- * @param createMetrics - A factory function that receives an initialized meter and returns a metric record.
+ * Helper to define a record of metrics.
+ * @see https://opentelemetry.io/docs/concepts/signals/metrics/
+ *
+ * @since 0.1.0
+ * @example
+ * ```ts
+ * const metrics = defineMetrics((meter) => {
+ *   return {
+ *     myMetric: meter.createCounter("my-metric", { description: "My metric" }),
+ *   };
+ * });
+ * ```
+ * @param createMetrics - A function that receives a meter which can be used to create the metrics.
  */
-export function createMetricsProxy<T extends Record<PropertyKey, MetricTypes>>(
+export function defineMetrics<T extends Record<PropertyKey, MetricTypes>>(
   createMetrics: (meter: Meter) => T,
 ): T {
   let initializedMetrics: T | null = null;
@@ -62,17 +73,18 @@ export function createMetricsProxy<T extends Record<PropertyKey, MetricTypes>>(
 
       try {
         const { meter } = getGlobalTelemetryApi();
-
         isInitializing = true;
+
         initializedMetrics = createMetrics(meter) as T;
+        isInitializing = false;
 
         return initializedMetrics[prop as keyof T];
       } catch (error) {
+        isInitializing = false;
         throw new Error(
           `Failed to initialize metrics: ${error instanceof Error ? error.message : error}`,
+          { cause: error },
         );
-      } finally {
-        isInitializing = false;
       }
     },
   });
