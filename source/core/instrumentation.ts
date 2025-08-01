@@ -195,6 +195,7 @@ export function instrument<T extends AnyFunction>(
     const spanCfg = {
       ...spanOptions,
       attributes: {
+        "self.name": spanName,
         "action.name": actionName,
         ...spanOptions.attributes,
       },
