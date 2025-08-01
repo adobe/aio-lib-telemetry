@@ -1,4 +1,4 @@
-import { afterEach, test as baseTest, describe, expect, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
   setupDevelopmentEnv,
@@ -6,122 +6,80 @@ import {
   setupProductionEnv,
 } from "~~/tests/fixtures/environment";
 
-type Deps = typeof import("~/helpers/runtime");
-type ExtendTest = { deps: Deps };
-
-// See: https://vitest.dev/guide/test-context.html#test-extend
-const test = baseTest.extend<ExtendTest>({
-  // biome-ignore lint/correctness/noEmptyPattern: Vitest requires the context object to be destructured (for some reason)
-  deps: async ({}, use) => {
-    // The `helper/runtime` module caches data at the module level
-    // Vitest can't reset top-level imports, that's why we need to import dynamically.
-    const deps = await import("~/helpers/runtime");
-    await use(deps);
-
-    // Reset the module after using it.
-    // Otherwise side effects will persist between tests.
-    // This will run after the test has finished.
-    vi.resetModules();
-  },
-});
-
 describe("helpers/runtime", () => {
-  afterEach(() => {
+  let runtimeHelpers: typeof import("~/helpers/runtime");
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
     vi.unstubAllEnvs();
+    vi.resetModules();
+
+    runtimeHelpers = await import("~/helpers/runtime");
   });
 
   describe("isDevelopment", () => {
-    test("should return true when AIO_DEV is set", ({ deps }) => {
-      const { isDevelopment } = deps;
-
+    test("should return true when AIO_DEV is set", () => {
       vi.stubEnv("AIO_DEV", "true");
-      expect(isDevelopment()).toBe(true);
+      expect(runtimeHelpers.isDevelopment()).toBe(true);
     });
 
-    test("should return true when AIO_DEV is just defined", ({ deps }) => {
-      const { isDevelopment } = deps;
-
+    test("should return true when AIO_DEV is just defined", () => {
       vi.stubEnv("AIO_DEV", "");
-      expect(isDevelopment()).toBe(true);
+      expect(runtimeHelpers.isDevelopment()).toBe(true);
     });
 
-    test("should return true when __OW_ACTION_VERSION is not set", ({
-      deps,
-    }) => {
-      const { isDevelopment } = deps;
-      expect(isDevelopment()).toBe(true);
+    test("should return true when __OW_ACTION_VERSION is not set", () => {
+      expect(runtimeHelpers.isDevelopment()).toBe(true);
     });
 
-    test("should return false when __OW_ACTION_VERSION is set", ({ deps }) => {
-      const { isDevelopment } = deps;
-
+    test("should return false when __OW_ACTION_VERSION is set", () => {
       vi.stubEnv("__OW_ACTION_VERSION", "1.0.0");
-      expect(isDevelopment()).toBe(false);
+      expect(runtimeHelpers.isDevelopment()).toBe(false);
     });
 
-    test("should return false when AIO_DEV is not set and __OW_ACTION_VERSION is set", ({
-      deps,
-    }) => {
-      const { isDevelopment } = deps;
-
+    test("should return false when AIO_DEV is not set and __OW_ACTION_VERSION is set", () => {
       vi.stubEnv("__OW_ACTION_VERSION", "1.0.0");
-      expect(isDevelopment()).toBe(false);
+      expect(runtimeHelpers.isDevelopment()).toBe(false);
     });
 
-    test("should return true when AIO_DEV is set and __OW_ACTION_VERSION is not set", ({
-      deps,
-    }) => {
-      const { isDevelopment } = deps;
-
+    test("should return true when AIO_DEV is set and __OW_ACTION_VERSION is not set", () => {
       vi.stubEnv("AIO_DEV", "true");
-      expect(isDevelopment()).toBe(true);
+      expect(runtimeHelpers.isDevelopment()).toBe(true);
     });
   });
 
   describe("isTelemetryEnabled", () => {
-    test("should return true when __ENABLE_TELEMETRY is 'true'", ({ deps }) => {
-      const { isTelemetryEnabled } = deps;
-
+    test("should return true when __ENABLE_TELEMETRY is 'true'", () => {
       vi.stubEnv("__ENABLE_TELEMETRY", "true");
-      expect(isTelemetryEnabled()).toBe(true);
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(true);
     });
 
-    test("should return false when __ENABLE_TELEMETRY is 'false'", ({
-      deps,
-    }) => {
-      const { isTelemetryEnabled } = deps;
-
+    test("should return false when __ENABLE_TELEMETRY is 'false'", () => {
       vi.stubEnv("__ENABLE_TELEMETRY", "false");
-      expect(isTelemetryEnabled()).toBe(false);
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
 
-    test("should return false when __ENABLE_TELEMETRY is not set", ({
-      deps,
-    }) => {
-      const { isTelemetryEnabled } = deps;
-      expect(isTelemetryEnabled()).toBe(false);
+    test("should return false when __ENABLE_TELEMETRY is not set", () => {
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
 
-    test("should return false for any non-true value", ({ deps }) => {
-      const { isTelemetryEnabled } = deps;
-
+    test("should return false for any non-true value", () => {
       vi.stubEnv("__ENABLE_TELEMETRY", "1");
-      expect(isTelemetryEnabled()).toBe(false);
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
 
       vi.stubEnv("__ENABLE_TELEMETRY", "yes");
-      expect(isTelemetryEnabled()).toBe(false);
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
 
       vi.stubEnv("__ENABLE_TELEMETRY", "TRUE");
-      expect(isTelemetryEnabled()).toBe(false);
+      expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
   });
 
   describe("getRuntimeActionMetadata", () => {
-    test("should return correct metadata for production", ({ deps }) => {
-      const { getRuntimeActionMetadata } = deps;
+    test("should return correct metadata for production", () => {
       setupProductionEnv();
 
-      const metadata = getRuntimeActionMetadata();
+      const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
         activationId: "test-prod-activation-id",
         namespace: "test-prod-namespace",
@@ -140,11 +98,10 @@ describe("helpers/runtime", () => {
       });
     });
 
-    test("should return correct metadata for development", ({ deps }) => {
-      const { getRuntimeActionMetadata } = deps;
+    test("should return correct metadata for development", () => {
       setupDevelopmentEnv();
 
-      const metadata = getRuntimeActionMetadata();
+      const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
         activationId: "test-dev-activation-id",
         namespace: "test-dev-namespace",
@@ -163,13 +120,10 @@ describe("helpers/runtime", () => {
       });
     });
 
-    test("should return correct metadata for legacy development", ({
-      deps,
-    }) => {
-      const { getRuntimeActionMetadata } = deps;
+    test("should return correct metadata for legacy development", () => {
       setupLegacyDevelopmentEnv();
 
-      const metadata = getRuntimeActionMetadata();
+      const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
         activationId: "test-dev-activation-id",
         namespace: "test-dev-namespace",
@@ -188,14 +142,11 @@ describe("helpers/runtime", () => {
       });
     });
 
-    baseTest("should cache inferred metadata", async () => {
-      const { getRuntimeActionMetadata } = await import("~/helpers/runtime");
-      const metadata = getRuntimeActionMetadata();
-      const metadata2 = getRuntimeActionMetadata();
+    test("should cache inferred metadata", () => {
+      const metadata = runtimeHelpers.getRuntimeActionMetadata();
+      const metadata2 = runtimeHelpers.getRuntimeActionMetadata();
 
-      // biome-ignore lint/suspicious/noMisplacedAssertion: Justified as we are extending the Test API.
       expect(metadata).toBe(metadata2);
-      vi.resetModules();
     });
   });
 
@@ -203,11 +154,11 @@ describe("helpers/runtime", () => {
     // biome-ignore lint/performance/useTopLevelRegex: No major performance impact as this is a test.
     const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
-    test("should infer correct attributes for production", ({ deps }) => {
-      const { inferTelemetryAttributesFromRuntimeMetadata } = deps;
+    test("should infer correct attributes for production", () => {
       setupProductionEnv();
+      const attributes =
+        runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
-      const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
         "service.version": "1.0.0",
         "service.name": "test-prod-namespace/test-prod-package-name",
@@ -225,11 +176,11 @@ describe("helpers/runtime", () => {
       });
     });
 
-    test("should infer correct attributes for development", ({ deps }) => {
-      const { inferTelemetryAttributesFromRuntimeMetadata } = deps;
+    test("should infer correct attributes for development", () => {
       setupDevelopmentEnv();
+      const attributes =
+        runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
-      const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
         "service.version": "0.0.0 (development)",
         "service.name":
@@ -247,13 +198,11 @@ describe("helpers/runtime", () => {
       });
     });
 
-    test("should infer correct attributes for legacy development", ({
-      deps,
-    }) => {
-      const { inferTelemetryAttributesFromRuntimeMetadata } = deps;
+    test("should infer correct attributes for legacy development", () => {
       setupLegacyDevelopmentEnv();
+      const attributes =
+        runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
-      const attributes = inferTelemetryAttributesFromRuntimeMetadata();
       expect(attributes).toEqual({
         "service.version": "0.0.0 (development)",
         "service.name": "test-dev-namespace-local-development",
