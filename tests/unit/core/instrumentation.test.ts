@@ -701,7 +701,7 @@ describe("core/instrumentation", () => {
       expect(context.meter).toBeDefined();
     });
 
-    it("should handle async entrypoints", () => {
+    it("should handle async entrypoints", async () => {
       const asyncMain = vi.fn().mockResolvedValue({ statusCode: 200 });
 
       const instrumentedMain = instrumentation.instrumentEntrypoint(asyncMain, {
@@ -710,7 +710,8 @@ describe("core/instrumentation", () => {
 
       const result = instrumentedMain({ ENABLE_TELEMETRY: "true" });
       expect(result).toBeInstanceOf(Promise);
-      expect(result).resolves.toEqual({ statusCode: 200 });
+
+      await expect(result).resolves.toEqual({ statusCode: 200 });
     });
   });
 });
