@@ -12,7 +12,7 @@
 
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import { context, SpanStatusCode, trace } from "@opentelemetry/api";
+import { context, SpanStatusCode } from "@opentelemetry/api";
 
 import {
   deserializeContextFromCarrier,
@@ -180,8 +180,8 @@ export function instrument<T extends AnyFunction>(
 
   /** Sets up the span data (given to the tracer) for the current operation. */
   function setupSpanData(...args: Parameters<T>) {
-    const { actionName, actionVersion } = getRuntimeActionMetadata();
-    const tracer = trace.getTracer(actionName, actionVersion);
+    const { actionName } = getRuntimeActionMetadata();
+    const { tracer } = getGlobalTelemetryApi();
     const currentCtx = getBaseContext?.(...args) ?? context.active();
 
     const spanCfg = {
