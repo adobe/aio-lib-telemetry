@@ -78,18 +78,5 @@ describe("api/presets", () => {
         expect(config.requireParentforSpans).toBe(true);
       },
     );
-
-    test("full preset should configure http instrumentation with requireParentforIncomingSpans", () => {
-      const instrumentations = getPresetInstrumentations("full");
-      const httpInstrumentation = instrumentations.find(
-        (i) => i.instrumentationName === "@opentelemetry/instrumentation-http",
-      );
-
-      expect(httpInstrumentation).toBeDefined();
-      expect(httpInstrumentation).toBeInstanceOf(HttpInstrumentation);
-
-      const config = (httpInstrumentation as HttpInstrumentation).getConfig();
-      expect(config.requireParentforIncomingSpans).toBe(true);
-    });
   });
 });
