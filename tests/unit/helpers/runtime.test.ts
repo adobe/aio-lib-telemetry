@@ -174,10 +174,7 @@ describe("helpers/runtime", () => {
       expect(attributes).toEqual({
         "service.version": "1.0.0",
         "service.name": "test-prod-namespace/test-prod-package-name",
-
-        "deployment.region": "test-prod-region",
-        "deployment.cloud": "test-prod-cloud",
-        "deployment.environment": "production",
+        environment: "production",
 
         "action.name": "test-prod-action-name",
         "action.package_name": "test-prod-package-name",
@@ -194,19 +191,15 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "service.version": "0.0.0 (development)",
         "service.name":
           "test-dev-namespace-local-development/test-dev-package-name",
 
-        "deployment.region": "local",
-        "deployment.cloud": "local",
-        "deployment.environment": "development",
+        environment: "development",
 
         "action.name": "test-dev-action-name",
         "action.package_name": "test-dev-package-name",
         "action.namespace": "test-dev-namespace",
         "action.activation_id": "test-dev-activation-id",
-        "action.transaction_id": "unknown",
       });
     });
 
@@ -216,18 +209,13 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "service.version": "0.0.0 (development)",
         "service.name": "test-dev-namespace-local-development",
 
-        "deployment.region": "local",
-        "deployment.cloud": "local",
-        "deployment.environment": "development",
+        environment: "development",
 
         "action.name": "test-dev-action-name",
-        "action.package_name": "unknown",
         "action.namespace": "test-dev-namespace",
         "action.activation_id": "test-dev-activation-id",
-        "action.transaction_id": "unknown",
       });
     });
   });
