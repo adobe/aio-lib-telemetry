@@ -100,7 +100,12 @@ describe("core/metrics", () => {
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow();
+      expect(() => proxy.requestCount).toThrow(
+        expect.objectContaining({
+          message: expect.stringContaining(error.message),
+          cause: error,
+        }),
+      );
     });
 
     test("should throw descriptive error when metric creation fails", () => {
@@ -113,7 +118,12 @@ describe("core/metrics", () => {
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow();
+      expect(() => proxy.requestCount).toThrow(
+        expect.objectContaining({
+          message: expect.stringContaining(error.message),
+          cause: error,
+        }),
+      );
     });
 
     test("should handle non-Error exceptions", () => {
@@ -126,7 +136,11 @@ describe("core/metrics", () => {
         requestCount: meter.createCounter("request.count"),
       }));
 
-      expect(() => proxy.requestCount).toThrow();
+      expect(() => proxy.requestCount).toThrow(
+        expect.objectContaining({
+          message: expect.stringContaining(stringError),
+        }),
+      );
     });
 
     test("should not reinitialize after successful initialization", () => {
