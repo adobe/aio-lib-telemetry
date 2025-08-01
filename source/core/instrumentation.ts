@@ -170,13 +170,10 @@ export function instrument<T extends AnyFunction>(
 
     const { actionName } = getRuntimeActionMetadata();
     const { tracer, meter } = getGlobalTelemetryApi();
-    const logger = getLogger(
-      `${fn.name ? `${actionName}/${fn.name}` : spanName}`,
-      {
-        logSourceAction: false,
-        level: process.env.__LOG_LEVEL,
-      },
-    );
+    const logger = getLogger(`${actionName}/${spanName}`, {
+      logSourceAction: false,
+      level: process.env.__LOG_LEVEL,
+    });
 
     return {
       currentSpan: span,
