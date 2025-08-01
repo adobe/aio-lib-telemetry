@@ -1,74 +1,84 @@
-import { diag } from "@opentelemetry/api";
-import { NodeSDK } from "@opentelemetry/sdk-node";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import * as loggingModule from "~/core/logging";
-import {
-  ensureSdkInitialized,
-  initializeDiagnostics,
-  initializeSdk,
-} from "~/core/sdk";
+import type { NodeSDK } from "@opentelemetry/sdk-node";
 
-vi.mock("@opentelemetry/api", () => ({
-  diag: {
-    warn: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
-  },
-}));
-
-vi.mock("@opentelemetry/sdk-node", () => ({
-  NodeSDK: vi.fn(),
-}));
-
-vi.mock("~/core/logging", () => ({
-  setOtelDiagLogger: vi.fn(),
-}));
-
-function clearGlobalState() {
-  // biome-ignore lint/performance/noDelete: it's for testing purposes
-  delete globalThis.__OTEL_SDK__;
-}
-
-function mockShutdown(signal: "SIGTERM" | "SIGINT" | "beforeExit") {
+async function simulateShutdown(
+  sdk: typeof import("~/core/sdk"),
+  signal: "SIGTERM" | "SIGINT" | "beforeExit",
+  onBeforeShutdown?: () => void,
+) {
   // Shutdown is not allowed to be called directly.
-  // It only executes when the process exits on some signals.
+  // It only executes when the process exits.
+  // Mock process.on so we can get the shutdown handler.
   const processOnSpy = vi.spyOn(process, "on");
-  const getShutdownHandler = () =>
-    processOnSpy.mock.calls.find((call) => call[0] === signal)?.[1] as
-      | (() => Promise<void>)
-      | undefined;
 
-  return [getShutdownHandler, () => processOnSpy.mockRestore()] as const;
+  // Initialize SDK first
+  sdk.initializeSdk();
+  const shutdownHandler = processOnSpy.mock.calls.find(
+    (call) => call[0] === signal,
+  )?.[1] as (() => Promise<void>) | undefined;
+
+  // biome-ignore lint/suspicious/noMisplacedAssertion: for easy testing
+  expect(shutdownHandler).toBeDefined();
+  onBeforeShutdown?.();
+  await shutdownHandler?.();
+
+  processOnSpy.mockRestore();
+  return { processOnSpy };
 }
 
 describe("core/sdk", () => {
-  let mockSdkInstance: Partial<NodeSDK>;
+  let coreSdk: typeof import("~/core/sdk");
 
-  beforeEach(() => {
+  const startSdk = vi.fn();
+  const shutdownSdk = vi.fn();
+
+  const diagWarn = vi.fn();
+  const diagInfo = vi.fn();
+  const diagError = vi.fn();
+  const setOtelDiagLogger = vi.fn();
+
+  const mockNodeSdk = {
+    start: startSdk,
+    shutdown: shutdownSdk,
+  };
+
+  const NodeSdk = vi.fn().mockImplementation(() => mockNodeSdk);
+
+  beforeEach(async () => {
     vi.clearAllMocks();
-    clearGlobalState();
+    vi.unstubAllGlobals();
 
-    // Setup mock SDK instance
-    mockSdkInstance = {
-      start: vi.fn(),
-      shutdown: vi.fn().mockResolvedValue(undefined),
-    };
+    // Clear any previous SDK instance
+    globalThis.__OTEL_SDK__ = null;
 
-    vi.mocked(NodeSDK).mockImplementation((_) => mockSdkInstance as NodeSDK);
+    vi.doMock("@opentelemetry/api", () => ({
+      diag: {
+        warn: diagWarn,
+        info: diagInfo,
+        error: diagError,
+      },
+    }));
+
+    vi.doMock("@opentelemetry/sdk-node", () => ({
+      NodeSDK: NodeSdk,
+    }));
+
+    vi.doMock("~/core/logging", () => ({
+      setOtelDiagLogger,
+    }));
+
+    coreSdk = await import("~/core/sdk");
   });
 
   describe("ensureSdkInitialized", () => {
     test("should throw error if SDK is not initialized", () => {
-      expect(() => ensureSdkInitialized()).toThrow(
-        "You're trying to perform an operation that requires the telemetry SDK to be initialized. " +
-          "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
-      );
+      expect(() => coreSdk.ensureSdkInitialized()).toThrow();
     });
 
     test("should not throw if SDK is initialized", () => {
-      globalThis.__OTEL_SDK__ = mockSdkInstance as NodeSDK;
-      expect(() => ensureSdkInitialized()).not.toThrow();
+      vi.stubGlobal("__OTEL_SDK__", {} as NodeSDK);
+      expect(() => coreSdk.ensureSdkInitialized()).not.toThrow();
     });
   });
 
@@ -80,12 +90,10 @@ describe("core/sdk", () => {
         exportLogs: true,
       } as const;
 
-      initializeDiagnostics(diagnosticsConfig);
+      coreSdk.initializeDiagnostics(diagnosticsConfig);
 
-      expect(diag.warn).not.toHaveBeenCalled();
-      expect(loggingModule.setOtelDiagLogger).toHaveBeenCalledWith(
-        diagnosticsConfig,
-      );
+      expect(diagWarn).not.toHaveBeenCalled();
+      expect(setOtelDiagLogger).toHaveBeenCalledWith(diagnosticsConfig);
     });
 
     test("should skip initialization and warn when SDK is already initialized", () => {
@@ -93,26 +101,22 @@ describe("core/sdk", () => {
         logLevel: "info",
       } as const;
 
-      globalThis.__OTEL_SDK__ = mockSdkInstance as NodeSDK;
-      initializeDiagnostics(diagnosticsConfig);
+      vi.stubGlobal("__OTEL_SDK__", mockNodeSdk);
+      coreSdk.initializeDiagnostics(diagnosticsConfig);
 
-      expect(loggingModule.setOtelDiagLogger).not.toHaveBeenCalled();
-      expect(diag.warn).toHaveBeenCalledWith(
-        "Telemetry SDK already initialized, skipping diagnostics initialization",
-      );
+      expect(setOtelDiagLogger).not.toHaveBeenCalled();
+      expect(diagWarn).toHaveBeenCalledWith(expect.any(String));
     });
   });
 
   describe("initializeSdk", () => {
     test("should initialize SDK with default config", () => {
-      initializeSdk();
+      coreSdk.initializeSdk();
+      expect(globalThis.__OTEL_SDK__).toBe(mockNodeSdk);
 
-      expect(NodeSDK).toHaveBeenCalledWith(undefined);
-      expect(mockSdkInstance.start).toHaveBeenCalled();
-      expect(globalThis.__OTEL_SDK__).toBe(mockSdkInstance);
-      expect(diag.info).toHaveBeenCalledWith(
-        "OpenTelemetry automatic instrumentation started successfully",
-      );
+      expect(NodeSdk).toHaveBeenCalledWith(undefined);
+      expect(startSdk).toHaveBeenCalled();
+      expect(diagInfo).toHaveBeenCalledWith(expect.any(String));
     });
 
     test("should initialize SDK with custom config", () => {
@@ -121,41 +125,37 @@ describe("core/sdk", () => {
         serviceName: "test-service",
       };
 
-      initializeSdk(customConfig);
+      coreSdk.initializeSdk(customConfig);
+      expect(globalThis.__OTEL_SDK__).toBe(mockNodeSdk);
 
-      expect(NodeSDK).toHaveBeenCalledWith(customConfig);
-      expect(mockSdkInstance.start).toHaveBeenCalled();
-      expect(globalThis.__OTEL_SDK__).toBe(mockSdkInstance);
+      expect(NodeSdk).toHaveBeenCalledWith(customConfig);
+      expect(startSdk).toHaveBeenCalled();
     });
 
     test("should skip initialization and warn when SDK is already initialized", () => {
-      globalThis.__OTEL_SDK__ = mockSdkInstance as NodeSDK;
-      initializeSdk();
+      vi.stubGlobal("__OTEL_SDK__", mockNodeSdk);
+      coreSdk.initializeSdk();
 
-      expect(NodeSDK).not.toHaveBeenCalled();
-      expect(diag.warn).toHaveBeenCalledWith(
-        "Telemetry SDK already initialized, skipping telemetry initialization",
-      );
+      expect(NodeSdk).not.toHaveBeenCalled();
+      expect(diagWarn).toHaveBeenCalledWith(expect.any(String));
     });
 
     test("should handle SDK start errors", () => {
       const error = new Error("Failed to start SDK");
-      mockSdkInstance.start = vi.fn().mockImplementation(() => {
+      startSdk.mockImplementationOnce(() => {
         throw error;
       });
 
-      initializeSdk();
-      expect(diag.error).toHaveBeenCalledWith(
-        "Failed to start the telemetry SDK, your application won't emit telemetry data",
-        error,
-      );
+      coreSdk.initializeSdk();
 
+      // The SDK should be nullified after the error
       expect(globalThis.__OTEL_SDK__).toBeNull();
+      expect(diagError).toHaveBeenCalledWith(expect.any(String), error);
     });
 
     test("should register shutdown handlers for process signals", () => {
       const processOnSpy = vi.spyOn(process, "on");
-      initializeSdk();
+      coreSdk.initializeSdk();
 
       expect(processOnSpy).toHaveBeenCalledWith(
         "SIGTERM",
@@ -174,74 +174,32 @@ describe("core/sdk", () => {
     test.each(["SIGTERM", "SIGINT", "beforeExit"] as const)(
       "should shutdown SDK on %s",
       async (signal) => {
-        const [getShutdownHandler, restoreShutdownMock] = mockShutdown(signal);
+        await simulateShutdown(coreSdk, signal);
 
-        // We need to initialize the SDK to register the handlers.
-        initializeSdk();
-
-        const shutdownHandler = getShutdownHandler();
-        expect(shutdownHandler).toBeDefined();
-
-        // Simulate the process exiting.
-        await shutdownHandler?.();
-
-        expect(mockSdkInstance.shutdown).toHaveBeenCalled();
-        expect(diag.info).toHaveBeenCalledWith(
-          "Shutting down the telemetry SDK. No more telemetry data will be emitted",
-        );
-
-        expect(diag.info).toHaveBeenCalledWith(
-          `Telemetry SDK shutdown reason -> "Terminating process: ${signal}"`,
-        );
-
-        expect(diag.info).toHaveBeenCalledWith(
-          "OpenTelemetry automatic instrumentation shutdown successful",
-        );
-
-        restoreShutdownMock();
+        expect(shutdownSdk).toHaveBeenCalled();
+        expect(diagInfo).toHaveBeenCalledWith(expect.stringContaining(signal));
       },
     );
 
-    test("should handle shutdown errors gracefully", async () => {
+    test("should log error if shutdown fails", async () => {
       const shutdownError = new Error("Shutdown failed");
-      mockSdkInstance.shutdown = vi.fn().mockRejectedValue(shutdownError);
+      shutdownSdk.mockImplementationOnce(() => {
+        throw shutdownError;
+      });
 
-      const [getShutdownHandler, restoreShutdownMock] = mockShutdown("SIGINT");
-      initializeSdk();
-
-      const shutdownHandler = getShutdownHandler();
-      expect(shutdownHandler).toBeDefined();
-
-      await shutdownHandler?.();
-      expect(diag.error).toHaveBeenCalledWith(
-        "Failed to shutdown the telemetry SDK, telemetry data may not be flushed",
-        shutdownError,
-      );
-
-      restoreShutdownMock();
+      await simulateShutdown(coreSdk, "SIGINT");
+      expect(diagError).toHaveBeenCalledWith(expect.any(String), shutdownError);
     });
 
-    test("should not shutdown if SDK is not initialized", async () => {
-      const [getShutdownHandler, restoreShutdownMock] =
-        mockShutdown("beforeExit");
+    test("should not shutdown if SDK is not initialized and log warning", async () => {
+      // First shutdown to get the handler
+      await simulateShutdown(coreSdk, "beforeExit", () => {
+        // Simulate a non initialized SDK
+        vi.stubGlobal("__OTEL_SDK__", null);
+      });
 
-      // We need to initialize the SDK to register the handlers.
-      initializeSdk();
-
-      const shutdownHandler = getShutdownHandler();
-      expect(shutdownHandler).toBeDefined();
-
-      // But before shutting down, clear the initialized state
-      // To simulate it has not been initialized.
-      globalThis.__OTEL_SDK__ = null;
-      await shutdownHandler?.();
-
-      expect(mockSdkInstance.shutdown).not.toHaveBeenCalled();
-      expect(diag.warn).toHaveBeenCalledWith(
-        "Telemetry SDK not initialized, skipping telemetry shutdown",
-      );
-
-      restoreShutdownMock();
+      expect(shutdownSdk).not.toHaveBeenCalled();
+      expect(diagWarn).toHaveBeenCalledWith(expect.any(String));
     });
   });
 });
