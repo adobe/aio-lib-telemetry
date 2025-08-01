@@ -1,7 +1,7 @@
 import AioLogger from "@adobe/aio-lib-core-logging";
 import { DiagLogLevel, diag } from "@opentelemetry/api";
 import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { getLogger, setOtelDiagLogger } from "~/core/logging";
 import * as sdkModule from "~/core/sdk";
@@ -67,7 +67,7 @@ describe("core/logging", () => {
   });
 
   describe("getLogger", () => {
-    it("should create a logger with default configuration", () => {
+    test("should create a logger with default configuration", () => {
       const logger = getLogger("test-logger");
       expect(logger).toBe(mockLogger);
 
@@ -78,7 +78,7 @@ describe("core/logging", () => {
       });
     });
 
-    it("should create a logger with custom configuration", () => {
+    test("should create a logger with custom configuration", () => {
       const customConfig = {
         level: "debug",
         logSourceAction: false,
@@ -93,7 +93,7 @@ describe("core/logging", () => {
       });
     });
 
-    it("should add OpenTelemetry transport to the logger", () => {
+    test("should add OpenTelemetry transport to the logger", () => {
       const mockTransport = {};
 
       vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
@@ -110,7 +110,7 @@ describe("core/logging", () => {
       });
     });
 
-    it("should use custom log level for transport", () => {
+    test("should use custom log level for transport", () => {
       const mockTransport = {};
 
       vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
@@ -125,7 +125,7 @@ describe("core/logging", () => {
       });
     });
 
-    it("should handle undefined log level", () => {
+    test("should handle undefined log level", () => {
       getLogger("test-logger", { level: undefined });
       expect(AioLogger).toHaveBeenCalledWith("test-logger", {
         provider: "winston",
@@ -135,7 +135,7 @@ describe("core/logging", () => {
   });
 
   describe("setOtelDiagLogger", () => {
-    it("should set diagnostics logger with info level", () => {
+    test("should set diagnostics logger with info level", () => {
       setOtelDiagLogger({
         logLevel: "info",
         exportLogs: true,
@@ -156,7 +156,7 @@ describe("core/logging", () => {
       );
     });
 
-    it("should use custom logger name", () => {
+    test("should use custom logger name", () => {
       setOtelDiagLogger({
         logLevel: "debug",
         loggerName: "custom-diag-logger",
@@ -170,7 +170,7 @@ describe("core/logging", () => {
       });
     });
 
-    it.each([
+    test.each([
       // { input: "none" as const, aioLevel: undefined, diagLevel: "NONE" },
       { input: "all" as const, aioLevel: "verbose", diagLevel: "ALL" },
       { input: "error" as const, aioLevel: "error", diagLevel: "ERROR" },
@@ -201,7 +201,7 @@ describe("core/logging", () => {
       },
     );
 
-    it.each(["info", "warn", "error"] as const)(
+    test.each(["info", "warn", "error"] as const)(
       "should export diagnostic logs for level '%s'",
       (level) => {
         setOtelDiagLogger({
@@ -214,7 +214,7 @@ describe("core/logging", () => {
       },
     );
 
-    it("should export logs only for info, warn, and error levels", () => {
+    test("should export logs only for info, warn, and error levels", () => {
       const mockTransport = {};
       vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
         mockTransport as unknown as InstanceType<
@@ -242,7 +242,7 @@ describe("core/logging", () => {
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
     });
 
-    it("should not add transport when exportLogs is false", () => {
+    test("should not add transport when exportLogs is false", () => {
       setOtelDiagLogger({
         logLevel: "info",
         exportLogs: false,
@@ -251,7 +251,7 @@ describe("core/logging", () => {
       expect(mockLogger.logger.logger.add).not.toHaveBeenCalled();
     });
 
-    it("should handle errors when setting logger", () => {
+    test("should handle errors when setting logger", () => {
       vi.mocked(diag.setLogger).mockImplementation(() => {
         throw new Error("Failed to set logger");
       });
@@ -267,7 +267,7 @@ describe("core/logging", () => {
       );
     });
 
-    it("should not call ensureSdkInitialized for diagnostics logger", () => {
+    test("should not call ensureSdkInitialized for diagnostics logger", () => {
       setOtelDiagLogger({
         logLevel: "info",
         exportLogs: true,
