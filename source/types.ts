@@ -39,19 +39,26 @@ export type TelemetryInstrumentationPreset = "simple" | "full";
  * @since 0.1.0
  */
 export interface TelemetryDiagnosticsConfig {
-  /** The log level to use for the diagnostics. */
+  /**
+   * The log level to use for the diagnostics.
+   * @since 0.1.0
+   */
   logLevel: DiagnosticsLogLevel;
 
   /**
    * The name of the logger to use for the diagnostics.
+   *
    * @default `${actionName}/otel-diagnostics`
+   * @since 0.1.0
    */
   loggerName?: string;
 
   /**
    * Whether to make OpenTelemetry also export the diagnostic logs to the configured exporters.
    * Set to `false` if you don't want to see diagnostic logs in your observability platform.
+   *
    * @default true
+   * @since 0.1.0
    */
   exportLogs?: boolean;
 }
@@ -66,12 +73,15 @@ export interface TelemetryPropagationConfig<T extends AnyFunction> {
    * Set to `true` if you want to skip this automatic context propagation.
    *
    * @default false
+   * @since 0.1.0
    */
   skip?: boolean;
 
   /**
    * A function that returns the carrier for the current context.
    * Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
+   *
+   * @since 0.1.0
    *
    * @param args - The arguments of the instrumented function.
    * @returns The carrier of the context to retrieve and an optional base context to use for the started span (defaults to the active context).
@@ -90,16 +100,22 @@ export interface InstrumentationConfig<T extends AnyFunction> {
   /**
    * Configuration options related to the span started by the instrumented function.
    * See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
+   *
+   * @since 0.1.0
    */
   spanConfig?: SpanOptions & {
     /**
      * The name of the span. Defaults to the name of given function.
      * You must use a named function or a provide a name here.
+     *
+     * @since 0.1.0
      */
     spanName?: string;
 
     /**
      * The base context to use for the started span.
+     *
+     * @since 0.1.0
      *
      * @param args - The arguments of the instrumented function.
      * @returns The base context to use for the started span.
@@ -110,6 +126,8 @@ export interface InstrumentationConfig<T extends AnyFunction> {
   /**
    * A function that will be called to determine if the instrumented function was successful.
    * By default, the function is considered successful if it doesn't throw an error.
+   *
+   * @since 0.1.0
    *
    * @param result - The result of the instrumented function.
    * @returns Whether the instrumented function was successful.
@@ -122,6 +140,8 @@ export interface InstrumentationConfig<T extends AnyFunction> {
      * A function that will be called with the result of the instrumented function (if any, and no error was thrown).
      * You can use it to do something with the Span.
      *
+     * @since 0.1.0
+     *
      * @param result - The result of the instrumented function.
      * @param span - The span of the instrumented function.
      */
@@ -130,6 +150,8 @@ export interface InstrumentationConfig<T extends AnyFunction> {
     /**
      * A function that will be called when the instrumented function fails.
      * You can use it to do something with the Span.
+     *
+     * @since 0.1.0
      *
      * @param error - The error produced by the instrumented function.
      * @param span - The span of the instrumented function.
@@ -146,10 +168,15 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
   /**
    * The configuration options for the OpenTelemetry SDK.
    * See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) interface.
+   *
+   * @since 0.1.0
    */
   sdkConfig: Partial<NodeSDKConfiguration>;
 
-  /** The configuration options for the telemetry diagnostics. */
+  /**
+   * The configuration options for the telemetry diagnostics.
+   * @since 0.1.0
+   */
   diagnostics?: false | TelemetryDiagnosticsConfig;
 }
 
@@ -163,11 +190,15 @@ export interface EntrypointInstrumentationConfig<
   /**
    * Configuration options related to context propagation.
    * See the {@link TelemetryPropagationConfig} for the interface.
+   *
+   * @since 0.1.0
    */
   propagation?: TelemetryPropagationConfig<T>;
 
   /**
    * This function is called at the start of the action.
+   *
+   * @since 0.1.0
    *
    * @param params - The parameters of the action.
    * @param isDevelopment - Whether the action is running in development mode.
@@ -184,10 +215,16 @@ export interface EntrypointInstrumentationConfig<
  * @since 0.1.0
  */
 export interface TelemetryApi {
-  /** The tracer used to create spans. */
+  /**
+   * The tracer used to create spans.
+   * @since 0.1.0
+   */
   tracer: Tracer;
 
-  /** The meter used to create metrics. */
+  /**
+   * The meter used to create metrics.
+   * @since 0.1.0
+   */
   meter: Meter;
 }
 
@@ -196,18 +233,33 @@ export interface TelemetryApi {
  * @since 0.1.0
  */
 export interface InstrumentationContext {
-  /** The global (managed by the library) tracer instance used to create spans. */
+  /**
+   * The global (managed by the library) tracer instance used to create spans.
+   * @since 0.1.0
+   */
   tracer: Tracer;
 
-  /** The global (managed by the library) meter instance used to create metrics. */
+  /**
+   * The global (managed by the library) meter instance used to create metrics.
+   * @since 0.1.0
+   */
   meter: Meter;
 
-  /** The logger for the current operation. */
+  /**
+   * The logger for the current operation.
+   * @since 0.1.0
+   */
   logger: ReturnType<typeof getLogger>;
 
-  /** The span of the current operation. */
+  /**
+   * The span of the current operation.
+   * @since 0.1.0
+   */
   currentSpan: Span;
 
-  /** Holds a carrier that can be used to propagate the active context. */
+  /**
+   * Holds a carrier that can be used to propagate the active context.
+   * @since 0.1.0
+   */
   contextCarrier: Record<PropertyKey, string>;
 }
