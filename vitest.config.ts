@@ -30,6 +30,13 @@ export default defineConfig({
         "source/{index,otel,types}.ts",
         "tsdown.config.ts",
       ],
+
+      thresholds: {
+        statements: 100,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+      },
     },
   },
 });
