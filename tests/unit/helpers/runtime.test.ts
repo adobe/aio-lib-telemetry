@@ -18,6 +18,8 @@ import {
   setupProductionEnv,
 } from "~~/tests/fixtures/environment";
 
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+
 describe("helpers/runtime", () => {
   let runtimeHelpers: typeof import("~/helpers/runtime");
 
@@ -163,9 +165,6 @@ describe("helpers/runtime", () => {
   });
 
   describe("inferTelemetryAttributesFromRuntimeMetadata", () => {
-    // biome-ignore lint/performance/useTopLevelRegex: No major performance impact as this is a test.
-    const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
-
     test("should infer correct attributes for production", () => {
       setupProductionEnv();
       const attributes =
