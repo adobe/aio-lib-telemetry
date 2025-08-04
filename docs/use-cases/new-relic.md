@@ -11,12 +11,7 @@ This guide demonstrates how to configure runtime actions to send telemetry signa
 - [OpenTelemetry Instrumentation with New Relic](#opentelemetry-instrumentation-with-new-relic)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-    - [Configuration](#configuration)
-    - [How to Use](#how-to-use)
   - [Visualize the Data](#visualize-the-data)
-    - [Traces](#traces)
-    - [Metrics](#metrics)
-    - [Logs](#logs)
 
 ## Prerequisites
 
@@ -127,7 +122,7 @@ export const telemetryConfig = defineTelemetryConfig((params, isDev) => {
 
 ### How to Use
 
-Exporting directly to New Relic will seamlessly work in both development and production environments (no configuration changes required). Follow the [library documentation](../../README.md#-how-to-use) to instrument your runtime actions.
+Exporting directly to New Relic works in both development and production environments (no configuration changes required). Follow the [library documentation](../../README.md#-how-to-use) to instrument your runtime actions.
 
 ## Visualize the Data
 
