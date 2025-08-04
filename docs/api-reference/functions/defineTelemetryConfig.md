@@ -3,33 +3,33 @@
 ```ts
 function defineTelemetryConfig(
   init: (
-    params: Record<string, unknown>,
+    params: RecursiveStringRecord,
     isDevelopment: boolean,
   ) => TelemetryConfig,
 ): {
   initializeTelemetry: (
-    params: Record<string, unknown>,
+    params: RecursiveStringRecord,
     isDevelopment: boolean,
   ) => TelemetryConfig;
 };
 ```
 
-Defined in: [core/config.ts:21](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/core/config.ts#L21)
+Defined in: [core/config.ts:25](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/config.ts#L25)
 
 Helper to define the telemetry config for an entrypoint.
 
 ## Parameters
 
-| Parameter | Type                                                                                                                             | Description                               |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `init`    | (`params`: `Record`\<`string`, `unknown`\>, `isDevelopment`: `boolean`) => [`TelemetryConfig`](../interfaces/TelemetryConfig.md) | The function to initialize the telemetry. |
+| Parameter | Type                                                                                                                     | Description                               |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| `init`    | (`params`: `RecursiveStringRecord`, `isDevelopment`: `boolean`) => [`TelemetryConfig`](../interfaces/TelemetryConfig.md) | The function to initialize the telemetry. |
 
 ## Returns
 
 ```ts
 {
   initializeTelemetry: (
-    params: Record<string, unknown>,
+    params: RecursiveStringRecord,
     isDevelopment: boolean,
   ) => TelemetryConfig;
 }
@@ -38,18 +38,16 @@ Helper to define the telemetry config for an entrypoint.
 ### initializeTelemetry()
 
 ```ts
-initializeTelemetry: (
-  params: Record<string, unknown>,
-  isDevelopment: boolean,
-) => (TelemetryConfig = init);
+initializeTelemetry: (params: RecursiveStringRecord, isDevelopment: boolean) =>
+  (TelemetryConfig = init);
 ```
 
 #### Parameters
 
-| Parameter       | Type                            |
-| --------------- | ------------------------------- |
-| `params`        | `Record`\<`string`, `unknown`\> |
-| `isDevelopment` | `boolean`                       |
+| Parameter       | Type                    |
+| --------------- | ----------------------- |
+| `params`        | `RecursiveStringRecord` |
+| `isDevelopment` | `boolean`               |
 
 #### Returns
 

@@ -1,6 +1,6 @@
 # `TelemetryPropagationConfig\<T\>`
 
-Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L70)
+Defined in: [types.ts:66](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L66)
 
 Configuration related to context propagation (for distributed tracing).
 
@@ -21,11 +21,11 @@ Configuration related to context propagation (for distributed tracing).
 ```ts
 optional getContextCarrier: (...args: Parameters<T>) => {
   baseCtx?: Context;
-  carrier: Record<PropertyKey, string>;
+  carrier: Record<string, string>;
 };
 ```
 
-Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L89)
+Defined in: [types.ts:82](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L82)
 
 A function that returns the carrier for the current context.
 Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
@@ -41,7 +41,7 @@ Use it to specify where your carrier is located in the incoming parameters, when
 ```ts
 {
   baseCtx?: Context;
-  carrier: Record<PropertyKey, string>;
+  carrier: Record<string, string>;
 }
 ```
 
@@ -56,12 +56,8 @@ optional baseCtx: Context;
 ##### carrier
 
 ```ts
-carrier: Record<PropertyKey, string>;
+carrier: Record<string, string>;
 ```
-
-#### Since
-
-0.1.0
 
 ---
 
@@ -71,7 +67,7 @@ carrier: Record<PropertyKey, string>;
 optional skip: boolean;
 ```
 
-Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/311fa6dfe22958d569615a6746bf4a3a8211a5c3/source/types.ts#L78)
+Defined in: [types.ts:73](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L73)
 
 By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
 Set to `true` if you want to skip this automatic context propagation.
@@ -81,7 +77,3 @@ Set to `true` if you want to skip this automatic context propagation.
 ```ts
 false;
 ```
-
-#### Since
-
-0.1.0
