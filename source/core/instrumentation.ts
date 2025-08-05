@@ -235,10 +235,10 @@ export function instrument<T extends AnyFunction>(
         return handledResult;
       });
     } catch (error) {
-      handleError(error, span);
+      const handledError = handleError(error, span);
       span.end();
 
-      throw error;
+      throw handledError;
     }
   }
 
@@ -286,16 +286,16 @@ export function instrumentEntrypoint<
     const { ENABLE_TELEMETRY = false } = params;
     const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
     process.env = {
+      // Disable automatic resource detection to avoid leaking
+      // information about the runtime environment by default.
+      OTEL_NODE_RESOURCE_DETECTORS: "none",
+
       ...process.env,
 
       // Setting process.env.ENABLE_TELEMETRY directly won't work.
       // This is due to to webpack automatic env inline replacement.
       __ENABLE_TELEMETRY: enableTelemetry,
       __LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
-
-      // Disable automatic resource detection to avoid leaking
-      // information about the runtime environment by default.
-      OTEL_NODE_RESOURCE_DETECTORS: "none",
     };
   }
 
