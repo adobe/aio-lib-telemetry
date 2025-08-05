@@ -48,11 +48,11 @@ export function isDevelopment() {
 
 /** Checks if telemetry is enabled. */
 export function isTelemetryEnabled() {
-  if (process.env.__ENABLE_TELEMETRY) {
-    return process.env.__ENABLE_TELEMETRY === "true";
+  if (process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY) {
+    return process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY === "true";
   }
 
-  // If we don't have a process.env.ENABLE_TELEMETRY, then we assume it's disabled.
+  // If it's not set, then we assume it's disabled.
   return false;
 }
 

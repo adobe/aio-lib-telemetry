@@ -181,7 +181,7 @@ export function instrument<T extends AnyFunction>(
     const { tracer, meter } = getGlobalTelemetryApi();
     const logger = getLogger(`${actionName}/${spanName}`, {
       logSourceAction: false,
-      level: process.env.__LOG_LEVEL,
+      level: process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL,
     });
 
     return {
@@ -294,8 +294,8 @@ export function instrumentEntrypoint<
 
       // Setting process.env.ENABLE_TELEMETRY directly won't work.
       // This is due to to webpack automatic env inline replacement.
-      __ENABLE_TELEMETRY: enableTelemetry,
-      __LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
+      __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY: enableTelemetry,
+      __AIO_LIB_TELEMETRY_LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
     };
   }
 
