@@ -63,28 +63,28 @@ describe("helpers/runtime", () => {
   });
 
   describe("isTelemetryEnabled", () => {
-    test("should return true when __ENABLE_TELEMETRY is 'true'", () => {
-      vi.stubEnv("__ENABLE_TELEMETRY", "true");
+    test("should return true when __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY is 'true'", () => {
+      vi.stubEnv("__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY", "true");
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(true);
     });
 
-    test("should return false when __ENABLE_TELEMETRY is 'false'", () => {
-      vi.stubEnv("__ENABLE_TELEMETRY", "false");
+    test("should return false when __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY is 'false'", () => {
+      vi.stubEnv("__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY", "false");
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
 
-    test("should return false when __ENABLE_TELEMETRY is not set", () => {
+    test("should return false when __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY is not set", () => {
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
 
     test("should return false for any non-true value", () => {
-      vi.stubEnv("__ENABLE_TELEMETRY", "1");
+      vi.stubEnv("__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY", "1");
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
 
-      vi.stubEnv("__ENABLE_TELEMETRY", "yes");
+      vi.stubEnv("__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY", "yes");
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
 
-      vi.stubEnv("__ENABLE_TELEMETRY", "TRUE");
+      vi.stubEnv("__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY", "TRUE");
       expect(runtimeHelpers.isTelemetryEnabled()).toBe(false);
     });
   });

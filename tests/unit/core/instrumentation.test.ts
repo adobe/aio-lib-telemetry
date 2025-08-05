@@ -486,8 +486,10 @@ describe("core/instrumentation", () => {
       });
 
       instrumentedMain(params);
-      expect(process.env.__ENABLE_TELEMETRY).toBe(params.ENABLE_TELEMETRY);
-      expect(process.env.__LOG_LEVEL).toBe(params.LOG_LEVEL);
+      expect(process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL).toBe(params.LOG_LEVEL);
+      expect(process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY).toBe(
+        params.ENABLE_TELEMETRY,
+      );
     });
 
     test.each([
@@ -506,7 +508,7 @@ describe("core/instrumentation", () => {
         );
 
         instrumentedMain({});
-        expect(process.env.__LOG_LEVEL).toBe(logLevel);
+        expect(process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL).toBe(logLevel);
       },
     );
 
