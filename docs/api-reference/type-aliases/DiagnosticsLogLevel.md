@@ -4,7 +4,7 @@
 type DiagnosticsLogLevel = Lowercase<keyof typeof DiagLogLevel>;
 ```
 
-Defined in: [types.ts:32](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L32)
+Defined in: [types.ts:29](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L29)
 
 Available log levels for the OpenTelemetry `DiagLogger`.
 

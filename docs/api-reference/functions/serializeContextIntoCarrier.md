@@ -7,15 +7,15 @@ function serializeContextIntoCarrier<Carrier>(
 ): Carrier;
 ```
 
-Defined in: [api/propagation.ts:36](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/propagation.ts#L36)
+Defined in: [api/propagation.ts:36](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/api/propagation.ts#L36)
 
 Serializes the current context into a carrier.
 
 ## Type Parameters
 
-| Type Parameter                                     |
-| -------------------------------------------------- |
-| `Carrier` _extends_ `Record`\<`string`, `string`\> |
+| Type Parameter                                          |
+| ------------------------------------------------------- |
+| `Carrier` _extends_ `Record`\<`PropertyKey`, `string`\> |
 
 ## Parameters
 

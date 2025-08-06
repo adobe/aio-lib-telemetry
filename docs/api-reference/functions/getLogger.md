@@ -4,7 +4,7 @@
 function getLogger(name: string, config?: AioLoggerConfig): AioLogger;
 ```
 
-Defined in: [core/logging.ts:83](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/logging.ts#L83)
+Defined in: [core/logging.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/core/logging.ts#L78)
 
 Gets a logger instance that can export OpenTelemetry logs.
 

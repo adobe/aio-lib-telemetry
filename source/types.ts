@@ -83,7 +83,7 @@ export interface TelemetryPropagationConfig {
    *
    * @since 0.1.0
    *
-   * @param args - The arguments of the instrumented function.
+   * @param params - The classic `params` object received by Adobe runtime actions.
    * @returns The carrier of the context to retrieve and an optional base context to use for the started span (defaults to the active context).
    */
   getContextCarrier?: (params: Record<string, unknown>) => {
