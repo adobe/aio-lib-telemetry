@@ -4,7 +4,7 @@ This overview serves as a curated collection of the most important concepts and 
 
 <br />
 <div align="center">
-  <img alt="OpenTelemetry Logo" src="./images/open-telemetry.png">
+  <img alt="OpenTelemetry Logo" src="../images/open-telemetry.png">
 </div>
 <br />
 
@@ -57,7 +57,7 @@ The simplest pattern is to export your telemetry signals directly to an observab
 
 <br />
 <div align="center">
-  <img alt="OpenTelemetry Logo" src="./images/no-collector.png">
+  <img alt="OpenTelemetry Logo" src="../images/no-collector.png">
 </div>
 
 ### Collector-Based Export
@@ -79,7 +79,7 @@ This approach is recommended for production environments, as it enables advanced
 
 <br />
 <div align="center">
-  <img alt="OpenTelemetry Collector Architecture" src="./images/with-collector.png">
+  <img alt="OpenTelemetry Collector Architecture" src="../images/with-collector.png">
 </div>
 
 #### Architecture: Receivers, Processors, Exporters
@@ -92,7 +92,7 @@ The OpenTelemetry Collector follows a pipeline model consisting of three key com
 
 <br />
 <div align="center">
-  <img alt="OpenTelemetry Logo" src="./images/otel-architecture.png">
+  <img alt="OpenTelemetry Logo" src="../images/otel-architecture.png">
 </div>
 
 ## Supported Services and Backends
