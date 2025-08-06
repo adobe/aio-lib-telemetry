@@ -19,15 +19,6 @@ import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
 import type { TelemetryDiagnosticsConfig } from "~/types";
 
 /**
- * Get the global SDK instance.
- * @throws {Error} An error if the telemetry SDK is not initialized.
- */
-function getGlobalSdk() {
-  ensureSdkInitialized();
-  return global.__OTEL_SDK__;
-}
-
-/**
  * Set the global SDK instance.
  * @param sdkInstance - The SDK instance to set.
  */
@@ -41,7 +32,10 @@ function setGlobalSdk(sdkInstance: NodeSDK | null) {
  */
 export function ensureSdkInitialized() {
   if (!global.__OTEL_SDK__) {
-    throw new Error("Telemetry SDK not initialized");
+    throw new Error(
+      "You're trying to perform an operation that requires the telemetry SDK to be initialized. " +
+        "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
+    );
   }
 }
 
@@ -83,6 +77,11 @@ export function initializeSdk(config?: Partial<NodeSDKConfiguration>) {
 
     diag.info("OpenTelemetry automatic instrumentation started successfully");
   } catch (error) {
+    // Don't set the global SDK instance if the `start` failed.
+    // Currently the library doesn't support a way to recover from this error
+    // but it doesn't make sense to keep an instance to an SDK that couldn't initialize.
+    setGlobalSdk(null);
+
     diag.error(
       "Failed to start the telemetry SDK, your application won't emit telemetry data",
       error,
@@ -91,11 +90,7 @@ export function initializeSdk(config?: Partial<NodeSDKConfiguration>) {
 
   for (const signal of ["SIGTERM", "SIGINT", "beforeExit"]) {
     process.on(signal, async () => {
-      // We always try to shutdown the SDK after the runtime action finishes.
-      // But just in case something goes wrong, we have this fallback.
-      if (global.__OTEL_SDK__) {
-        await shutdownSdk(`Terminating process: ${signal}`);
-      }
+      await shutdownSdk(`Terminating process: ${signal}`);
     });
   }
 }
@@ -105,9 +100,7 @@ export function initializeSdk(config?: Partial<NodeSDKConfiguration>) {
  * @param reason - The reason for the shutdown.
  */
 async function shutdownSdk(reason?: string) {
-  const sdk = getGlobalSdk();
-
-  if (!sdk) {
+  if (!global.__OTEL_SDK__) {
     diag.warn("Telemetry SDK not initialized, skipping telemetry shutdown");
     return;
   }
@@ -118,10 +111,10 @@ async function shutdownSdk(reason?: string) {
     );
 
     if (reason) {
-      diag.info(`Telemetry SDK shutdown reason: ${reason}`);
+      diag.info(`Telemetry SDK shutdown reason -> "${reason}"`);
     }
 
-    await sdk.shutdown();
+    await global.__OTEL_SDK__.shutdown();
     diag.info("OpenTelemetry automatic instrumentation shutdown successful");
   } catch (error) {
     diag.error(

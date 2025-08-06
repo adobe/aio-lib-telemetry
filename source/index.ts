@@ -28,12 +28,13 @@ export {
   deserializeContextFromCarrier,
   serializeContextIntoCarrier,
 } from "./api/propagation";
-export { defineMetrics, defineTelemetryConfig } from "./core/config";
+export { defineTelemetryConfig } from "./core/config";
 export {
   getInstrumentationHelpers,
   instrument,
   instrumentEntrypoint,
 } from "./core/instrumentation";
 export { getLogger } from "./core/logging";
+export { defineMetrics } from "./core/metrics";
 export { getGlobalTelemetryApi } from "./core/telemetry-api";
 export * from "./types";

@@ -10,10 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { createMetricsProxy } from "~/core/metrics";
-
-import type { Meter } from "@opentelemetry/api";
-import type { MetricTypes } from "~/core/metrics";
 import type { EntrypointInstrumentationConfig } from "~/types";
 
 /**
@@ -28,25 +24,4 @@ export function defineTelemetryConfig(
   return {
     initializeTelemetry: init,
   };
-}
-
-/**
- * Helper to define a record of metrics.
- * @see https://opentelemetry.io/docs/concepts/signals/metrics/
- *
- * @since 0.1.0
- * @example
- * ```ts
- * const metrics = defineMetrics((meter) => {
- *   return {
- *     myMetric: meter.createCounter("my-metric", { description: "My metric" }),
- *   };
- * });
- * ```
- * @param createMetrics - A function that receives a meter which can be used to create the metrics.
- */
-export function defineMetrics<T extends Record<string, MetricTypes>>(
-  createMetrics: (meter: Meter) => T,
-): T {
-  return createMetricsProxy(createMetrics);
 }

@@ -316,16 +316,14 @@ With this setup, your carrier object will be deserialized and the resulting cont
 > [!WARNING]
 > Log processing and exporting [is currently in development](https://opentelemetry.io/docs/languages/js/) in the OpenTelemetry SDK for Node.js. While we haven't encountered any issues or limitations, occasional problems or API changes may occur.
 
-OpenTelemetry simplifies log exporting by handling the heavy lifting automatically, you just need to log normally. However, not all loggers are supported. OpenTelemetry provides auto-instrumentation for the Winston library, which in turn powers `@adobe/aio-lib-core-logging`, the library used for custom loggers in App Builder actions (and by the `Core.Logger` from `@adobe/aio-core-sdk`).
-
-To export [logs](https://opentelemetry.io/docs/concepts/signals/logs/), ensure the Winston instrumentation is enabled. This comes configured by default in both `simple` and `full` presets when using the [`getPresetInstrumentations`](./api-reference/functions/getPresetInstrumentations.md) helper. If you're using a custom instrumentation array, make sure to include it.
+OpenTelemetry simplifies log exporting by handling the heavy lifting automatically, you just need to log normally. However, not all loggers are supported. This module provides built-in support for the Winston library, which powers `@adobe/aio-lib-core-logging` (the library used for custom loggers in App Builder actions and by the `Core.Logger` from `@adobe/aio-core-sdk`).
 
 #### Exporting Log Data
 
 > [!TIP]
 > When logging within an instrumented function (i.e. one that is traced), OpenTelemetry will automatically associate log entries with the corresponding trace, allowing you to correlate logs with specific trace executions.
 
-To export logs, use the `getLogger` helper provided by this module. Its signature matches that of `@adobe/aio-lib-core-logging`, which supports both `winston` and `debug` as logging providers. However, this helper always enforces the use of `winston` to ensure compatibility with OpenTelemetry log export.
+To export [logs](https://opentelemetry.io/docs/concepts/signals/logs/), use the `getLogger` helper provided by this module. Its signature matches that of `@adobe/aio-lib-core-logging`, which supports both `winston` and `debug` as logging providers. However, this helper always enforces the use of `winston` to ensure compatibility with OpenTelemetry log export.
 
 By using this helper, your logs are automatically captured and routed through OpenTelemetry. Provided your telemetry configuration is set up correctly, this will enable seamless export to your observability backend of choice.
 

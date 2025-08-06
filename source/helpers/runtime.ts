@@ -48,11 +48,11 @@ export function isDevelopment() {
 
 /** Checks if telemetry is enabled. */
 export function isTelemetryEnabled() {
-  if (process.env.__ENABLE_TELEMETRY) {
-    return process.env.__ENABLE_TELEMETRY === "true";
+  if (process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY) {
+    return process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY === "true";
   }
 
-  // If we don't have a process.env.ENABLE_TELEMETRY, then we assume it's disabled.
+  // If it's not set, then we assume it's disabled.
   return false;
 }
 
@@ -72,17 +72,24 @@ function retrieveBasicMetadata() {
     transactionId: process.env.__OW_TRANSACTION_ID ?? "unknown",
     actionVersion: process.env.__OW_ACTION_VERSION ?? "0.0.0 (development)",
     deadline: process.env.__OW_DEADLINE
-      ? new Date(Number(process.env.__OW_DEADLINE) * 1000)
+      ? new Date(Number(process.env.__OW_DEADLINE))
       : null,
   };
 }
 
 /** Parses the action name from the runtime environment. */
 function parseActionName() {
-  if (process.env.__OW_ACTION_NAME?.includes("/")) {
-    const [, _, packageName, ...action] =
-      process.env.__OW_ACTION_NAME?.split("/") ?? [];
+  const actionName = process.env.__OW_ACTION_NAME;
 
+  if (!actionName) {
+    return {
+      packageName: "unknown",
+      actionName: "unknown",
+    };
+  }
+
+  if (actionName.includes("/")) {
+    const [, _, packageName, ...action] = actionName.split("/");
     return {
       packageName,
       actionName: action.join("/"),
@@ -98,44 +105,83 @@ function parseActionName() {
 }
 
 /** Gets the runtime metadata for the currently running action. */
-export function getRuntimeActionMetadata(): RuntimeMetadata {
-  if (runtimeMetadata) {
-    // Data should not change across invocations.
-    return runtimeMetadata;
+export function getRuntimeActionMetadata() {
+  if (!runtimeMetadata) {
+    runtimeMetadata = {
+      ...retrieveBasicMetadata(),
+      ...parseActionName(),
+    };
   }
 
-  runtimeMetadata = {
-    ...retrieveBasicMetadata(),
-    ...parseActionName(),
+  return runtimeMetadata;
+}
+
+/** Creates the service name based on environment and metadata. */
+function createServiceName(meta: RuntimeMetadata) {
+  if (meta.isDevelopment) {
+    // The package name is not (always) available in development
+    const packageSuffix =
+      meta.packageName !== "unknown" ? `/${meta.packageName}` : "";
+
+    return `${meta.namespace}-local-development${packageSuffix}`;
+  }
+
+  return `${meta.namespace}/${meta.packageName}`;
+}
+
+/** Creates core telemetry attributes that are always present. */
+function createCoreAttributes(meta: RuntimeMetadata) {
+  return {
+    [ATTR_SERVICE_NAME]: createServiceName(meta),
+    environment: meta.isDevelopment ? "development" : "production",
+
+    "action.name": meta.actionName,
+    "action.namespace": meta.namespace,
+    "action.activation_id": meta.activationId,
+  };
+}
+
+/** Adds conditional attributes that may not always be present. */
+function addConditionalAttributes(
+  attributes: Record<string, string>,
+  meta: RuntimeMetadata,
+) {
+  // Only add service version if not in development
+  const isProductionVersion = meta.actionVersion !== "0.0.0 (development)";
+  if (isProductionVersion) {
+    attributes[ATTR_SERVICE_VERSION] = meta.actionVersion;
+  }
+
+  // Add deadline if present
+  if (meta.deadline) {
+    attributes["action.deadline"] = meta.deadline.toISOString();
+  }
+}
+
+/** Adds attributes that should be excluded if they have "unknown" values. */
+function addKnownValueAttributes(
+  attributes: Record<string, string>,
+  meta: RuntimeMetadata,
+) {
+  const potentiallyUnknownAttributes = {
+    "action.transaction_id": meta.transactionId,
+    "action.package_name": meta.packageName,
   };
 
-  return runtimeMetadata;
+  for (const [name, value] of Object.entries(potentiallyUnknownAttributes)) {
+    if (value !== "unknown") {
+      attributes[name] = value;
+    }
+  }
 }
 
 /** Tries to infer the telemetry attributes from the runtime metadata. */
 export function inferTelemetryAttributesFromRuntimeMetadata() {
   const meta = getRuntimeActionMetadata();
-  const serviceName = meta.isDevelopment
-    ? // The package name is not available in development
-      `${meta.namespace}-local-development/${meta.packageName !== "unknown" ? `${meta.packageName}` : ""}`
-    : `${meta.namespace}/${meta.packageName}`;
+  const attributes = createCoreAttributes(meta);
 
-  return {
-    [ATTR_SERVICE_NAME]: serviceName,
-    [ATTR_SERVICE_VERSION]: meta.actionVersion,
+  addConditionalAttributes(attributes, meta);
+  addKnownValueAttributes(attributes, meta);
 
-    "deployment.region": meta.region,
-    "deployment.cloud": meta.cloud,
-    "deployment.environment": meta.isDevelopment ? "development" : "production",
-
-    "action.package_name": meta.packageName,
-    "action.namespace": meta.namespace,
-    "action.activation_id": meta.activationId,
-    "action.transaction_id": meta.transactionId,
-
-    // Potentially empty attributes.
-    ...(meta.deadline
-      ? { "action.deadline": meta.deadline.toISOString() }
-      : {}),
-  };
+  return attributes;
 }

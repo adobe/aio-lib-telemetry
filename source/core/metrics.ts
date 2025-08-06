@@ -25,7 +25,7 @@ import type {
 } from "@opentelemetry/api";
 
 /** The different types of metrics you can create with the OpenTelemetry API. */
-export type MetricTypes =
+type MetricTypes =
   | Counter<Attributes>
   | UpDownCounter<Attributes>
   | Gauge<Attributes>
@@ -35,10 +35,21 @@ export type MetricTypes =
   | ObservableGauge<Attributes>;
 
 /**
- * Creates a metrics proxy that lazily initializes metrics when accessed for the first time.
- * @param createMetrics - A factory function that receives an initialized meter and returns a metric record.
+ * Helper to define a record of metrics.
+ * @see https://opentelemetry.io/docs/concepts/signals/metrics/
+ *
+ * @since 0.1.0
+ * @example
+ * ```ts
+ * const metrics = defineMetrics((meter) => {
+ *   return {
+ *     myMetric: meter.createCounter("my-metric", { description: "My metric" }),
+ *   };
+ * });
+ * ```
+ * @param createMetrics - A function that receives a meter which can be used to create the metrics.
  */
-export function createMetricsProxy<T extends Record<string, MetricTypes>>(
+export function defineMetrics<T extends Record<PropertyKey, MetricTypes>>(
   createMetrics: (meter: Meter) => T,
 ): T {
   let initializedMetrics: T | null = null;
@@ -47,11 +58,7 @@ export function createMetricsProxy<T extends Record<string, MetricTypes>>(
   // Return a proxy that will lazy-initialize the metrics when accessed.
   // This way we can defer the initialization of the metrics until the telemetry API (meter) is initialized.
   return new Proxy({} as T, {
-    get(_, prop: string | symbol) {
-      if (typeof prop === "symbol") {
-        return;
-      }
-
+    get(_, prop: PropertyKey) {
       if (isInitializing) {
         // Would happen if using a metric inside the `defineMetrics` function.
         throw new Error(
@@ -66,17 +73,18 @@ export function createMetricsProxy<T extends Record<string, MetricTypes>>(
 
       try {
         const { meter } = getGlobalTelemetryApi();
-
         isInitializing = true;
+
         initializedMetrics = createMetrics(meter) as T;
+        isInitializing = false;
 
         return initializedMetrics[prop as keyof T];
       } catch (error) {
+        isInitializing = false;
         throw new Error(
           `Failed to initialize metrics: ${error instanceof Error ? error.message : error}`,
+          { cause: error },
         );
-      } finally {
-        isInitializing = false;
       }
     },
   });

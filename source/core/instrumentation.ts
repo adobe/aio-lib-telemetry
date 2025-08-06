@@ -12,7 +12,7 @@
 
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import { context, SpanStatusCode, trace } from "@opentelemetry/api";
+import { context, SpanStatusCode } from "@opentelemetry/api";
 
 import {
   deserializeContextFromCarrier,
@@ -45,16 +45,20 @@ import type {
 // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
 export type AnyFunction = (...args: any[]) => any | Promise<any>;
 
-/** A map of key-value pairs where the values are either strings or other maps. */
-export type RecursiveStringRecord = {
-  [key: string]: string | RecursiveStringRecord;
-};
-
 /** AsyncLocalStorage for helpers context. */
-const helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
+let helpersStorage: AsyncLocalStorage<InstrumentationHelpers> | null = null;
 
 const UNKNOWN_ERROR_CODE = -1;
 const UNKNOWN_ERROR_NAME = "Unknown Error";
+
+/** @internal Returns the module-level helpers storage. */
+function __getHelpersStorage() {
+  if (!helpersStorage) {
+    helpersStorage = new AsyncLocalStorage<InstrumentationHelpers>();
+  }
+
+  return helpersStorage;
+}
 
 /**
  * Access helpers for the current instrumented operation.
@@ -72,7 +76,7 @@ export function getInstrumentationHelpers(): InstrumentationHelpers {
     );
   }
 
-  const ctx = helpersStorage.getStore();
+  const ctx = __getHelpersStorage().getStore();
 
   if (!ctx) {
     throw new Error(
@@ -147,16 +151,25 @@ export function instrument<T extends AnyFunction>(
       span.recordException(givenError);
     } else if (error instanceof Error) {
       span.recordException(error);
-    } else {
+    } else if (error) {
+      const stackCarrier: { stack?: string } = new Error("Unhandled error");
+
+      if (Error.captureStackTrace) {
+        // This will capture and override the default stack trace.
+        Error.captureStackTrace(stackCarrier);
+      }
+
       const exception = {
         code: UNKNOWN_ERROR_CODE,
         name: UNKNOWN_ERROR_NAME,
-        message: `Unhandled error at "${fn.name ?? spanName}": ${error}`,
-        stack: new Error("Unhandled error").stack,
+        message: `Unhandled error at span "${spanName}": ${error}`,
+        stack: stackCarrier.stack,
       };
 
       span.recordException(exception);
     }
+
+    return error;
   }
 
   /** Sets up the context for the current operation. */
@@ -166,13 +179,10 @@ export function instrument<T extends AnyFunction>(
 
     const { actionName } = getRuntimeActionMetadata();
     const { tracer, meter } = getGlobalTelemetryApi();
-    const logger = getLogger(
-      `${fn.name ? `${actionName}/${fn.name}` : spanName}`,
-      {
-        logSourceAction: false,
-        level: process.env.__LOG_LEVEL,
-      },
-    );
+    const logger = getLogger(`${actionName}/${spanName}`, {
+      logSourceAction: false,
+      level: process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL,
+    });
 
     return {
       currentSpan: span,
@@ -185,13 +195,14 @@ export function instrument<T extends AnyFunction>(
 
   /** Sets up the span data (given to the tracer) for the current operation. */
   function setupSpanData(...args: Parameters<T>) {
-    const { actionName, actionVersion } = getRuntimeActionMetadata();
-    const tracer = trace.getTracer(actionName, actionVersion);
+    const { actionName } = getRuntimeActionMetadata();
+    const { tracer } = getGlobalTelemetryApi();
     const currentCtx = getBaseContext?.(...args) ?? context.active();
 
     const spanCfg = {
       ...spanOptions,
       attributes: {
+        "self.name": spanName,
         "action.name": actionName,
         ...spanOptions.attributes,
       },
@@ -208,15 +219,14 @@ export function instrument<T extends AnyFunction>(
   function runHandler(span: Span, ...args: Parameters<T>) {
     try {
       const ctx = setupContextHelpers(span);
-      return helpersStorage.run(ctx, () => {
+      return __getHelpersStorage().run(ctx, () => {
         const result = fn(...args);
 
         if (result instanceof Promise) {
           return result
-            .then((r) => handleResult(r, span))
-            .finally(() => {
-              span.end();
-            });
+            .then((r) => Promise.resolve(handleResult(r, span)))
+            .catch((e) => Promise.reject(handleError(e, span)))
+            .finally(() => span.end());
         }
 
         const handledResult = handleResult(result, span);
@@ -225,10 +235,10 @@ export function instrument<T extends AnyFunction>(
         return handledResult;
       });
     } catch (error) {
-      handleError(error, span);
+      const handledError = handleError(error, span);
       span.end();
 
-      throw error;
+      throw handledError;
     }
   }
 
@@ -269,24 +279,28 @@ export function instrument<T extends AnyFunction>(
  */
 export function instrumentEntrypoint<
   // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
-  T extends (params: RecursiveStringRecord) => any,
+  T extends (params: Record<string, unknown>) => any,
 >(fn: T, config: EntrypointInstrumentationConfig<T>) {
   /** Sets a global process.env.ENABLE_TELEMETRY variable. */
-  function setTelemetryEnv(params: RecursiveStringRecord) {
+  function setTelemetryEnv(params: Record<string, unknown>) {
     const { ENABLE_TELEMETRY = false } = params;
     const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
     process.env = {
+      // Disable automatic resource detection to avoid leaking
+      // information about the runtime environment by default.
+      OTEL_NODE_RESOURCE_DETECTORS: "none",
+
       ...process.env,
 
       // Setting process.env.ENABLE_TELEMETRY directly won't work.
       // This is due to to webpack automatic env inline replacement.
-      __ENABLE_TELEMETRY: enableTelemetry,
-      __LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
+      __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY: enableTelemetry,
+      __AIO_LIB_TELEMETRY_LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
     };
   }
 
   /** Callback that will be used to retrieve the base context for the entrypoint. */
-  function getPropagatedContext(params: RecursiveStringRecord) {
+  function getPropagatedContext(params: Record<string, unknown>) {
     function inferContextCarrier() {
       // Try to infer the parent context from the following (in order):
       // 1. A `x-telemetry-context` header.
@@ -296,7 +310,7 @@ export function instrumentEntrypoint<
       const telemetryContext =
         headers["x-telemetry-context"] ??
         params.__telemetryContext ??
-        (params.data as RecursiveStringRecord)?.__telemetryContext ??
+        (params.data as Record<string, unknown>)?.__telemetryContext ??
         null;
 
       return {
@@ -328,7 +342,7 @@ export function instrumentEntrypoint<
   }
 
   /** Initializes the Telemetry SDK and API. */
-  function setupTelemetry(params: RecursiveStringRecord) {
+  function setupTelemetry(params: Record<string, unknown>) {
     const { initializeTelemetry, ...instrumentationConfig } = config;
 
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
@@ -360,40 +374,18 @@ export function instrumentEntrypoint<
     handler: T,
     { spanConfig, ...instrumentationConfig }: InstrumentationConfig<T> = {},
   ) {
-    try {
-      const { actionName } = getRuntimeActionMetadata();
-      return instrument(handler, {
-        ...instrumentationConfig,
-        spanConfig: {
-          spanName: `${actionName}/${fn.name}`,
-          ...spanConfig,
-        },
-      }) as T;
-    } catch (error) {
-      throw new Error(`Failed to instrument entrypoint: ${error}`, {
-        cause: error,
-      });
-    }
+    const { actionName } = getRuntimeActionMetadata();
+    return instrument(handler, {
+      ...instrumentationConfig,
+      spanConfig: {
+        spanName: `${actionName}/${fn.name || "entrypoint"}`,
+        ...spanConfig,
+      },
+    }) as T;
   }
 
-  /** Runs the entrypoint and shuts down the Telemetry SDK. */
-  function runEntrypoint(
-    instrumentedHandler: T,
-    params: RecursiveStringRecord,
-  ) {
-    try {
-      const result = instrumentedHandler(params);
-      return result;
-    } catch (error) {
-      throw new Error(`Failed to run entrypoint: ${error}`, {
-        cause: error,
-      });
-    }
-  }
-
-  return async (
-    params: RecursiveStringRecord,
-  ): Promise<Awaited<ReturnType<T>>> => {
+  return (params: Record<string, unknown>): ReturnType<T> => {
+    let instrumentedHandler: T;
     setTelemetryEnv(params);
 
     if (!isTelemetryEnabled()) {
@@ -401,11 +393,21 @@ export function instrumentEntrypoint<
       return fn(params);
     }
 
-    // Instrumentation of the entrypoint (and telemetry setup) needs to happen at runtime (inside the wrapper).
-    // Otherwise we can't access runtime metadata or the received parameters.
-    const instrumentConfig = setupTelemetry(params);
-    const instrumentedHandler = await instrumentHandler(fn, instrumentConfig);
+    try {
+      // Instrumentation of the entrypoint (and telemetry setup) needs to happen at runtime (inside the wrapper).
+      // Otherwise we can't access runtime metadata or the received parameters.
+      const instrumentConfig = setupTelemetry(params);
+      instrumentedHandler = instrumentHandler(fn, instrumentConfig);
+    } catch (error) {
+      throw new Error(
+        `Failed to instrument entrypoint: ${error instanceof Error ? error.message : error}`,
+        {
+          cause: error,
+        },
+      );
+    }
 
-    return runEntrypoint(instrumentedHandler, params);
+    // If there's an error during execution, it will just bubble up.
+    return instrumentedHandler(params);
   };
 }

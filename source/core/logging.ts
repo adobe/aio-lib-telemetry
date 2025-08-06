@@ -10,16 +10,14 @@
  * governing permissions and limitations under the License.
  */
 
+import AioLogger from "@adobe/aio-lib-core-logging";
 import { DiagLogLevel, diag } from "@opentelemetry/api";
 import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
 
 import { ensureSdkInitialized } from "~/core/sdk";
 import { getRuntimeActionMetadata } from "~/helpers/runtime";
 
-import type {
-  AioLoggerConfig,
-  default as AioLoggerFactory,
-} from "@adobe/aio-lib-core-logging";
+import type { AioLoggerConfig } from "@adobe/aio-lib-core-logging";
 import type WinstonLogger from "@adobe/aio-lib-core-logging/types/WinstonLogger";
 import type { DiagLogger } from "@opentelemetry/api";
 import type Transport from "winston-transport";
@@ -39,10 +37,6 @@ function __getLoggerInternal(
   if (forceSDKInitialized) {
     ensureSdkInitialized();
   }
-
-  // Lazy load the logger library so OpenTelemetry can load first and patch it.
-  const AioLogger =
-    require("@adobe/aio-lib-core-logging") as typeof AioLoggerFactory;
 
   const level = config?.level ?? DEFAULT_LOG_LEVEL;
   const aioLogger = AioLogger(name, {

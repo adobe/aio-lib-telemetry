@@ -50,7 +50,10 @@ function setGlobalTelemetryApi(api: TelemetryApi | null) {
  */
 function ensureTelemetryApiInitialized() {
   if (!global.__OTEL_TELEMETRY_API__) {
-    throw new Error("Telemetry API not initialized");
+    throw new Error(
+      "You're trying to perform an operation that requires the telemetry API to be initialized. " +
+        "Ensure the `ENABLE_TELEMETRY` environment variable is set to `true` and that you instrumented your entrypoint function.",
+    );
   }
 }
 

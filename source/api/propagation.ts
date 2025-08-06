@@ -34,7 +34,7 @@ import { context, propagation } from "@opentelemetry/api";
  * ```
  */
 export function serializeContextIntoCarrier<
-  Carrier extends Record<string, string>,
+  Carrier extends Record<PropertyKey, string>,
 >(carrier?: Carrier, ctx = context.active()) {
   const carrierObject = carrier ?? {};
   propagation.inject(ctx, carrierObject);
@@ -57,7 +57,7 @@ export function serializeContextIntoCarrier<
  * ```
  */
 export function deserializeContextFromCarrier<
-  Carrier extends Record<string, string>,
+  Carrier extends Record<PropertyKey, string>,
 >(carrier: Carrier, baseCtx = context.active()) {
   return propagation.extract(baseCtx, carrier);
 }
