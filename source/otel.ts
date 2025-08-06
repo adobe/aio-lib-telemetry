@@ -33,8 +33,8 @@ export {
   ConsoleLogRecordExporter,
   InMemoryLogRecordExporter,
   LoggerProvider,
-  LogRecord,
   NoopLogRecordProcessor,
+  type SdkLogRecord,
   SimpleLogRecordProcessor,
 } from "@opentelemetry/sdk-logs";
 export {
