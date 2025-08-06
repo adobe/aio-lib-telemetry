@@ -585,6 +585,24 @@ describe("core/instrumentation", () => {
       expect(propagation.deserializeContextFromCarrier).not.toHaveBeenCalled();
     });
 
+    test("should receive params in getContextCarrier", () => {
+      let capturedParams: Record<string, unknown> | null = null;
+      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
+        initializeTelemetry: mockInitializeTelemetry,
+        propagation: {
+          getContextCarrier: (entrypointParams) => {
+            capturedParams = entrypointParams;
+            return { carrier: {}, baseCtx: undefined };
+          },
+        },
+      });
+
+      const params = { ENABLE_TELEMETRY: "true" };
+      instrumentedMain(params);
+
+      expect(capturedParams).toBe(params);
+    });
+
     test("should use custom base context if provided", () => {
       const baseContext = {} as Context;
 

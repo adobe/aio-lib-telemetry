@@ -67,7 +67,7 @@ export interface TelemetryDiagnosticsConfig {
  * Configuration related to context propagation (for distributed tracing).
  * @since 0.1.0
  */
-export interface TelemetryPropagationConfig<T extends AnyFunction> {
+export interface TelemetryPropagationConfig {
   /**
    * By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
    * Set to `true` if you want to skip this automatic context propagation.
@@ -86,7 +86,7 @@ export interface TelemetryPropagationConfig<T extends AnyFunction> {
    * @param args - The arguments of the instrumented function.
    * @returns The carrier of the context to retrieve and an optional base context to use for the started span (defaults to the active context).
    */
-  getContextCarrier?: (...args: Parameters<T>) => {
+  getContextCarrier?: (params: Record<string, unknown>) => {
     carrier: Record<PropertyKey, string>;
     baseCtx?: Context;
   };
@@ -184,16 +184,15 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
  * The configuration for entrypoint instrumentation.
  * @since 0.1.0
  */
-export interface EntrypointInstrumentationConfig<
-  T extends AnyFunction = AnyFunction,
-> extends InstrumentationConfig<T> {
+export interface EntrypointInstrumentationConfig
+  extends InstrumentationConfig<(params: Record<string, unknown>) => unknown> {
   /**
    * Configuration options related to context propagation.
    * See the {@link TelemetryPropagationConfig} for the interface.
    *
    * @since 0.1.0
    */
-  propagation?: TelemetryPropagationConfig<T>;
+  propagation?: TelemetryPropagationConfig;
 
   /**
    * This function is called at the start of the action.
