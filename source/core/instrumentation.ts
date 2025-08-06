@@ -299,29 +299,29 @@ export function instrumentEntrypoint<
     };
   }
 
+  function inferContextCarrier(params: Record<string, unknown>) {
+    // Try to infer the parent context from the following (in order):
+    // 1. A `x-telemetry-context` header.
+    // 2. A `__telemetryContext` input parameter.
+    // 3. A `__telemetryContext` property in `params.data`.
+    const headers = (params.__ow_headers as Record<string, string>) ?? {};
+    const telemetryContext =
+      headers["x-telemetry-context"] ??
+      params.__telemetryContext ??
+      (params.data as Record<string, unknown>)?.__telemetryContext ??
+      null;
+
+    return {
+      baseCtx: context.active(),
+      carrier:
+        typeof telemetryContext === "string"
+          ? JSON.parse(telemetryContext)
+          : telemetryContext,
+    };
+  }
+
   /** Callback that will be used to retrieve the base context for the entrypoint. */
   function getPropagatedContext(params: Record<string, unknown>) {
-    function inferContextCarrier() {
-      // Try to infer the parent context from the following (in order):
-      // 1. A `x-telemetry-context` header.
-      // 2. A `__telemetryContext` input parameter.
-      // 3. A `__telemetryContext` property in `params.data`.
-      const headers = (params.__ow_headers as Record<string, string>) ?? {};
-      const telemetryContext =
-        headers["x-telemetry-context"] ??
-        params.__telemetryContext ??
-        (params.data as Record<string, unknown>)?.__telemetryContext ??
-        null;
-
-      return {
-        baseCtx: context.active(),
-        carrier:
-          typeof telemetryContext === "string"
-            ? JSON.parse(telemetryContext)
-            : telemetryContext,
-      };
-    }
-
     const {
       skip: skipPropagation = false,
       getContextCarrier = inferContextCarrier,
@@ -331,7 +331,7 @@ export function instrumentEntrypoint<
       return context.active();
     }
 
-    const { carrier, baseCtx } = getContextCarrier();
+    const { carrier, baseCtx } = getContextCarrier(params);
     let currentCtx = baseCtx ?? context.active();
 
     if (carrier) {
