@@ -6,7 +6,7 @@ function getPresetInstrumentations(
 ): Instrumentation<InstrumentationConfig>[];
 ```
 
-Defined in: [api/presets.ts:53](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/api/presets.ts#L53)
+Defined in: [api/presets.ts:53](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/api/presets.ts#L53)
 
 Gets the instrumentations for a given preset.
 

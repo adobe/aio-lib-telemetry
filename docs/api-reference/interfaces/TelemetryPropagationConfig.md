@@ -1,6 +1,6 @@
 # `TelemetryPropagationConfig`
 
-Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L70)
+Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L70)
 
 Configuration related to context propagation (for distributed tracing).
 
@@ -19,16 +19,16 @@ optional getContextCarrier: (params: Record<string, unknown>) => {
 };
 ```
 
-Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L89)
+Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L89)
 
 A function that returns the carrier for the current context.
 Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
 
 #### Parameters
 
-| Parameter | Type                            |
-| --------- | ------------------------------- |
-| `params`  | `Record`\<`string`, `unknown`\> |
+| Parameter | Type                            | Description                                                    |
+| --------- | ------------------------------- | -------------------------------------------------------------- |
+| `params`  | `Record`\<`string`, `unknown`\> | The classic `params` object received by Adobe runtime actions. |
 
 #### Returns
 
@@ -65,7 +65,7 @@ carrier: Record<PropertyKey, string>;
 optional skip: boolean;
 ```
 
-Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L78)
+Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L78)
 
 By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
 Set to `true` if you want to skip this automatic context propagation.

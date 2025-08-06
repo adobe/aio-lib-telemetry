@@ -1,6 +1,6 @@
 # `InstrumentationContext`
 
-Defined in: [types.ts:234](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L234)
+Defined in: [types.ts:234](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L234)
 
 The context for the current operation.
 
@@ -16,7 +16,7 @@ The context for the current operation.
 contextCarrier: Record<PropertyKey, string>;
 ```
 
-Defined in: [types.ts:263](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L263)
+Defined in: [types.ts:263](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L263)
 
 Holds a carrier that can be used to propagate the active context.
 
@@ -32,7 +32,7 @@ Holds a carrier that can be used to propagate the active context.
 currentSpan: Span;
 ```
 
-Defined in: [types.ts:257](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L257)
+Defined in: [types.ts:257](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L257)
 
 The span of the current operation.
 
@@ -48,7 +48,7 @@ The span of the current operation.
 logger: AioLogger;
 ```
 
-Defined in: [types.ts:251](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L251)
+Defined in: [types.ts:251](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L251)
 
 The logger for the current operation.
 
@@ -64,7 +64,7 @@ The logger for the current operation.
 meter: Meter;
 ```
 
-Defined in: [types.ts:245](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L245)
+Defined in: [types.ts:245](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L245)
 
 The global (managed by the library) meter instance used to create metrics.
 
@@ -80,7 +80,7 @@ The global (managed by the library) meter instance used to create metrics.
 tracer: Tracer;
 ```
 
-Defined in: [types.ts:239](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/types.ts#L239)
+Defined in: [types.ts:239](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L239)
 
 The global (managed by the library) tracer instance used to create spans.
 

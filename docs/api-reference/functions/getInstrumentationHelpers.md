@@ -4,7 +4,7 @@
 function getInstrumentationHelpers(): InstrumentationContext;
 ```
 
-Defined in: [core/instrumentation.ts:71](https://github.com/adobe/aio-lib-telemetry/blob/9592ef0d673b0c1c4209408c0de01f199de38283/source/core/instrumentation.ts#L71)
+Defined in: [core/instrumentation.ts:71](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/core/instrumentation.ts#L71)
 
 Access helpers for the current instrumented operation.
 
