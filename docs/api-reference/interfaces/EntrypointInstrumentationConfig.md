@@ -1,6 +1,6 @@
-# `EntrypointInstrumentationConfig\<T\>`
+# `EntrypointInstrumentationConfig`
 
-Defined in: [types.ts:163](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L163)
+Defined in: [types.ts:187](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L187)
 
 The configuration for entrypoint instrumentation.
 
@@ -10,13 +10,7 @@ The configuration for entrypoint instrumentation.
 
 ## Extends
 
-- [`InstrumentationConfig`](InstrumentationConfig.md)\<`T`\>
-
-## Type Parameters
-
-| Type Parameter              | Default type  |
-| --------------------------- | ------------- |
-| `T` _extends_ `AnyFunction` | `AnyFunction` |
+- [`InstrumentationConfig`](InstrumentationConfig.md)\<(`params`: `Record`\<`string`, `unknown`\>) => `unknown`\>
 
 ## Properties
 
@@ -25,11 +19,11 @@ The configuration for entrypoint instrumentation.
 ```ts
 optional hooks: {
   onError?: (error: unknown, span: Span) => undefined | Error;
-  onResult?: (result: ReturnType<T>, span: Span) => void;
+  onResult?: (result: unknown, span: Span) => void;
 };
 ```
 
-Defined in: [types.ts:123](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L123)
+Defined in: [types.ts:138](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L138)
 
 Hooks that can be used to act on a span depending on the result of the function.
 
@@ -53,10 +47,14 @@ You can use it to do something with the Span.
 
 `undefined` \| `Error`
 
+##### Since
+
+0.1.0
+
 #### onResult()?
 
 ```ts
-optional onResult: (result: ReturnType<T>, span: Span) => void;
+optional onResult: (result: unknown, span: Span) => void;
 ```
 
 A function that will be called with the result of the instrumented function (if any, and no error was thrown).
@@ -64,14 +62,18 @@ You can use it to do something with the Span.
 
 ##### Parameters
 
-| Parameter | Type                | Description                              |
-| --------- | ------------------- | ---------------------------------------- |
-| `result`  | `ReturnType`\<`T`\> | The result of the instrumented function. |
-| `span`    | `Span`              | The span of the instrumented function.   |
+| Parameter | Type      | Description                              |
+| --------- | --------- | ---------------------------------------- |
+| `result`  | `unknown` | The result of the instrumented function. |
+| `span`    | `Span`    | The span of the instrumented function.   |
 
 ##### Returns
 
 `void`
+
+##### Since
+
+0.1.0
 
 #### Inherited from
 
@@ -82,20 +84,22 @@ You can use it to do something with the Span.
 ### initializeTelemetry()
 
 ```ts
-initializeTelemetry: (params: RecursiveStringRecord, isDevelopment: boolean) =>
-  TelemetryConfig;
+initializeTelemetry: (
+  params: Record<string, unknown>,
+  isDevelopment: boolean,
+) => TelemetryConfig;
 ```
 
-Defined in: [types.ts:179](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L179)
+Defined in: [types.ts:206](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L206)
 
 This function is called at the start of the action.
 
 #### Parameters
 
-| Parameter       | Type                    | Description                                        |
-| --------------- | ----------------------- | -------------------------------------------------- |
-| `params`        | `RecursiveStringRecord` | The parameters of the action.                      |
-| `isDevelopment` | `boolean`               | Whether the action is running in development mode. |
+| Parameter       | Type                            | Description                                        |
+| --------------- | ------------------------------- | -------------------------------------------------- |
+| `params`        | `Record`\<`string`, `unknown`\> | The parameters of the action.                      |
+| `isDevelopment` | `boolean`                       | Whether the action is running in development mode. |
 
 #### Returns
 
@@ -103,30 +107,38 @@ This function is called at the start of the action.
 
 The telemetry configuration to use for the action.
 
+#### Since
+
+0.1.0
+
 ---
 
 ### isSuccessful()?
 
 ```ts
-optional isSuccessful: (result: ReturnType<T>) => boolean;
+optional isSuccessful: (result: unknown) => boolean;
 ```
 
-Defined in: [types.ts:120](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L120)
+Defined in: [types.ts:135](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L135)
 
 A function that will be called to determine if the instrumented function was successful.
 By default, the function is considered successful if it doesn't throw an error.
 
 #### Parameters
 
-| Parameter | Type                | Description                              |
-| --------- | ------------------- | ---------------------------------------- |
-| `result`  | `ReturnType`\<`T`\> | The result of the instrumented function. |
+| Parameter | Type      | Description                              |
+| --------- | --------- | ---------------------------------------- |
+| `result`  | `unknown` | The result of the instrumented function. |
 
 #### Returns
 
 `boolean`
 
 Whether the instrumented function was successful.
+
+#### Since
+
+0.1.0
 
 #### Inherited from
 
@@ -137,13 +149,17 @@ Whether the instrumented function was successful.
 ### propagation?
 
 ```ts
-optional propagation: TelemetryPropagationConfig<T>;
+optional propagation: TelemetryPropagationConfig;
 ```
 
-Defined in: [types.ts:170](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L170)
+Defined in: [types.ts:195](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L195)
 
 Configuration options related to context propagation.
 See the [TelemetryPropagationConfig](TelemetryPropagationConfig.md) for the interface.
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -151,12 +167,12 @@ See the [TelemetryPropagationConfig](TelemetryPropagationConfig.md) for the inte
 
 ```ts
 optional spanConfig: SpanOptions & {
-  getBaseContext?: (...args: Parameters<T>) => Context;
+  getBaseContext?: (...args: [Record<string, unknown>]) => Context;
   spanName?: string;
 };
 ```
 
-Defined in: [types.ts:97](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L97)
+Defined in: [types.ts:106](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L106)
 
 Configuration options related to the span started by the instrumented function.
 See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
@@ -166,22 +182,26 @@ See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/int
 ##### getBaseContext()?
 
 ```ts
-optional getBaseContext: (...args: Parameters<T>) => Context;
+optional getBaseContext: (...args: [Record<string, unknown>]) => Context;
 ```
 
 The base context to use for the started span.
 
 ###### Parameters
 
-| Parameter | Type                | Description                                 |
-| --------- | ------------------- | ------------------------------------------- |
-| ...`args` | `Parameters`\<`T`\> | The arguments of the instrumented function. |
+| Parameter | Type                                | Description                                 |
+| --------- | ----------------------------------- | ------------------------------------------- |
+| ...`args` | \[`Record`\<`string`, `unknown`\>\] | The arguments of the instrumented function. |
 
 ###### Returns
 
 `Context`
 
 The base context to use for the started span.
+
+###### Since
+
+0.1.0
 
 ##### spanName?
 
@@ -191,6 +211,14 @@ optional spanName: string;
 
 The name of the span. Defaults to the name of given function.
 You must use a named function or a provide a name here.
+
+###### Since
+
+0.1.0
+
+#### Since
+
+0.1.0
 
 #### Inherited from
 

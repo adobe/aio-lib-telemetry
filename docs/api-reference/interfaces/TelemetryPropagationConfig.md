@@ -1,6 +1,6 @@
-# `TelemetryPropagationConfig\<T\>`
+# `TelemetryPropagationConfig`
 
-Defined in: [types.ts:66](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L66)
+Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L70)
 
 Configuration related to context propagation (for distributed tracing).
 
@@ -8,40 +8,34 @@ Configuration related to context propagation (for distributed tracing).
 
 0.1.0
 
-## Type Parameters
-
-| Type Parameter              |
-| --------------------------- |
-| `T` _extends_ `AnyFunction` |
-
 ## Properties
 
 ### getContextCarrier()?
 
 ```ts
-optional getContextCarrier: (...args: Parameters<T>) => {
+optional getContextCarrier: (params: Record<string, unknown>) => {
   baseCtx?: Context;
-  carrier: Record<string, string>;
+  carrier: Record<PropertyKey, string>;
 };
 ```
 
-Defined in: [types.ts:82](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L82)
+Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L89)
 
 A function that returns the carrier for the current context.
 Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
 
 #### Parameters
 
-| Parameter | Type                | Description                                 |
-| --------- | ------------------- | ------------------------------------------- |
-| ...`args` | `Parameters`\<`T`\> | The arguments of the instrumented function. |
+| Parameter | Type                            | Description                                                    |
+| --------- | ------------------------------- | -------------------------------------------------------------- |
+| `params`  | `Record`\<`string`, `unknown`\> | The classic `params` object received by Adobe runtime actions. |
 
 #### Returns
 
 ```ts
 {
   baseCtx?: Context;
-  carrier: Record<string, string>;
+  carrier: Record<PropertyKey, string>;
 }
 ```
 
@@ -56,8 +50,12 @@ optional baseCtx: Context;
 ##### carrier
 
 ```ts
-carrier: Record<string, string>;
+carrier: Record<PropertyKey, string>;
 ```
+
+#### Since
+
+0.1.0
 
 ---
 
@@ -67,7 +65,7 @@ carrier: Record<string, string>;
 optional skip: boolean;
 ```
 
-Defined in: [types.ts:73](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L73)
+Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/types.ts#L78)
 
 By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
 Set to `true` if you want to skip this automatic context propagation.
@@ -77,3 +75,7 @@ Set to `true` if you want to skip this automatic context propagation.
 ```ts
 false;
 ```
+
+#### Since
+
+0.1.0

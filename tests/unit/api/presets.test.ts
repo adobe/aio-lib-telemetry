@@ -10,10 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { beforeEach, describe, expect, test } from "vitest";
 
-import type { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import type { TelemetryInstrumentationPreset } from "~/types";
 
 describe("api/presets", () => {
@@ -70,9 +70,7 @@ describe("api/presets", () => {
         );
 
         expect(httpInstrumentation).toBeDefined();
-
-        // Temporarily commenting because of an instance mismatch between package versions.
-        // expect(httpInstrumentation).toBeInstanceOf(HttpInstrumentation);
+        expect(httpInstrumentation).toBeInstanceOf(HttpInstrumentation);
 
         const config = (httpInstrumentation as HttpInstrumentation).getConfig();
         expect(config.requireParentforIncomingSpans).toBe(true);

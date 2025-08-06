@@ -7,15 +7,15 @@ function deserializeContextFromCarrier<Carrier>(
 ): Context;
 ```
 
-Defined in: [api/propagation.ts:59](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/api/propagation.ts#L59)
+Defined in: [api/propagation.ts:59](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/api/propagation.ts#L59)
 
 Deserializes the context from a carrier and augments the given base context with it.
 
 ## Type Parameters
 
-| Type Parameter                                     |
-| -------------------------------------------------- |
-| `Carrier` _extends_ `Record`\<`string`, `string`\> |
+| Type Parameter                                          |
+| ------------------------------------------------------- |
+| `Carrier` _extends_ `Record`\<`PropertyKey`, `string`\> |
 
 ## Parameters
 
