@@ -15,6 +15,7 @@ import { GraphQLInstrumentation } from "@opentelemetry/instrumentation-graphql";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 
+import type { Instrumentation } from "@opentelemetry/instrumentation";
 import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
 import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
 import type { TelemetryInstrumentationPreset } from "~/types";
@@ -51,7 +52,7 @@ const undiciInstrumentationConfig = {
  */
 export function getPresetInstrumentations(
   preset: TelemetryInstrumentationPreset,
-) {
+): Instrumentation[] {
   switch (preset) {
     case "simple": {
       return [
