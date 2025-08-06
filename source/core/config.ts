@@ -13,7 +13,7 @@
 import type { EntrypointInstrumentationConfig } from "~/types";
 
 /**
- * Helper to define the telemetry config for an entrypoint.
+ * Helper to define the telemetry configuration for an entrypoint.
  * @param init - The function to initialize the telemetry.
  *
  * @since 0.1.0

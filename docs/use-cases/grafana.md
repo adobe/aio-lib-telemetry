@@ -14,23 +14,14 @@ This guide demonstrates how to configure Grafana with App Builder runtime action
 - [OpenTelemetry Instrumentation with Grafana](#opentelemetry-instrumentation-with-grafana)
   - [Prerequisites](#prerequisites)
   - [Local Development](#local-development)
-    - [Setup](#setup)
-    - [Docker Compose Configuration](#docker-compose-configuration)
-    - [OpenTelemetry Collector Configuration](#opentelemetry-collector-configuration)
-    - [Tempo Configuration](#tempo-configuration)
-    - [Prometheus Configuration](#prometheus-configuration)
-    - [Telemetry Configuration](#telemetry-configuration)
-    - [Visualize the Data](#visualize-the-data)
+  - [Visualize the Data](#visualize-the-data)
   - [App Builder](#app-builder)
-    - [Tunneling Setup](#tunneling-setup)
-    - [Updated Telemetry Configuration](#updated-telemetry-configuration)
 
 ## Prerequisites
 
 - Docker and Docker Compose
 - An App Builder project with OpenTelemetry instrumentation.
-- A tunneling tool for App Builder (see [Tunneling Guide](../support/tunnel-forwarding.md) for setup instructions).
-  - We'll be using Cloudflare Tunnel (cloudflared) for this example.
+- A tunneling tool for App Builder (see [Tunneling Guide](../support/tunnel-forwarding.md) for setup instructions). We'll be using Cloudflare Tunnel (cloudflared) for this example.
 
 ## Local Development
 

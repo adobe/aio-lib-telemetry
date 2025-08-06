@@ -63,7 +63,8 @@ function __getLoggerInternal(
 }
 
 /**
- * Get a logger instance.
+ * Gets a logger instance that can export OpenTelemetry logs.
+ *
  * @param name - The name of the logger
  * @param config - The configuration for the logger
  *

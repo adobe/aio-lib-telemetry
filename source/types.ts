@@ -23,7 +23,7 @@ import type { AnyFunction } from "~/core/instrumentation";
 import type { getLogger } from "~/core/logging";
 
 /**
- * Available log levels for the OpenTelemetry DiagLogger.
+ * Available log levels for the OpenTelemetry `DiagLogger`.
  * @since 0.1.0
  */
 export type DiagnosticsLogLevel = Lowercase<keyof typeof DiagLogLevel>;
@@ -211,7 +211,7 @@ export interface EntrypointInstrumentationConfig<
 }
 
 /**
- * Defines the global telemetry API. These items should be set once per-application.
+ * Defines the global telemetry API. These items should be set once per application.
  * @since 0.1.0
  */
 export interface TelemetryApi {

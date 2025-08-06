@@ -63,10 +63,14 @@ The library is designed to configure OpenTelemetry on a **per-action basis**, bu
 
 ### Open Telemetry Configuration
 
-There are 2 different ways to configure Open Telemetry in Node.js:
+There are two ways to configure Open Telemetry in Node.js:
 
-- [Using environment variables](https://opentelemetry.io/docs/languages/sdk-configuration/) (currently not supported)
 - At runtime, via the [Node SDK configuration](https://open-telemetry.github.io/opentelemetry-js/modules/_opentelemetry_sdk-node.html#configuration) object
+- [Using environment variables](https://opentelemetry.io/docs/languages/sdk-configuration/) (currently not supported)
+
+#### Node SDK Configuration
+
+This is the currently supported method for configuring OpenTelemetry with this library. You'll need to provide a NodeSDK configuration object that will be passed directly to the `NodeSDK` constructor. For detailed information about each configuration option, please refer to the [official OpenTelemetry documentation](https://opentelemetry.io/docs/languages/js/instrumentation/#initialize-the-sdk).
 
 #### Environment Variables
 
@@ -76,10 +80,6 @@ There are 2 different ways to configure Open Telemetry in Node.js:
 When searching for OpenTelemetry usage examples, you'll find numerous tutorials demonstrating how to configure the SDK using environment variables. These variables are automatically processed by the SDK to configure its behavior.
 
 However, these variables need to be present in `process.env`, and due to how App Builder handles environment variables (fed via `params`), this configuration method is currently not supported.
-
-#### Node SDK Configuration
-
-This is the currently supported method for configuring OpenTelemetry with this library. You'll need to provide a NodeSDK configuration object that will be passed directly to the `NodeSDK` constructor. For detailed information about each configuration option, please refer to the [official OpenTelemetry documentation](https://opentelemetry.io/docs/languages/js/instrumentation/#initialize-the-sdk).
 
 ### Writing your Telemetry Configuration
 

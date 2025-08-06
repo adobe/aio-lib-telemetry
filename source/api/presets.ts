@@ -30,15 +30,15 @@ const undiciInstrumentationConfig = {
 } satisfies UndiciInstrumentationConfig;
 
 /**
- * Get the instrumentations for a given preset.
+ * Gets the instrumentations for a given preset.
  *
  * @param preset - The preset to get the instrumentations for. *
  * @returns The instrumentations for the given preset:
  * - `full`: All the Node.js [auto-instrumentations](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
  * - `simple`: Instrumentations for:
- *   [Http](https://www.npmjs.com/package/@opentelemetry/instrumentation-http),
- *   [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql), and
- *   [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici)
+ *     - [Http](https://www.npmjs.com/package/@opentelemetry/instrumentation-http),
+ *     - [GraphQL](https://www.npmjs.com/package/@opentelemetry/instrumentation-graphql)
+ *     - [Undici](https://www.npmjs.com/package/@opentelemetry/instrumentation-undici)
  *
  * @throws {Error} If the preset is unknown.
  *

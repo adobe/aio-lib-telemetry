@@ -16,7 +16,7 @@ Below is a summary table of the documented use cases. Key terms:
 - `Local Development`: Runtime actions executed locally using `aio app dev`
 
 - `In Cloud`: Runtime actions deployed to the cloud via `aio app deploy`
-  - A `Via Tunneling` indicator shows that the guide demonstrates forwarding telemetry from deployed actions to a local observability stack. This is just one possible approach, you're not required to use tunneling (especially not in production). For instance, with hosted solutions like Grafana, you can configure direct data transmission instead.
+  - A `Via Tunneling` indicator shows that the guide demonstrates forwarding telemetry from deployed actions to a local observability stack. This is just one possible approach. You're not required to use tunneling (especially not in production). For instance, with hosted solutions like Grafana, you can configure direct data transmission instead.
 
 <table>
   <thead>

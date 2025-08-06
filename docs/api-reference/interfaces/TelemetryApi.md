@@ -2,7 +2,7 @@
 
 Defined in: [types.ts:189](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/types.ts#L189)
 
-Defines the global telemetry API. These items should be set once per-application.
+Defines the global telemetry API. These items should be set once per application.
 
 ## Since
 

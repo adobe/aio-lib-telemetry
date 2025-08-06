@@ -6,7 +6,7 @@ function getLogger(name: string, config?: AioLoggerConfig): AioLogger;
 
 Defined in: [core/logging.ts:83](https://github.com/adobe/aio-lib-telemetry/blob/dd348342643b2b66d5a8c5267221de639b83642e/source/core/logging.ts#L83)
 
-Get a logger instance.
+Gets a logger instance that can export OpenTelemetry logs.
 
 ## Parameters
 
