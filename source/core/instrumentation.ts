@@ -280,7 +280,7 @@ export function instrument<T extends AnyFunction>(
 export function instrumentEntrypoint<
   // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
   T extends (params: Record<string, unknown>) => any,
->(fn: T, config: EntrypointInstrumentationConfig<T>) {
+>(fn: T, config: EntrypointInstrumentationConfig) {
   /** Sets a global process.env.ENABLE_TELEMETRY variable. */
   function setTelemetryEnv(params: Record<string, unknown>) {
     const { ENABLE_TELEMETRY = false } = params;
