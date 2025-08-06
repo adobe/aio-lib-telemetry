@@ -76,3 +76,24 @@ jobs:
 
       - name: Run Build
         run: npm run build
+
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["lts/-1", "lts/*", "current"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-ci-env
+        with:
+          install-deps: true
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run Tests
+        run: npm run test
