@@ -216,7 +216,7 @@ import {
   SimpleLogRecordProcessor,
 } from "@adobe/aio-lib-telemetry/otel";
 
-function localCollectorConfig(isDev: boolean) {
+function localCollectorConfig(isDev) {
   return {
     // Not specifying any export URL will default to find an Open Telemetry Collector instance in localhost.
     traceExporter: new OTLPTraceExporterProto(),
@@ -381,8 +381,8 @@ import {
   SimpleLogRecordProcessor,
 } from "@adobe/aio-lib-telemetry/otel";
 
-function localCollectorConfig(exportUrl: string) {
-  const makeExporterConfig = (path: string) => ({
+function localCollectorConfig(exportUrl) {
+  const makeExporterConfig = (path) => ({
     url: `${exportUrl}/${path}`,
   });
 
