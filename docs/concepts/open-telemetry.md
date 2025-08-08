@@ -53,7 +53,7 @@ OTLP supports multiple transmission protocols and encodings to accommodate diffe
 
 ### Application-Level Export
 
-The simplest pattern is to export your telemetry signals directly to an observability backend. This is usually done via a language-specific OpenTelemetry SDK. It's the easiest to setup and requires no intermediate infrastructure, which makes it suitable for development/test environments, but not for production use cases.
+The simplest pattern is to export your telemetry signals directly to an observability backend. This is usually done via a language-specific OpenTelemetry SDK. It's the easiest to setup and requires no intermediate infrastructure, which makes it suitable for development/test environments or simple applications. If your application is rather complex and spans multiple services, the OpenTelemetry collector (described below) might be a better option.
 
 <br />
 <div align="center">
@@ -74,9 +74,6 @@ Collectors are commonly deployed in two patterns:
 
 This approach is recommended for production environments, as it enables advanced features like multi-destination export, data enrichment, and dynamic configuration without modifying application code. ([Learn more](https://opentelemetry.io/docs/collector/))
 
-> [!NOTE]
-> When exporting [telemetry directly from the application](#application-level-export), the pipeline model described above does not fully apply. There are no receivers involved; the SDK sends data directly to the backend using an exporter (with optional, in-code processing).
-
 <br />
 <div align="center">
   <img alt="OpenTelemetry Collector Architecture" src="../images/with-collector.png">
@@ -89,6 +86,9 @@ The OpenTelemetry Collector follows a pipeline model consisting of three key com
 1. Telemetry data is first collected by receivers, which ingest data from instrumented applications or external sources.
 2. The data then passes through processors, which can modify, batch, or filter the telemetry before it is sent to exporters.
 3. Exporters are responsible for delivering the processed data to external observability platforms or storage systems.
+
+> [!NOTE]
+> When exporting [telemetry directly from the application](#application-level-export), the pipeline model described above does not fully apply. There are no receivers involved; the SDK sends data directly to the backend using an exporter (with optional, in-code processing).
 
 <br />
 <div align="center">
