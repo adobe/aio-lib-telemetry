@@ -21,7 +21,7 @@ This guide demonstrates how to configure Grafana with App Builder runtime action
 
 - Docker and Docker Compose
 - An App Builder project with OpenTelemetry instrumentation.
-- A tunneling tool for App Builder (see [Tunneling Guide](../support/tunnel-forwarding.md) for setup instructions). We'll be using Cloudflare Tunnel (cloudflared) for this example.
+- A tunneling tool for App Builder (see [Tunneling Guide](./support/tunnel-forwarding.md) for setup instructions). We'll be using Cloudflare Tunnel (cloudflared) for this example.
 
 ## Local Development
 
