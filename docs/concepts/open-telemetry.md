@@ -53,7 +53,7 @@ OTLP supports multiple transmission protocols and encodings to accommodate diffe
 
 ### Application-Level Export
 
-The simplest pattern is to export your telemetry signals directly to an observability backend. This is usually done via a language-specific OpenTelemetry SDK. It's the easiest to setup and requires no intermediate infrastructure, which makes it suitable for development/test environments or simple applications. If your application is rather complex and spans multiple services, the OpenTelemetry collector (described below) might be a better option.
+The simplest pattern is to export your telemetry signals directly to an observability backend. This is usually done via a language-specific OpenTelemetry SDK. It's the easiest to setup and requires no intermediate infrastructure, which makes it suitable for development/test environments or simple applications. This method might not be the best for complex applications that span multiple different services and processes, but all depends on your specific needs.
 
 <br />
 <div align="center">
