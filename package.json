@@ -94,7 +94,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@changesets/changelog-github": "0.5.1",
-    "@changesets/cli": "2.29.5",
+    "@changesets/cli": "2.29.6",
     "@tsconfig/node-lts": "^22.0.2",
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/recommended": "^1.0.10",
