@@ -26,14 +26,22 @@ import type { TelemetryDiagnosticsConfig } from "~/types";
 // If no log level is given, use [INFO].
 const DEFAULT_LOG_LEVEL = "info";
 
+type GetLoggerInternalConfig = {
+  name: string;
+  config?: AioLoggerConfig;
+  forceSDKInitialized?: boolean;
+  addTransport?: boolean;
+  telemetryTransportOptions?: Transport.TransportStreamOptions;
+};
+
 /** @internal */
-function __getLoggerInternal(
-  name: string,
-  config?: AioLoggerConfig,
+function __getLoggerInternal({
+  name,
+  config,
   forceSDKInitialized = true,
   addTransport = true,
-  telemetryTransportOptions: Transport.TransportStreamOptions = {},
-) {
+  telemetryTransportOptions = {},
+}: GetLoggerInternalConfig) {
   if (forceSDKInitialized) {
     ensureSdkInitialized();
   }
@@ -76,7 +84,7 @@ function __getLoggerInternal(
  * ```
  */
 export function getLogger(name: string, config?: AioLoggerConfig) {
-  return __getLoggerInternal(name, config, true);
+  return __getLoggerInternal({ name, config, forceSDKInitialized: true });
 }
 
 /**
@@ -98,21 +106,23 @@ export function setOtelDiagLogger({
 
   const aioLogLevel = logLevels[level] ?? level;
   const { actionName } = getRuntimeActionMetadata();
-  const logger = __getLoggerInternal(
-    loggerName ?? `${actionName}/otel-diagnostics`,
-    {
+  const logger = __getLoggerInternal({
+    name: loggerName ?? `${actionName}/otel-diagnostics`,
+    config: {
       level: aioLogLevel,
       logSourceAction: false,
     },
-    false,
-    exportLogs,
+    forceSDKInitialized: false,
+    addTransport: exportLogs,
+
     // Only use the OpenTelemetry transport (i.e. export diagnostic logs) if the log level is
     // set to info, warn or error. The other levels are too verbose to be exported and may expose
     // irrelevant/sensitive information. All logs will still be visible via `aio rt activation logs <id>`.
-    level === "info" || level === "warn" || level === "error"
-      ? { level }
-      : { level: "info" },
-  );
+    telemetryTransportOptions:
+      level === "info" || level === "warn" || level === "error"
+        ? { level }
+        : { level: "info" },
+  });
 
   // Wrap the logger in a DiagLogger compatible interface.
   const logLevel = level.toUpperCase() as keyof typeof DiagLogLevel;

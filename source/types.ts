@@ -38,7 +38,7 @@ export type TelemetryInstrumentationPreset = "simple" | "full";
  * The configuration for the telemetry diagnostics.
  * @since 0.1.0
  */
-export interface TelemetryDiagnosticsConfig {
+export type TelemetryDiagnosticsConfig = {
   /**
    * The log level to use for the diagnostics.
    * @since 0.1.0
@@ -61,13 +61,13 @@ export interface TelemetryDiagnosticsConfig {
    * @since 0.1.0
    */
   exportLogs?: boolean;
-}
+};
 
 /**
  * Configuration related to context propagation (for distributed tracing).
  * @since 0.1.0
  */
-export interface TelemetryPropagationConfig {
+export type TelemetryPropagationConfig = {
   /**
    * By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
    * Set to `true` if you want to skip this automatic context propagation.
@@ -90,13 +90,13 @@ export interface TelemetryPropagationConfig {
     carrier: Record<PropertyKey, string>;
     baseCtx?: Context;
   };
-}
+};
 
 /**
  * The configuration for instrumentation.
  * @since 0.1.0
  */
-export interface InstrumentationConfig<T extends AnyFunction> {
+export type InstrumentationConfig<T extends AnyFunction> = {
   /**
    * Configuration options related to the span started by the instrumented function.
    * See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
@@ -158,7 +158,7 @@ export interface InstrumentationConfig<T extends AnyFunction> {
      */
     onError?: (error: unknown, span: Span) => Error | undefined;
   };
-}
+};
 
 /**
  * The configuration options for the telemetry module.
@@ -213,7 +213,7 @@ export interface EntrypointInstrumentationConfig
  * Defines the global telemetry API. These items should be set once per application.
  * @since 0.1.0
  */
-export interface TelemetryApi {
+export type TelemetryApi = {
   /**
    * The tracer used to create spans.
    * @since 0.1.0
@@ -225,13 +225,13 @@ export interface TelemetryApi {
    * @since 0.1.0
    */
   meter: Meter;
-}
+};
 
 /**
  * The context for the current operation.
  * @since 0.1.0
  */
-export interface InstrumentationContext {
+export type InstrumentationContext = {
   /**
    * The global (managed by the library) tracer instance used to create spans.
    * @since 0.1.0
@@ -261,4 +261,4 @@ export interface InstrumentationContext {
    * @since 0.1.0
    */
   contextCarrier: Record<PropertyKey, string>;
-}
+};

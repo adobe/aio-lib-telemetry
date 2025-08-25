@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+/** biome-ignore-all lint/performance/noBarrelFile: This is the import entrypoint for the public API. */
 // This file collects and exports all the public API of the telemetry module.
 
 export {
