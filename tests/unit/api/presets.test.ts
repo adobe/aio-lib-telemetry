@@ -27,7 +27,9 @@ describe("api/presets", () => {
     test("should return simple instrumentations for 'simple' preset", () => {
       const instrumentations = apiPresets.getPresetInstrumentations("simple");
       expect(Array.isArray(instrumentations)).toBe(true);
-      expect(instrumentations).toHaveLength(3);
+
+      const expectedInstrumentations = 3;
+      expect(instrumentations).toHaveLength(expectedInstrumentations);
 
       const instrumentationNames = instrumentations.map(
         (i) => i.instrumentationName,

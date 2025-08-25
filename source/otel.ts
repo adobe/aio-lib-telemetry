@@ -14,6 +14,8 @@
 // It provides core APIs, SDKs, exporters, and resources while omitting
 // specialized packages like individual instrumentations and similar utilities.
 
+/** biome-ignore-all lint/performance/noBarrelFile: This is the import entrypoint for the public API. */
+
 export * from "@opentelemetry/api";
 export * from "@opentelemetry/api-logs";
 export { OTLPLogExporter as OTLPLogExporterGrpc } from "@opentelemetry/exporter-logs-otlp-grpc";

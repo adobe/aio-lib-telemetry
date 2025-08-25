@@ -58,6 +58,6 @@ export function setupProductionEnv() {
 
   // The `__OW_DEADLINE` env var represents the timestamp (in ms)
   // by which the action execution must be completed.
-  const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+  const oneMonthInMilliseconds = 2_592_000_000;
   vi.stubEnv("__OW_DEADLINE", `${Date.now() + oneMonthInMilliseconds}`);
 }

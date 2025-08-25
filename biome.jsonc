@@ -38,6 +38,19 @@
     }
   },
 
+  "overrides": [
+    {
+      "includes": ["tests/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noMagicNumbers": "off"
+          }
+        }
+      }
+    }
+  ],
+
   "assist": {
     "actions": {
       "source": {
