@@ -31,8 +31,8 @@
     },
     {
       "groupName": "OpenTelemetry packages",
-      "matchPackagePatterns": ["^@opentelemetry/"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["/^@opentelemetry//"]
     }
   ]
 }
