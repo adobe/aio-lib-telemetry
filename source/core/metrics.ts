@@ -59,7 +59,6 @@ export function defineMetrics<T extends Record<PropertyKey, MetricTypes>>(
   // This way we can defer the initialization of the metrics until the telemetry API (meter) is initialized.
   return new Proxy({} as T, {
     get(_, prop: PropertyKey) {
-      // biome-ignore lint/nursery/noUnnecessaryConditions: False positive
       if (isInitializing) {
         // Would happen if using a metric inside the `defineMetrics` function.
         throw new Error(
