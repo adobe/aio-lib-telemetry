@@ -246,9 +246,7 @@ describe("core/instrumentation", () => {
         throw error;
       });
 
-      const errorFn2 = vi.fn(() => {
-        return Promise.reject(error);
-      });
+      const errorFn2 = vi.fn(() => Promise.reject(error));
 
       // Non-catched error in an async function
       const instrumentedFn = instrumentation.instrument(errorFn);
@@ -260,9 +258,7 @@ describe("core/instrumentation", () => {
     });
 
     test("non-throwing functions should use isSuccessful predicate to determine success", () => {
-      const fn = vi.fn(() => {
-        return { success: false, data: "test" };
-      });
+      const fn = vi.fn(() => ({ success: false, data: "test" }));
 
       const instrumentedFn = instrumentation.instrument(fn, {
         spanConfig: { spanName: "predicate-test" },

@@ -54,9 +54,9 @@ describe("api/propagation", () => {
           carrier["x-test"] = ctx.getValue(testKey) ?? "";
         }),
 
-        extract: vi.fn((ctx, carrier) => {
-          return ctx.setValue(testKey, carrier["x-test"]);
-        }),
+        extract: vi.fn((ctx, carrier) =>
+          ctx.setValue(testKey, carrier["x-test"]),
+        ),
 
         fields: vi.fn(() => ["x-test"]),
       },
