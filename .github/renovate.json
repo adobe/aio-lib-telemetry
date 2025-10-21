@@ -32,6 +32,11 @@
     {
       "matchManagers": ["github-actions"],
       "pinDigests": false
+    },
+    {
+      "groupName": "OpenTelemetry packages",
+      "matchPackagePatterns": ["^@opentelemetry/"],
+      "matchUpdateTypes": ["minor", "patch"]
     }
   ]
 }
