@@ -22,17 +22,11 @@
   "automerge": false,
   "branchPrefix": "renovate/",
   "commitMessagePrefix": "chore(renovate): ",
-  "labels": [
-    "dependencies"
-  ],
-  "postUpdateOptions": [
-    "npmDedupe"
-  ],
+  "labels": ["dependencies"],
+  "postUpdateOptions": ["npmDedupe"],
   "packageRules": [
     {
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "pinDigests": false
     }
   ]
