@@ -22,17 +22,28 @@
   "automerge": false,
   "branchPrefix": "renovate/",
   "commitMessagePrefix": "chore(renovate): ",
-  "labels": ["dependencies"],
-  "postUpdateOptions": ["npmDedupe"],
+  "labels": [
+    "dependencies"
+  ],
+  "postUpdateOptions": [
+    "npmDedupe"
+  ],
   "packageRules": [
     {
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "pinDigests": false
     },
     {
       "groupName": "OpenTelemetry packages",
-      "matchPackagePatterns": ["^@opentelemetry/"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchPackageNames": [
+        "/^@opentelemetry//"
+      ]
     }
   ]
 }
