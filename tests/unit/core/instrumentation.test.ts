@@ -542,6 +542,11 @@ describe("core/instrumentation", () => {
           __telemetryContext: { traceparent: "00-123-456-01" },
         },
       },
+      {
+        __ow_headers: {
+          traceparent: "00-123-456-01",
+        },
+      },
     ])("should handle context propagation from different sources", (params) => {
       const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
         initializeTelemetry: mockInitializeTelemetry,
