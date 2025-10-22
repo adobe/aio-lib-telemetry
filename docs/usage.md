@@ -269,9 +269,13 @@ function callExternalInstrumentedService() {
 
 When invoking an external service instrumented with this module (such as another runtime action), you can include the context carrier in your request or event. Upon receiving the request, the library will automatically attempt to deserialize the context by checking these locations in order:
 
-1. The `x-telemetry-context` header, if you're invoking via HTTP requests
+> [!WARNING]
+> The `x-telemetry-context` header as a context propagation source is deprecated and will be removed in a future major release. You should always send the context information via HTTP headers following the [W3C Trace Context specification](https://www.w3.org/TR/trace-context/) (if you're instrumenting your code using OpenTelemetry, creating a context carrier following this specification is really simple with the [OpenTelemetry APIs](https://opentelemetry.io/docs/specs/otel/context/api-propagators/#propagators-distribution)).
+
+1. **[DEPRECATED]** The `x-telemetry-context` header, if you're invoking via HTTP requests
 2. The `params.__telemetryContext` parameter when invoking runtime actions directly through Openwhisk or Event Ingress
 3. The `params.data.__telemetryContext` parameter - a convenience option for cases where parameters are nested under a `data` object
+4. **[NEW]** The OpenTelemetry W3C context information automatically extracted from the incoming HTTP request headers (if you're invoking via HTTP requests)
 
 If you don't want this automatic behavior, you can opt-out by providing a `skip: true` option in the `propagation` configuration.
 
