@@ -306,17 +306,20 @@ export function instrumentEntrypoint<
     // 3. A `__telemetryContext` property in `params.data`.
     const headers = (params.__ow_headers as Record<string, string>) ?? {};
     const telemetryContext =
+      // @deprecated: Remove custom __telemetryContext lookups in a future major release.
       headers["x-telemetry-context"] ??
       params.__telemetryContext ??
       (params.data as Record<string, unknown>)?.__telemetryContext ??
       null;
 
+    // If the telemetry context is not found among all the above lookups,
+    // default to the OpenWhisk headers (received when invoking via HTTP requests).
+    // OpenTelemetry will pick the correct W3C context info automatically.
+    const w3cContext = telemetryContext ?? headers;
     return {
       baseCtx: context.active(),
       carrier:
-        typeof telemetryContext === "string"
-          ? JSON.parse(telemetryContext)
-          : telemetryContext,
+        typeof w3cContext === "string" ? JSON.parse(w3cContext) : w3cContext,
     };
   }
 
