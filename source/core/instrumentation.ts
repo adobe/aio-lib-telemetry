@@ -379,13 +379,11 @@ export function instrumentEntrypoint<
       // App Builder expects an "error" property in the result to determine if the action failed.
       // See: https://developer.adobe.com/app-builder/docs/guides/runtime_guides/creating-actions#unsuccessful-response
       isSuccessful: (result) => {
-        if (typeof result === "object") {
-          // Only do the check if the result is an object (should always be the case)
-          return result && !("error" in result);
-        }
-
+        // Only do the check if the result is an object (should always be the case)
         // Otherwise default to true (non-intrusive)
-        return true;
+        return typeof result === "object"
+          ? result && !("error" in result)
+          : true;
       },
 
       ...instrumentationConfig,
