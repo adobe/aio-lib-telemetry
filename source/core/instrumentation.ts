@@ -376,6 +376,16 @@ export function instrumentEntrypoint<
   ) {
     const { actionName } = getRuntimeActionMetadata();
     return instrument(handler, {
+      // App Builder expects an "error" property in the result to determine if the action failed.
+      // See: https://developer.adobe.com/app-builder/docs/guides/runtime_guides/creating-actions#unsuccessful-response
+      isSuccessful: (result) => {
+        // Only do the check if the result is an object (should always be the case)
+        // Otherwise default to true (non-intrusive)
+        return typeof result === "object"
+          ? result && !("error" in result)
+          : true;
+      },
+
       ...instrumentationConfig,
       spanConfig: {
         spanName: `${actionName}/${fn.name || "entrypoint"}`,

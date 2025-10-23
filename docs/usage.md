@@ -481,11 +481,20 @@ Example use cases on when you might want to use these options are:
 - **Customizing Span Names**: If you want to use a custom span name for a function, you can set the [`spanConfig.spanName`](./api-reference/interfaces/InstrumentationConfig.md#spanname) option. There are other span configuration options available, see the API reference for [`SpanConfig`](./api-reference/interfaces/InstrumentationConfig.md#spanconfig) for more details.
 - **Reacting to the Result**: If you want to react to the result of a function, you can set the [`onResult`](./api-reference/interfaces/InstrumentationConfig.md#onresult) option.
 - **Handling Errors**: If you want to handle errors of a function, you can set the [`onError`](./api-reference/interfaces/InstrumentationConfig.md#onerror) option.
-- **Handling Success/Failure**: By default, the library considers a function successful if it doesn't throw an error. You can customize this behavior by setting the [`isSuccessful`](./api-reference/interfaces/InstrumentationConfig.md#issuccessful) option.
-  - This option takes a function that receives the result and returns a boolean indicating whether the operation was successful.
-  - The success/failure state may not matter for your use case. Internally, it determines when to trigger the [`onError`](./api-reference/interfaces/InstrumentationConfig.md#onerror) and [`onResult`](./api-reference/interfaces/InstrumentationConfig.md#onresult) hooks, and whether to [set the span status](https://opentelemetry.io/docs/concepts/signals/traces/#span-status) to `OK` or `ERROR`. Different observability backends might interpret these statuses in their own way.
+- **Handling Success/Failure**: See the [Span Status](#span-status) section below for more details.
 
 See the API reference for the configuration options available: [`InstrumentationConfig`](./api-reference/interfaces/InstrumentationConfig.md).
+
+### Span Status
+
+By default, the library considers a function successful if it doesn't throw an error. You can customize this behavior using the [`isSuccessful`](./api-reference/interfaces/InstrumentationConfig.md#issuccessful) option.
+
+- This option accepts a function that receives the result and returns a boolean indicating whether the operation succeeded.
+- The success/failure state may not be relevant to your use case. Internally, it determines when to trigger the [`onError`](./api-reference/interfaces/InstrumentationConfig.md#onerror) and [`onResult`](./api-reference/interfaces/InstrumentationConfig.md#onresult) hooks, and whether to [set the span status](https://opentelemetry.io/docs/concepts/signals/traces/#span-status) to `OK` or `ERROR`. Note that different observability backends may interpret these statuses differently.
+
+#### Runtime Action Success/Failure
+
+App Builder determines action failure by looking for an `error` property in the result (see [this section](https://developer.adobe.com/app-builder/docs/guides/runtime_guides/creating-actions#unsuccessful-response) of the App Builder documentation for more details). When using the `instrumentEntrypoint` helper (the one applied to the `main` function), this behavior is replicated to evaluate the success/failure state of the root span. The helper reads the response object and sets the span status accordingly by providing a default implementation for the [`isSuccessful`](./api-reference/interfaces/InstrumentationConfig.md#issuccessful) option that performs this `error` property check. You can override this behavior if needed by setting a custom `isSuccessful` function.
 
 ## Additional Resources
 

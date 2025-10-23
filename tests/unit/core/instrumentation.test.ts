@@ -762,5 +762,44 @@ describe("core/instrumentation", () => {
       namedEntrypoint({});
       expect(mockSpan.registerName).toHaveBeenCalledWith("test-action/main");
     });
+
+    test("should mark root span as error if the runtime action fails", () => {
+      const error = {
+        statusCode: 500,
+        message: "Runtime action failed",
+      };
+
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          return { error };
+        },
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+        },
+      );
+
+      const result = instrumentedMain({});
+      expect(result).toEqual({ error });
+      expect(mockSpan.setStatus).toHaveBeenCalledWith({
+        code: SpanStatusCode.ERROR,
+      });
+    });
+
+    test("should not instrusively mark root span if the runtime action returns a non-object", () => {
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          return "test";
+        },
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+        },
+      );
+
+      const result = instrumentedMain({});
+      expect(result).toEqual("test");
+      expect(mockSpan.setStatus).not.toHaveBeenCalledWith({
+        code: SpanStatusCode.ERROR,
+      });
+    });
   });
 });
