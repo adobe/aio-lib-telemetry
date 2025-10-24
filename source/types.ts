@@ -161,6 +161,44 @@ export type InstrumentationConfig<T extends AnyFunction> = {
 };
 
 /**
+ * A telemetry integration.
+ * @since 1.2.0
+ */
+export type TelemetryIntegration<T extends AnyFunction> = {
+  /**
+   * The name of the integration.
+   * @since 1.2.0
+   */
+  name: string;
+
+  /**
+   * A function that patches the telemetry configuration.
+   * @since 1.2.0
+   *
+   * @param config - The telemetry configuration.
+   * @param instrumentationConfig - The instrumentation configuration.
+   * @returns The patched telemetry configuration and instrumentation configuration.
+   */
+  patch: TelemetryIntegrationPatcher<T>;
+};
+
+/**
+ * A function that receives a telemetry configuration and returns an updated one (with the integration applied).
+ * @since 1.2.0
+ *
+ * @param config - The telemetry configuration.
+ * @param instrumentationConfig - The instrumentation configuration.
+ * @returns The patched telemetry configuration and instrumentation configuration.
+ */
+export type TelemetryIntegrationPatcher<T extends AnyFunction> = (
+  config: TelemetryConfig,
+  instrumentationConfig: InstrumentationConfig<T>,
+) => {
+  newConfig: TelemetryConfig;
+  newInstrumentationConfig: InstrumentationConfig<T>;
+};
+
+/**
  * The configuration options for the telemetry module.
  * @since 0.1.0
  */
@@ -181,11 +219,18 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
 }
 
 /**
+ * The shape of the entrypoint function.
+ * @since 1.2.0
+ */
+export type EntrypointFunction = (params: Record<string, unknown>) => unknown;
+
+/**
  * The configuration for entrypoint instrumentation.
  * @since 0.1.0
  */
-export interface EntrypointInstrumentationConfig
-  extends InstrumentationConfig<(params: Record<string, unknown>) => unknown> {
+export interface EntrypointInstrumentationConfig<
+  T extends EntrypointFunction = EntrypointFunction,
+> extends InstrumentationConfig<T> {
   /**
    * Configuration options related to context propagation.
    * See the {@link TelemetryPropagationConfig} for the interface.
@@ -193,6 +238,13 @@ export interface EntrypointInstrumentationConfig
    * @since 0.1.0
    */
   propagation?: TelemetryPropagationConfig;
+
+  /**
+   * Integrations with external telemetry systems.
+   * @since 1.2.0
+   * @default []
+   */
+  integrations?: TelemetryIntegration<T>[];
 
   /**
    * This function is called at the start of the action.

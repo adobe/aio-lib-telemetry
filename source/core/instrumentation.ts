@@ -19,15 +19,8 @@ import {
   serializeContextIntoCarrier,
 } from "~/api/propagation";
 import { getLogger } from "~/core/logging";
-import {
-  ensureSdkInitialized,
-  initializeDiagnostics,
-  initializeSdk,
-} from "~/core/sdk";
-import {
-  getGlobalTelemetryApi,
-  initializeGlobalTelemetryApi,
-} from "~/core/telemetry-api";
+import { ensureSdkInitialized } from "~/core/sdk";
+import { getGlobalTelemetryApi } from "~/core/telemetry-api";
 import {
   getRuntimeActionMetadata,
   isDevelopment,
@@ -336,28 +329,32 @@ export function instrumentEntrypoint<
 
   /** Initializes the Telemetry SDK and API. */
   function setupTelemetry(params: Record<string, unknown>) {
-    const { initializeTelemetry, ...instrumentationConfig } = config;
+    const {
+      initializeTelemetry,
+      integrations = [],
+      ...initialInstrumentationConfig
+    } = config;
 
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
-    const { sdkConfig, tracer, meter, diagnostics } = initializeTelemetry(
-      params,
-      isDev,
-    );
 
-    if (diagnostics) {
-      // Diagnostics only work if initialized before the telemetry SDK.
-      initializeDiagnostics(diagnostics);
+    let currentConfig = initializeTelemetry(params, isDev);
+    let currentInstrumentationConfig = initialInstrumentationConfig;
+
+    for (const integration of integrations) {
+      const { newConfig, newInstrumentationConfig } = integration.patch(
+        currentConfig,
+        currentInstrumentationConfig,
+      );
+
+      currentConfig = newConfig;
+      currentInstrumentationConfig = newInstrumentationConfig;
     }
 
-    // Internal calls to initialize the Telemetry SDK.
-    initializeSdk(sdkConfig);
-    initializeGlobalTelemetryApi({ tracer, meter });
-
     return {
-      ...instrumentationConfig,
+      ...currentInstrumentationConfig,
       spanConfig: {
         getBaseContext: getPropagatedContext,
-        ...instrumentationConfig.spanConfig,
+        ...currentInstrumentationConfig.spanConfig,
       },
     };
   }
