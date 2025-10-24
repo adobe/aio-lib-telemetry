@@ -195,22 +195,12 @@ export function instrument<T extends AnyFunction>(
 
   /** Sets up the span data (given to the tracer) for the current operation. */
   function setupSpanData(...args: Parameters<T>) {
-    const { actionName } = getRuntimeActionMetadata();
     const { tracer } = getGlobalTelemetryApi();
     const currentCtx = getBaseContext?.(...args) ?? context.active();
 
-    const spanCfg = {
-      ...spanOptions,
-      attributes: {
-        "self.name": spanName,
-        "action.name": actionName,
-        ...spanOptions.attributes,
-      },
-    };
-
     return {
       currentCtx,
-      spanConfig: spanCfg,
+      spanConfig: spanOptions,
       tracer,
     };
   }
