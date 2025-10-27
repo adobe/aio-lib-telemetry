@@ -23,6 +23,7 @@ import type { TelemetryInstrumentationPreset } from "~/types";
 const httpInstrumentationConfig = {
   // Prevent traces from being created by the un-managed logic of `aio app dev`.
   requireParentforIncomingSpans: true,
+  disableIncomingRequestInstrumentation: true,
 } satisfies HttpInstrumentationConfig;
 
 const undiciInstrumentationConfig = {

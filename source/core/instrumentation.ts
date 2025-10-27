@@ -13,14 +13,22 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 import { context, SpanStatusCode } from "@opentelemetry/api";
+import deepmerge from "deepmerge";
 
 import {
   deserializeContextFromCarrier,
   serializeContextIntoCarrier,
 } from "~/api/propagation";
 import { getLogger } from "~/core/logging";
-import { ensureSdkInitialized } from "~/core/sdk";
-import { getGlobalTelemetryApi } from "~/core/telemetry-api";
+import {
+  ensureSdkInitialized,
+  initializeDiagnostics,
+  initializeSdk,
+} from "~/core/sdk";
+import {
+  getGlobalTelemetryApi,
+  initializeGlobalTelemetryApi,
+} from "~/core/telemetry-api";
 import {
   getRuntimeActionMetadata,
   isDevelopment,
@@ -28,7 +36,9 @@ import {
 } from "~/helpers/runtime";
 
 import type { Span } from "@opentelemetry/api";
+import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
 import type {
+  EntrypointFunction,
   EntrypointInstrumentationConfig,
   InstrumentationConfig,
   InstrumentationContext as InstrumentationHelpers,
@@ -337,18 +347,70 @@ export function instrumentEntrypoint<
 
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
 
-    let currentConfig = initializeTelemetry(params, isDev);
-    let currentInstrumentationConfig = initialInstrumentationConfig;
+    const currentConfig = initializeTelemetry(params, isDev);
+    let currentInstrumentationConfig = deepmerge(
+      currentConfig.instrumentationConfig ?? {},
+      initialInstrumentationConfig,
+    );
 
-    for (const integration of integrations) {
-      const { newConfig, newInstrumentationConfig } = integration.patch(
-        currentConfig,
-        currentInstrumentationConfig,
+    const updateSdkConfigHandler = (
+      newSdkConfig: Partial<NodeSDKConfiguration>,
+    ) => {
+      currentConfig.sdkConfig = deepmerge(
+        currentConfig.sdkConfig,
+        newSdkConfig,
       );
+    };
 
-      currentConfig = newConfig;
-      currentInstrumentationConfig = newInstrumentationConfig;
+    const updateInstrumentationConfigHandler = (
+      newInstrumentationConfig: Partial<
+        InstrumentationConfig<EntrypointFunction>
+      >,
+    ) => {
+      // @ts-expect-error - Although it's a different type, it's compatible
+      currentInstrumentationConfig = deepmerge(
+        currentInstrumentationConfig,
+        newInstrumentationConfig,
+      );
+    };
+
+    let currentIntegration: string | null = null;
+    try {
+      for (const integration of integrations) {
+        currentIntegration = integration.name;
+
+        integration.patch({
+          config: currentConfig,
+          instrumentationConfig: currentInstrumentationConfig,
+          params,
+
+          updateSdkConfig: updateSdkConfigHandler,
+          updateInstrumentationConfig: updateInstrumentationConfigHandler,
+        });
+      }
+    } catch (error) {
+      if (currentIntegration) {
+        throw new Error(
+          `Failed to apply integration "${currentIntegration}" to the telemetry configuration: ${error instanceof Error ? error.message : error}`,
+          {
+            cause: error,
+          },
+        );
+      }
+
+      throw error;
     }
+
+    const { diagnostics, sdkConfig, tracer, meter } = currentConfig;
+
+    if (diagnostics) {
+      // Diagnostics only work if initialized before the telemetry SDK.
+      initializeDiagnostics(diagnostics);
+    }
+
+    // Internal calls to initialize the Telemetry SDK.
+    initializeSdk(sdkConfig);
+    initializeGlobalTelemetryApi({ tracer, meter });
 
     return {
       ...currentInstrumentationConfig,

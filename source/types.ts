@@ -19,7 +19,7 @@ import type {
   Tracer,
 } from "@opentelemetry/api";
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-import type { AnyFunction } from "~/core/instrumentation";
+import type { AnyFunction, instrumentEntrypoint } from "~/core/instrumentation";
 import type { getLogger } from "~/core/logging";
 
 /**
@@ -186,18 +186,20 @@ export type TelemetryIntegration<T extends AnyFunction> = {
  * A function that receives a telemetry configuration and returns an updated one (with the integration applied).
  * @since 1.2.0
  *
- * @param config - The telemetry configuration.
- * @param instrumentationConfig - The instrumentation configuration.
+ * @param patcherPayload - The payload containing data to be used by the patcher.
  * @returns The patched telemetry configuration and instrumentation configuration.
  */
-export type TelemetryIntegrationPatcher<T extends AnyFunction> = (
-  config: TelemetryConfig,
-  instrumentationConfig: InstrumentationConfig<T>,
-) => {
-  newConfig: TelemetryConfig;
-  newInstrumentationConfig: InstrumentationConfig<T>;
-};
+export type TelemetryIntegrationPatcher<T extends AnyFunction> =
+  (patcherPayload: {
+    config: TelemetryConfig;
+    instrumentationConfig: InstrumentationConfig<T>;
+    params: Record<string, unknown>;
 
+    updateSdkConfig: (config: Partial<NodeSDKConfiguration>) => void;
+    updateInstrumentationConfig: (
+      config: Partial<InstrumentationConfig<T>>,
+    ) => void;
+  }) => void;
 /**
  * The configuration options for the telemetry module.
  * @since 0.1.0
@@ -210,6 +212,20 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
    * @since 0.1.0
    */
   sdkConfig: Partial<NodeSDKConfiguration>;
+
+  /**
+   * The instrumentation configuration that will be used for the entrypoint function.
+   *
+   * @remarks This configuration will be merged with the initial instrumentation configuration provided
+   * in the {@link instrumentEntrypoint} function. The latter will take precedence over this configuration.
+   *
+   * @default undefined
+   * @since 1.2.0
+   */
+  instrumentationConfig?: Omit<
+    EntrypointInstrumentationConfig<EntrypointFunction>,
+    "initializeTelemetry"
+  >;
 
   /**
    * The configuration options for the telemetry diagnostics.
