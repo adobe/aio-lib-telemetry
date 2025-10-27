@@ -20,7 +20,7 @@ import {
 import { deserializeContextFromCarrier } from "~/api/propagation";
 
 import type { Context } from "@opentelemetry/api";
-import type { EntrypointFunction, TelemetryIntegration } from "~/types";
+import type { TelemetryIntegration } from "~/types";
 
 /** Base configuration options for all Commerce integrations. */
 export type CommerceWebhooksIntegrationConfig = {
@@ -73,9 +73,7 @@ function tryExtractRemoteSpanContext(ctx: Context) {
  *
  * @since 1.2.0
  */
-export function commerceEvents<
-  T extends EntrypointFunction = EntrypointFunction,
->(): TelemetryIntegration<T> {
+export function commerceEvents(): TelemetryIntegration {
   return {
     name: "commerce-events",
     patch: ({ updateInstrumentationConfig, params }) => {
@@ -110,11 +108,9 @@ export function commerceEvents<
  *
  * @since 1.2.0
  */
-export function commerceWebhooks<
-  T extends EntrypointFunction = EntrypointFunction,
->({
+export function commerceWebhooks({
   ensureSampling = true,
-}: CommerceWebhooksIntegrationConfig = {}): TelemetryIntegration<T> {
+}: CommerceWebhooksIntegrationConfig = {}): TelemetryIntegration {
   return {
     name: "commerce-webhooks",
     patch: ({ params, updateInstrumentationConfig }) => {
