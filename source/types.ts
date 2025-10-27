@@ -193,14 +193,17 @@ export type TelemetryIntegrationPatcher = (patcherPayload: {
   config: TelemetryConfig;
   instrumentationConfig: Omit<
     EntrypointInstrumentationConfig,
-    "initializeTelemetry"
+    "initializeTelemetry" | "integrations"
   >;
   params: Record<string, unknown>;
 
   updateSdkConfig: (config: Partial<NodeSDKConfiguration>) => void;
   updateInstrumentationConfig: (
     config: Partial<
-      Omit<EntrypointInstrumentationConfig, "initializeTelemetry">
+      Omit<
+        EntrypointInstrumentationConfig,
+        "initializeTelemetry" | "integrations"
+      >
     >,
   ) => void;
 }) => void;

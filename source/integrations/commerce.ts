@@ -10,12 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import {
-  context,
-  isSpanContextValid,
-  TraceFlags,
-  trace,
-} from "@opentelemetry/api";
+import { isSpanContextValid, TraceFlags, trace } from "@opentelemetry/api";
 
 import { deserializeContextFromCarrier } from "~/api/propagation";
 
@@ -86,8 +81,13 @@ export function commerceEvents(): TelemetryIntegration {
       const spanContext = tryExtractRemoteSpanContext(propagatedCtx);
 
       updateInstrumentationConfig({
+        propagation: {
+          // We don't want to propagate the context from the Commerce Events integration.
+          // As it the incoming trace comes from an async event (not part of the same execution trace)
+          skip: true,
+        },
+
         spanConfig: {
-          getBaseContext: () => context.active(),
           links:
             spanContext !== null
               ? [
@@ -131,13 +131,14 @@ export function commerceWebhooks({
         spanContext !== null && !isSampled && ensureSampling;
 
       updateInstrumentationConfig({
+        propagation: {
+          skip: !(shouldCreateNewRoot && spanContext),
+          getContextCarrier: () => ({ carrier, baseCtx: propagatedCtx }),
+        },
+
         spanConfig: {
           // If we're starting a new trace, add a link to the incoming trace.
           links: shouldCreateNewRoot ? [{ context: spanContext }] : [],
-          getBaseContext: () =>
-            shouldCreateNewRoot || !spanContext
-              ? context.active()
-              : propagatedCtx,
         },
       });
     },
