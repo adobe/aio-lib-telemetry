@@ -57,8 +57,6 @@ function tryExtractRemoteSpanContext(ctx: Context) {
   if (spanContext.isRemote && isSpanContextValid(spanContext)) {
     return spanContext;
   }
-
-  return null;
 }
 
 /**
@@ -77,7 +75,7 @@ export function commerceEvents(): TelemetryIntegration {
 
       const carrier = typedParams.data._metadata;
       const propagatedCtx = deserializeContextFromCarrier(carrier);
-      const spanContext = tryExtractRemoteSpanContext(propagatedCtx);
+      const spanContext = tryExtractRemoteSpanContext(propagatedCtx) ?? null;
 
       updateInstrumentationConfig({
         propagation: {
@@ -121,7 +119,7 @@ export function commerceWebhooks({
 
       const carrier = typedParams.__ow_headers;
       const propagatedCtx = deserializeContextFromCarrier(carrier);
-      const spanContext = tryExtractRemoteSpanContext(propagatedCtx);
+      const spanContext = tryExtractRemoteSpanContext(propagatedCtx) ?? null;
 
       const isSampled =
         spanContext !== null &&
