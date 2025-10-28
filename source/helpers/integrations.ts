@@ -42,16 +42,12 @@ export function applyInstrumentationIntegrationPatches(
       });
     }
   } catch (error) {
-    if (currentIntegration) {
-      throw new Error(
-        `Failed to apply integration "${currentIntegration}" to the telemetry configuration: ${error instanceof Error ? error.message : error}`,
-        {
-          cause: error,
-        },
-      );
-    }
-
-    throw error;
+    throw new Error(
+      `Failed to apply integration "${currentIntegration ?? "unknown"}" to the telemetry configuration: ${error instanceof Error ? error.message : error}`,
+      {
+        cause: error,
+      },
+    );
   }
 
   return currentInstrumentationConfig;

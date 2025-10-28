@@ -13,15 +13,7 @@
 
 import { metrics, ROOT_CONTEXT, trace } from "@opentelemetry/api";
 import { NodeSDK } from "@opentelemetry/sdk-node";
-import {
-  afterEach,
-  assert,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Context, Meter, SpanContext, Tracer } from "@opentelemetry/api";
 import type { InstrumentationContext } from "~/types";
@@ -120,7 +112,7 @@ describe("core/instrumentation", () => {
       expect(result).toBe("success");
 
       if (!capturedHelpers) {
-        assert.fail("capturedHelpers is null");
+        expect.fail("capturedHelpers is null");
       }
 
       const helpers = capturedHelpers as InstrumentationContext;
@@ -405,7 +397,7 @@ describe("core/instrumentation", () => {
         sdkConfig: {},
         tracer: {},
         meter: {},
-        diagnostics: false,
+        diagnostics: { logLevel: "error" },
       }));
     });
 
@@ -537,7 +529,7 @@ describe("core/instrumentation", () => {
       });
 
       if (!capturedSpanContext) {
-        assert.fail("capturedSpanContext is null");
+        expect.fail("capturedSpanContext is null");
       }
 
       const spanContext = capturedSpanContext as SpanContext;
@@ -572,7 +564,7 @@ describe("core/instrumentation", () => {
       });
 
       if (!capturedSpanContext) {
-        assert.fail("capturedContext is null");
+        expect.fail("capturedContext is null");
       }
 
       const spanContext = capturedSpanContext as SpanContext;
@@ -700,7 +692,7 @@ describe("core/instrumentation", () => {
       instrumentedMain({ ENABLE_TELEMETRY: "true" });
 
       if (!capturedContext) {
-        assert.fail("capturedContext is null");
+        expect.fail("capturedContext is null");
       }
 
       const instrumentationContext = capturedContext as InstrumentationContext;
