@@ -124,6 +124,46 @@ Refer to the API reference documentation of this library for more information ab
 | `getPresetInstrumentations` | [API reference](./api-reference/functions/getPresetInstrumentations.md) |
 | `getAioRuntimeResource`     | [API reference](./api-reference/functions/getAioRuntimeResource.md)     |
 
+### Integrations
+
+Since version 1.1.0, this library supports an `integrations` feature that provides pre-configured patches for external systems. Integrations handle complex setup tasks like context propagation, span linking, and sampling decisions automatically.
+
+Available integrations are imported from `@adobe/aio-lib-telemetry/integrations`:
+
+```ts
+import { defineTelemetryConfig } from "@adobe/aio-lib-telemetry";
+import { commerceEvents } from "@adobe/aio-lib-telemetry/integrations";
+
+const telemetryConfig = defineTelemetryConfig((params, isDev) => {
+  return {
+    integrations: [commerceEvents()],
+    sdkConfig: {
+      // Your OpenTelemetry SDK configuration
+    },
+  };
+});
+```
+
+Integrations can be applied globally (in your telemetry configuration file) or per-action:
+
+```ts
+// Override global integrations for specific actions
+export const main = instrumentEntrypoint(
+  async function webhooksHandler(params) {
+    // Your webhook handler code
+  },
+  {
+    ...telemetryConfig,
+    integrations: [commerceWebhooks()],
+  },
+);
+```
+
+> [!IMPORTANT]
+> Integrations are configuration patches applied sequentially. Later integrations may override settings from earlier ones or your base configuration.
+
+For detailed documentation and a complete list of available integrations, see the [integrations guide](./use-cases/integrations/README.md).
+
 ## How to Use
 
 This section provides a comprehensive guide for instrumenting App Builder Runtime Actions and demonstrates how to leverage this module's API for streamlined telemetry implementation.
