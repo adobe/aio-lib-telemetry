@@ -38,7 +38,7 @@ export type CommerceWebhooksIntegrationConfig = {
    * Commerce's subscription configuration.
    *
    * @default true
-   * @since 1.2.0
+   * @since 1.1.0
    */
   ensureSampling?: boolean;
 };
@@ -63,7 +63,7 @@ function tryExtractRemoteSpanContext(ctx: Context) {
  * An integration with Adobe Commerce Events.
  * @see https://developer.adobe.com/commerce/extensibility/events/
  *
- * @since 1.2.0
+ * @since 1.1.0
  */
 export function commerceEvents(): TelemetryIntegration {
   return {
@@ -105,7 +105,7 @@ export function commerceEvents(): TelemetryIntegration {
  * An integration with Adobe Commerce Webhooks.
  * @see https://developer.adobe.com/commerce/extensibility/webhooks/
  *
- * @since 1.2.0
+ * @since 1.1.0
  */
 export function commerceWebhooks({
   ensureSampling = true,

@@ -162,18 +162,18 @@ export type InstrumentationConfig<T extends AnyFunction> = {
 
 /**
  * A telemetry integration.
- * @since 1.2.0
+ * @since 1.1.0
  */
 export type TelemetryIntegration = {
   /**
    * The name of the integration.
-   * @since 1.2.0
+   * @since 1.1.0
    */
   name: string;
 
   /**
    * A function that patches the {@link EntrypointInstrumentationConfig} provided in {@link defineTelemetryConfig} or in the {@link instrumentEntrypoint} function.
-   * @since 1.2.0
+   * @since 1.1.0
    *
    * @param payload - The payload containing data to be used by the patcher.
    * @param payload.params - The parameters of the action.
@@ -213,7 +213,7 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
    * in the {@link instrumentEntrypoint} function. The latter will take precedence over this configuration.
    *
    * @default undefined
-   * @since 1.2.0
+   * @since 1.1.0
    */
   instrumentationConfig?: Omit<
     EntrypointInstrumentationConfig,
@@ -229,7 +229,7 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
 
 /**
  * The shape of the entrypoint function.
- * @since 1.2.0
+ * @since 1.1.0
  */
 export type EntrypointFunction = (params: Record<string, unknown>) => unknown;
 
@@ -249,7 +249,7 @@ export interface EntrypointInstrumentationConfig
 
   /**
    * Integrations with external telemetry systems.
-   * @since 1.2.0
+   * @since 1.1.0
    * @default []
    */
   integrations?: TelemetryIntegration[];
