@@ -108,7 +108,7 @@ export function getPropagatedContext(
   const { carrier, baseCtx } = getContextCarrier(params);
   let currentCtx = baseCtx ?? context.active();
 
-  if (carrier) {
+  if (carrier && Object.keys(carrier).length > 0) {
     currentCtx = deserializeContextFromCarrier(carrier, currentCtx);
   }
 

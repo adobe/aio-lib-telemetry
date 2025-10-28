@@ -18,11 +18,6 @@ describe("core/config", () => {
   let coreConfig: typeof import("~/core/config");
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.doMock("~/core/metrics", () => ({
-      createMetricsProxy: vi.fn(),
-    }));
-
     coreConfig = await import("~/core/config");
   });
 
