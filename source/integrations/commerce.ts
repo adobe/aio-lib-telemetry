@@ -55,7 +55,6 @@ function tryExtractRemoteSpanContext(ctx: Context) {
 
   const spanContext = span.spanContext();
   if (spanContext.isRemote && isSpanContextValid(spanContext)) {
-    // It's sampled, use the incoming trace.
     return spanContext;
   }
 
@@ -71,7 +70,7 @@ function tryExtractRemoteSpanContext(ctx: Context) {
 export function commerceEvents(): TelemetryIntegration {
   return {
     name: "commerce-events",
-    patch: ({ updateInstrumentationConfig, params }) => {
+    patchInstrumentationConfig: ({ updateInstrumentationConfig, params }) => {
       const typedParams = params as {
         data: { _metadata: Record<PropertyKey, string> };
       };
@@ -92,6 +91,8 @@ export function commerceEvents(): TelemetryIntegration {
             spanContext !== null
               ? [
                   {
+                    // Some backends still don't support span links, so we add the trace ID as an attribute.
+                    attributes: { "commerce.traceid": spanContext.traceId },
                     context: spanContext,
                   },
                 ]
@@ -113,7 +114,7 @@ export function commerceWebhooks({
 }: CommerceWebhooksIntegrationConfig = {}): TelemetryIntegration {
   return {
     name: "commerce-webhooks",
-    patch: ({ params, updateInstrumentationConfig }) => {
+    patchInstrumentationConfig: ({ params, updateInstrumentationConfig }) => {
       const typedParams = params as {
         __ow_headers: Record<PropertyKey, string>;
       };
@@ -132,13 +133,21 @@ export function commerceWebhooks({
 
       updateInstrumentationConfig({
         propagation: {
-          skip: !(shouldCreateNewRoot && spanContext),
+          skip: shouldCreateNewRoot,
           getContextCarrier: () => ({ carrier, baseCtx: propagatedCtx }),
         },
 
         spanConfig: {
           // If we're starting a new trace, add a link to the incoming trace.
-          links: shouldCreateNewRoot ? [{ context: spanContext }] : [],
+          links: shouldCreateNewRoot
+            ? [
+                {
+                  // Some backends still don't support span links, so we add the trace ID as an attribute.
+                  attributes: { "commerce.traceid": spanContext.traceId },
+                  context: spanContext,
+                },
+              ]
+            : [],
         },
       });
     },

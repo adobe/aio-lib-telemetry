@@ -13,10 +13,9 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 import { context, SpanStatusCode } from "@opentelemetry/api";
-import deepmerge from "deepmerge";
 
 import {
-  deserializeContextFromCarrier,
+  getPropagatedContext,
   serializeContextIntoCarrier,
 } from "~/api/propagation";
 import { getLogger } from "~/core/logging";
@@ -29,14 +28,14 @@ import {
   getGlobalTelemetryApi,
   initializeGlobalTelemetryApi,
 } from "~/core/telemetry-api";
+import { applyInstrumentationIntegrationPatches } from "~/helpers/integrations";
 import {
   getRuntimeActionMetadata,
-  isDevelopment,
   isTelemetryEnabled,
 } from "~/helpers/runtime";
+import { setTelemetryEnv } from "~/helpers/setup";
 
 import type { Span } from "@opentelemetry/api";
-import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
 import type {
   EntrypointFunction,
   EntrypointInstrumentationConfig,
@@ -274,69 +273,6 @@ export function instrumentEntrypoint<
   // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
   T extends (params: Record<string, unknown>) => any,
 >(fn: T, config: EntrypointInstrumentationConfig) {
-  /** Sets a global process.env.ENABLE_TELEMETRY variable. */
-  function setTelemetryEnv(params: Record<string, unknown>) {
-    const { ENABLE_TELEMETRY = false } = params;
-    const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
-    process.env = {
-      // Disable automatic resource detection to avoid leaking
-      // information about the runtime environment by default.
-      OTEL_NODE_RESOURCE_DETECTORS: "none",
-
-      ...process.env,
-
-      // Setting process.env.ENABLE_TELEMETRY directly won't work.
-      // This is due to to webpack automatic env inline replacement.
-      __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY: enableTelemetry,
-      __AIO_LIB_TELEMETRY_LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
-    };
-  }
-
-  function inferContextCarrier(params: Record<string, unknown>) {
-    // Try to infer the parent context from the following (in order):
-    // 1. A `x-telemetry-context` header.
-    // 2. A `__telemetryContext` input parameter.
-    // 3. A `__telemetryContext` property in `params.data`.
-    const headers = params.__ow_headers as Record<string, string>;
-    const telemetryContext =
-      // @deprecated: Remove custom __telemetryContext lookups in a future major release.
-      headers?.["x-telemetry-context"] ??
-      params.__telemetryContext ??
-      (params.data as Record<string, unknown>)?.__telemetryContext ??
-      null;
-
-    // If the telemetry context is not found among all the above lookups,
-    // default to the OpenWhisk headers (received when invoking via HTTP requests).
-    // OpenTelemetry will pick the correct W3C context info automatically.
-    const w3cContext = telemetryContext ?? headers ?? null;
-    return {
-      baseCtx: context.active(),
-      carrier:
-        typeof w3cContext === "string" ? JSON.parse(w3cContext) : w3cContext,
-    };
-  }
-
-  /** Callback that will be used to retrieve the base context for the entrypoint. */
-  function getPropagatedContext(params: Record<string, unknown>) {
-    const {
-      skip: skipPropagation = false,
-      getContextCarrier = inferContextCarrier,
-    } = config.propagation ?? {};
-
-    if (skipPropagation) {
-      return context.active();
-    }
-
-    const { carrier, baseCtx } = getContextCarrier(params);
-    let currentCtx = baseCtx ?? context.active();
-
-    if (carrier) {
-      currentCtx = deserializeContextFromCarrier(carrier, currentCtx);
-    }
-
-    return currentCtx;
-  }
-
   /** Initializes the Telemetry SDK and API. */
   function setupTelemetry(params: Record<string, unknown>) {
     const {
@@ -348,59 +284,6 @@ export function instrumentEntrypoint<
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
 
     const currentConfig = initializeTelemetry(params, isDev);
-    let currentInstrumentationConfig = deepmerge(
-      currentConfig.instrumentationConfig ?? {},
-      initialInstrumentationConfig,
-    );
-
-    const updateSdkConfigHandler = (
-      newSdkConfig: Partial<NodeSDKConfiguration>,
-    ) => {
-      currentConfig.sdkConfig = deepmerge(
-        currentConfig.sdkConfig,
-        newSdkConfig,
-      );
-    };
-
-    const updateInstrumentationConfigHandler = (
-      newInstrumentationConfig: Partial<
-        InstrumentationConfig<EntrypointFunction>
-      >,
-    ) => {
-      // @ts-expect-error - Although it's a different type, it's compatible
-      currentInstrumentationConfig = deepmerge(
-        currentInstrumentationConfig,
-        newInstrumentationConfig,
-      );
-    };
-
-    let currentIntegration: string | null = null;
-    try {
-      for (const integration of integrations) {
-        currentIntegration = integration.name;
-
-        integration.patch({
-          config: currentConfig,
-          instrumentationConfig: currentInstrumentationConfig,
-          params,
-
-          updateSdkConfig: updateSdkConfigHandler,
-          updateInstrumentationConfig: updateInstrumentationConfigHandler,
-        });
-      }
-    } catch (error) {
-      if (currentIntegration) {
-        throw new Error(
-          `Failed to apply integration "${currentIntegration}" to the telemetry configuration: ${error instanceof Error ? error.message : error}`,
-          {
-            cause: error,
-          },
-        );
-      }
-
-      throw error;
-    }
-
     const { diagnostics, sdkConfig, tracer, meter } = currentConfig;
 
     if (diagnostics) {
@@ -412,13 +295,22 @@ export function instrumentEntrypoint<
     initializeSdk(sdkConfig);
     initializeGlobalTelemetryApi({ tracer, meter });
 
+    const { propagation, ...instrumentationConfig } =
+      applyInstrumentationIntegrationPatches(
+        integrations,
+        initialInstrumentationConfig,
+        params,
+      );
+
     return {
-      ...currentInstrumentationConfig,
+      ...instrumentationConfig,
       spanConfig: {
-        getBaseContext: getPropagatedContext,
-        ...currentInstrumentationConfig.spanConfig,
+        getBaseContext: (actionParams) =>
+          getPropagatedContext(actionParams, propagation ?? {}),
+
+        ...instrumentationConfig.spanConfig,
       },
-    };
+    } satisfies InstrumentationConfig<EntrypointFunction>;
   }
 
   /** Instruments the given entrypoint handler. */

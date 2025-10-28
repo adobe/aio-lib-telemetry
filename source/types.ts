@@ -172,41 +172,27 @@ export type TelemetryIntegration = {
   name: string;
 
   /**
-   * A function that patches the telemetry configuration.
+   * A function that patches the {@link EntrypointInstrumentationConfig} provided in {@link defineTelemetryConfig} or in the {@link instrumentEntrypoint} function.
    * @since 1.2.0
    *
-   * @param config - The telemetry configuration.
-   * @param instrumentationConfig - The instrumentation configuration.
-   * @returns The patched telemetry configuration and instrumentation configuration.
+   * @param payload - The payload containing data to be used by the patcher.
+   * @param payload.params - The parameters of the action.
+   * @param payload.instrumentationConfig - The {@link EntrypointInstrumentationConfig} to patch.
+   * @param payload.updateInstrumentationConfig - A function to update the {@link EntrypointInstrumentationConfig}.
    */
-  patch: TelemetryIntegrationPatcher;
+  patchInstrumentationConfig?: (payload: {
+    params: Record<string, unknown>;
+    instrumentationConfig: Omit<
+      EntrypointInstrumentationConfig,
+      "initializeTelemetry" | "integrations"
+    >;
+
+    updateInstrumentationConfig: (
+      config: Partial<EntrypointInstrumentationConfig>,
+    ) => void;
+  }) => void;
 };
 
-/**
- * A function that receives a telemetry configuration and returns an updated one (with the integration applied).
- * @since 1.2.0
- *
- * @param patcherPayload - The payload containing data to be used by the patcher.
- * @returns The patched telemetry configuration and instrumentation configuration.
- */
-export type TelemetryIntegrationPatcher = (patcherPayload: {
-  config: TelemetryConfig;
-  instrumentationConfig: Omit<
-    EntrypointInstrumentationConfig,
-    "initializeTelemetry" | "integrations"
-  >;
-  params: Record<string, unknown>;
-
-  updateSdkConfig: (config: Partial<NodeSDKConfiguration>) => void;
-  updateInstrumentationConfig: (
-    config: Partial<
-      Omit<
-        EntrypointInstrumentationConfig,
-        "initializeTelemetry" | "integrations"
-      >
-    >,
-  ) => void;
-}) => void;
 /**
  * The configuration options for the telemetry module.
  * @since 0.1.0
