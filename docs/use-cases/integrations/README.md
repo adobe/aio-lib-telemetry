@@ -115,7 +115,7 @@ Commerce Events include trace context in the `_metadata` field:
 }
 ```
 
-The integration automatically extracts and processes this trace information.
+The integration automatically extracts and processes the trace information.
 
 #### When to Use
 
