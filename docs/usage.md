@@ -144,7 +144,7 @@ const telemetryConfig = defineTelemetryConfig((params, isDev) => {
 });
 ```
 
-Integrations can be applied globally (in your telemetry configuration file) or per-action:
+Integrations can be applied globally (in your telemetry configuration file), or per-action:
 
 ```ts
 // Override global integrations for specific actions
