@@ -11,11 +11,17 @@
  */
 /** biome-ignore-all lint/style/noMagicNumbers: Test file. */
 
-import { metrics, ROOT_CONTEXT, trace } from "@opentelemetry/api";
+import {
+  metrics,
+  ROOT_CONTEXT,
+  SpanStatusCode,
+  trace,
+} from "@opentelemetry/api";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Context, Meter, SpanContext, Tracer } from "@opentelemetry/api";
+import type { MockInstance } from "vitest";
 import type { InstrumentationContext } from "~/types";
 
 describe("core/instrumentation", () => {
@@ -759,8 +765,12 @@ describe("core/instrumentation", () => {
         message: "Runtime action failed",
       };
 
+      let spy: MockInstance | null = null;
       const instrumentedMain = instrumentation.instrumentEntrypoint(
         function main() {
+          const span = instrumentation.getInstrumentationHelpers().currentSpan;
+          spy = vi.spyOn(span, "setStatus");
+
           return { error };
         },
         {
@@ -770,14 +780,24 @@ describe("core/instrumentation", () => {
 
       const result = instrumentedMain({});
       expect(result).toEqual({ error });
-      expect(mockSpan.setStatus).toHaveBeenCalledWith({
+
+      if (!spy) {
+        expect.fail("failed to spy on span.setStatus");
+      }
+
+      const mockSpy = spy as MockInstance;
+      expect(mockSpy.mock.calls[0][0]).toEqual({
         code: SpanStatusCode.ERROR,
       });
     });
 
     test("should not instrusively mark root span if the runtime action returns a non-object", () => {
+      let spy: MockInstance | null = null;
       const instrumentedMain = instrumentation.instrumentEntrypoint(
         function main() {
+          const span = instrumentation.getInstrumentationHelpers().currentSpan;
+          spy = vi.spyOn(span, "setStatus");
+
           return "test";
         },
         {
@@ -787,9 +807,13 @@ describe("core/instrumentation", () => {
 
       const result = instrumentedMain({});
       expect(result).toEqual("test");
-      expect(mockSpan.setStatus).not.toHaveBeenCalledWith({
-        code: SpanStatusCode.ERROR,
-      });
+
+      if (!spy) {
+        expect.fail("failed to spy on span.setStatus");
+      }
+
+      const mockSpy = spy as MockInstance;
+      expect(mockSpy.mock.calls[0][0]).not.toEqual(SpanStatusCode.ERROR);
     });
   });
 });
