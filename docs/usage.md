@@ -126,7 +126,7 @@ Refer to the API reference documentation of this library for more information ab
 
 ### Integrations
 
-Since version 1.1.0, this library supports an `integrations` feature that provides pre-configured patches for external systems. Integrations handle complex setup tasks like context propagation, span linking, and sampling decisions automatically.
+Since version 1.1.0, this library supports an `integrations` feature that provides preconfigured patches for external systems. Integrations handle complex setup tasks like context propagation, span linking, and sampling decisions automatically.
 
 Available integrations are imported from `@adobe/aio-lib-telemetry/integrations`:
 
