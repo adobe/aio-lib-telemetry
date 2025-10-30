@@ -1,6 +1,6 @@
 # Integrations
 
-Since version 1.1.0, this library supports an `integrations` feature that allows you to easily integrate with external systems requiring specific telemetry configurations. Integrations are pre-configured patches that automatically handle complex setup tasks like context propagation, span linking, and sampling decisions.
+Since version 1.1.0, this library supports an `integrations` feature that facilitates integration with external systems that require specific telemetry configurations. Integrations are preconfigured patches that automatically handle complex setup tasks, such as context propagation, span linking, and sampling decisions.
 
 > [!IMPORTANT]
 > Integrations are configuration patches applied sequentially to your telemetry configuration. Each integration can override or extend existing settings, so the order in which you apply them matters.
