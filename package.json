@@ -105,8 +105,8 @@
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/recommended": "^1.0.10",
     "@types/node": "^24.0.12",
-    "@vitest/coverage-v8": "^3.2.4",
-    "@vitest/ui": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.0",
+    "@vitest/ui": "^4.0.0",
     "husky": "^9.1.7",
     "knip": "^5.61.3",
     "lint-staged": "^16.1.2",
@@ -117,7 +117,7 @@
     "typescript": "^5.8.3",
     "ultracite": "5.6.4",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.0"
   },
   "sideEffects": false,
   "lint-staged": {
