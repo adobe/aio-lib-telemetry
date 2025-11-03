@@ -4,7 +4,7 @@
 function getAioRuntimeResource(): Resource;
 ```
 
-Defined in: [api/attributes.ts:45](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/api/attributes.ts#L45)
+Defined in: [api/attributes.ts:45](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/api/attributes.ts#L45)
 
 Creates a [resource](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.resources.Resource.html)
 from the attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
