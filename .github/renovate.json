@@ -37,8 +37,9 @@
     {
       "groupName": "biome and ultracite",
       "matchPackageNames": ["@biomejs/biome", "ultracite"],
+      "separateMajorMinor": false,
       "postUpgradeTasks": {
-        "commands": ["npm run lint:fix && npm run format"],
+        "commands": ["npm run lint:fix", "npm run format"],
         "executionMode": "branch"
       }
     }
