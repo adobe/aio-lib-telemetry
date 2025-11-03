@@ -19,7 +19,7 @@ import type {
   Tracer,
 } from "@opentelemetry/api";
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-import type { AnyFunction } from "~/core/instrumentation";
+import type { AnyFunction, instrumentEntrypoint } from "~/core/instrumentation";
 import type { getLogger } from "~/core/logging";
 
 /**
@@ -161,6 +161,39 @@ export type InstrumentationConfig<T extends AnyFunction> = {
 };
 
 /**
+ * A telemetry integration.
+ * @since 1.1.0
+ */
+export type TelemetryIntegration = {
+  /**
+   * The name of the integration.
+   * @since 1.1.0
+   */
+  name: string;
+
+  /**
+   * A function that patches the {@link EntrypointInstrumentationConfig} provided in {@link defineTelemetryConfig} or in the {@link instrumentEntrypoint} function.
+   * @since 1.1.0
+   *
+   * @param payload - The payload containing data to be used by the patcher.
+   * @param payload.params - The parameters of the action.
+   * @param payload.instrumentationConfig - The {@link EntrypointInstrumentationConfig} to patch.
+   * @param payload.updateInstrumentationConfig - A function to update the {@link EntrypointInstrumentationConfig}.
+   */
+  patchInstrumentationConfig?: (payload: {
+    params: Record<string, unknown>;
+    instrumentationConfig: Omit<
+      EntrypointInstrumentationConfig,
+      "initializeTelemetry" | "integrations"
+    >;
+
+    updateInstrumentationConfig: (
+      config: Partial<EntrypointInstrumentationConfig>,
+    ) => void;
+  }) => void;
+};
+
+/**
  * The configuration options for the telemetry module.
  * @since 0.1.0
  */
@@ -174,6 +207,20 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
   sdkConfig: Partial<NodeSDKConfiguration>;
 
   /**
+   * The instrumentation configuration that will be used for the entrypoint function.
+   *
+   * @remarks This configuration will be merged with the initial instrumentation configuration provided
+   * in the {@link instrumentEntrypoint} function. The latter will take precedence over this configuration.
+   *
+   * @default undefined
+   * @since 1.1.0
+   */
+  instrumentationConfig?: Omit<
+    EntrypointInstrumentationConfig,
+    "initializeTelemetry"
+  >;
+
+  /**
    * The configuration options for the telemetry diagnostics.
    * @since 0.1.0
    */
@@ -181,11 +228,17 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
 }
 
 /**
+ * The shape of the entrypoint function.
+ * @since 1.1.0
+ */
+export type EntrypointFunction = (params: Record<string, unknown>) => unknown;
+
+/**
  * The configuration for entrypoint instrumentation.
  * @since 0.1.0
  */
 export interface EntrypointInstrumentationConfig
-  extends InstrumentationConfig<(params: Record<string, unknown>) => unknown> {
+  extends InstrumentationConfig<EntrypointFunction> {
   /**
    * Configuration options related to context propagation.
    * See the {@link TelemetryPropagationConfig} for the interface.
@@ -193,6 +246,13 @@ export interface EntrypointInstrumentationConfig
    * @since 0.1.0
    */
   propagation?: TelemetryPropagationConfig;
+
+  /**
+   * Integrations with external telemetry systems.
+   * @since 1.1.0
+   * @default []
+   */
+  integrations?: TelemetryIntegration[];
 
   /**
    * This function is called at the start of the action.

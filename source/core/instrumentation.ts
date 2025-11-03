@@ -15,7 +15,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { context, SpanStatusCode } from "@opentelemetry/api";
 
 import {
-  deserializeContextFromCarrier,
+  getPropagatedContext,
   serializeContextIntoCarrier,
 } from "~/api/propagation";
 import { getLogger } from "~/core/logging";
@@ -28,14 +28,16 @@ import {
   getGlobalTelemetryApi,
   initializeGlobalTelemetryApi,
 } from "~/core/telemetry-api";
+import { applyInstrumentationIntegrationPatches } from "~/helpers/integrations";
 import {
   getRuntimeActionMetadata,
-  isDevelopment,
   isTelemetryEnabled,
 } from "~/helpers/runtime";
+import { setTelemetryEnv } from "~/helpers/setup";
 
 import type { Span } from "@opentelemetry/api";
 import type {
+  EntrypointFunction,
   EntrypointInstrumentationConfig,
   InstrumentationConfig,
   InstrumentationContext as InstrumentationHelpers,
@@ -195,22 +197,12 @@ export function instrument<T extends AnyFunction>(
 
   /** Sets up the span data (given to the tracer) for the current operation. */
   function setupSpanData(...args: Parameters<T>) {
-    const { actionName } = getRuntimeActionMetadata();
     const { tracer } = getGlobalTelemetryApi();
     const currentCtx = getBaseContext?.(...args) ?? context.active();
 
-    const spanCfg = {
-      ...spanOptions,
-      attributes: {
-        "self.name": spanName,
-        "action.name": actionName,
-        ...spanOptions.attributes,
-      },
-    };
-
     return {
       currentCtx,
-      spanConfig: spanCfg,
+      spanConfig: spanOptions,
       tracer,
     };
   }
@@ -281,75 +273,18 @@ export function instrumentEntrypoint<
   // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.
   T extends (params: Record<string, unknown>) => any,
 >(fn: T, config: EntrypointInstrumentationConfig) {
-  /** Sets a global process.env.ENABLE_TELEMETRY variable. */
-  function setTelemetryEnv(params: Record<string, unknown>) {
-    const { ENABLE_TELEMETRY = false } = params;
-    const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
-    process.env = {
-      // Disable automatic resource detection to avoid leaking
-      // information about the runtime environment by default.
-      OTEL_NODE_RESOURCE_DETECTORS: "none",
-
-      ...process.env,
-
-      // Setting process.env.ENABLE_TELEMETRY directly won't work.
-      // This is due to to webpack automatic env inline replacement.
-      __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY: enableTelemetry,
-      __AIO_LIB_TELEMETRY_LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
-    };
-  }
-
-  function inferContextCarrier(params: Record<string, unknown>) {
-    // Try to infer the parent context from the following (in order):
-    // 1. A `x-telemetry-context` header.
-    // 2. A `__telemetryContext` input parameter.
-    // 3. A `__telemetryContext` property in `params.data`.
-    const headers = (params.__ow_headers as Record<string, string>) ?? {};
-    const telemetryContext =
-      headers["x-telemetry-context"] ??
-      params.__telemetryContext ??
-      (params.data as Record<string, unknown>)?.__telemetryContext ??
-      null;
-
-    return {
-      baseCtx: context.active(),
-      carrier:
-        typeof telemetryContext === "string"
-          ? JSON.parse(telemetryContext)
-          : telemetryContext,
-    };
-  }
-
-  /** Callback that will be used to retrieve the base context for the entrypoint. */
-  function getPropagatedContext(params: Record<string, unknown>) {
-    const {
-      skip: skipPropagation = false,
-      getContextCarrier = inferContextCarrier,
-    } = config.propagation ?? {};
-
-    if (skipPropagation) {
-      return context.active();
-    }
-
-    const { carrier, baseCtx } = getContextCarrier(params);
-    let currentCtx = baseCtx ?? context.active();
-
-    if (carrier) {
-      currentCtx = deserializeContextFromCarrier(carrier, currentCtx);
-    }
-
-    return currentCtx;
-  }
-
   /** Initializes the Telemetry SDK and API. */
   function setupTelemetry(params: Record<string, unknown>) {
-    const { initializeTelemetry, ...instrumentationConfig } = config;
+    const {
+      initializeTelemetry,
+      integrations = [],
+      ...initialInstrumentationConfig
+    } = config;
 
     const { isDevelopment: isDev } = getRuntimeActionMetadata();
-    const { sdkConfig, tracer, meter, diagnostics } = initializeTelemetry(
-      params,
-      isDev,
-    );
+
+    const currentConfig = initializeTelemetry(params, isDev);
+    const { diagnostics, sdkConfig, tracer, meter } = currentConfig;
 
     if (diagnostics) {
       // Diagnostics only work if initialized before the telemetry SDK.
@@ -360,13 +295,22 @@ export function instrumentEntrypoint<
     initializeSdk(sdkConfig);
     initializeGlobalTelemetryApi({ tracer, meter });
 
+    const { propagation, ...instrumentationConfig } =
+      applyInstrumentationIntegrationPatches(
+        integrations,
+        initialInstrumentationConfig,
+        params,
+      );
+
     return {
       ...instrumentationConfig,
       spanConfig: {
-        getBaseContext: getPropagatedContext,
+        getBaseContext: (actionParams) =>
+          getPropagatedContext(actionParams, propagation ?? {}),
+
         ...instrumentationConfig.spanConfig,
       },
-    };
+    } satisfies InstrumentationConfig<EntrypointFunction>;
   }
 
   /** Instruments the given entrypoint handler. */

@@ -35,6 +35,11 @@
       "import": "./dist/es/otel.js",
       "require": "./dist/cjs/otel.cjs"
     },
+    "./integrations": {
+      "types": "./dist/integrations.d.cts",
+      "import": "./dist/es/integrations/index.js",
+      "require": "./dist/cjs/integrations/index.cjs"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -89,6 +94,7 @@
     "@opentelemetry/sdk-trace-node": "^2.0.0",
     "@opentelemetry/semantic-conventions": "^1.33.0",
     "@opentelemetry/winston-transport": "^0.17.0",
+    "deepmerge": "^4.3.1",
     "winston-transport": "^4.9.0"
   },
   "devDependencies": {

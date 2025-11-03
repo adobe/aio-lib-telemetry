@@ -32,9 +32,13 @@ const ADOBE_LICENSE_BANNER = `
 `.trimStart();
 
 export default defineConfig({
-  entry: ["./source/index.ts", "./source/otel.ts"],
-  format: ["cjs", "esm"],
+  entry: [
+    "./source/index.ts",
+    "./source/otel.ts",
+    "./source/integrations/index.ts",
+  ],
 
+  format: ["cjs", "esm"],
   outputOptions: {
     legalComments: "inline",
     dir: OUT_DIR,

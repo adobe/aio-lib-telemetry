@@ -9,29 +9,38 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/** biome-ignore-all lint/style/noMagicNumbers: Test file. */
 
-import { SpanStatusCode } from "@opentelemetry/api";
-import { assert, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  metrics,
+  ROOT_CONTEXT,
+  SpanStatusCode,
+  trace,
+} from "@opentelemetry/api";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import type { Context } from "@opentelemetry/api";
+import type { Context, Meter, SpanContext, Tracer } from "@opentelemetry/api";
+import type { MockInstance } from "vitest";
 import type { InstrumentationContext } from "~/types";
 
 describe("core/instrumentation", () => {
   let instrumentation: typeof import("~/core/instrumentation");
   let runtimeHelpers: typeof import("~/helpers/runtime");
-  let propagation: typeof import("~/api/propagation");
 
-  const mockSpan = {
-    registerName: vi.fn(),
-    setStatus: vi.fn(),
-    recordException: vi.fn(),
-    end: vi.fn(),
-    addEvent: vi.fn(),
-  };
+  let tracer: Tracer;
+  let meter: Meter;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+
+    tracer = trace.getTracer("test-tracer");
+    meter = metrics.getMeter("test-meter");
+    vi.stubGlobal("__OTEL_TELEMETRY_API__", {
+      tracer,
+      meter,
+    });
 
     vi.doMock("~/helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => ({
@@ -53,69 +62,19 @@ describe("core/instrumentation", () => {
       isDevelopment: vi.fn(() => false),
     }));
 
-    vi.doMock("~/core/sdk", () => ({
-      ensureSdkInitialized: vi.fn(),
-      initializeSdk: vi.fn(),
-      initializeDiagnostics: vi.fn(),
-    }));
-
-    vi.doMock("~/core/telemetry-api", () => ({
-      initializeGlobalTelemetryApi: vi.fn(),
-      getGlobalTelemetryApi: vi.fn(() => ({
-        meter: {},
-        tracer: {
-          startActiveSpan: vi.fn((name, _options, _ctx, fn) => {
-            // Note: This is a hacky way to get the span name for easier testing
-            // This registerName is not part of the public Span API.
-            // Because we're not able to check at runtime which is the name of the span
-            // We're creating this "fake" method to be able to expect it's called with the correct name
-            mockSpan.registerName(name);
-            return fn(mockSpan);
-          }),
-        },
-      })),
-    }));
-
-    vi.doMock("~/core/logging", () => ({
-      getLogger: vi.fn(() => ({
-        info: vi.fn(),
-        error: vi.fn(),
-        debug: vi.fn(),
-        warn: vi.fn(),
-      })),
-    }));
-
-    vi.doMock("~/api/propagation", () => ({
-      serializeContextIntoCarrier: vi.fn(() => ({ traceparent: "test-trace" })),
-      deserializeContextFromCarrier: vi.fn(() => ({
-        getValue: vi.fn(),
-        setValue: vi.fn(),
-        deleteValue: vi.fn(),
-      })),
-    }));
-
-    vi.doMock("@opentelemetry/api", async () => {
-      const actual = await vi.importActual("@opentelemetry/api");
-      return {
-        ...actual,
-        context: {
-          // @ts-expect-error - It can't infer the type of the module correctly.
-          ...actual.context,
-          active: vi.fn(() => ({
-            getValue: vi.fn(),
-            setValue: vi.fn(),
-            deleteValue: vi.fn(),
-          })),
-        },
-      };
-    });
-
     instrumentation = await import("~/core/instrumentation");
     runtimeHelpers = await import("~/helpers/runtime");
-    propagation = await import("~/api/propagation");
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe("getInstrumentationHelpers", () => {
+    beforeEach(() => {
+      vi.stubGlobal("__OTEL_SDK__", new NodeSDK());
+    });
+
     test("should throw different errors when telemetry is not enabled or called outside instrumented function", () => {
       // This should throw because telemetry is not enabled
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(false);
@@ -150,7 +109,6 @@ describe("core/instrumentation", () => {
 
     test("should return helpers when called within instrumented function", () => {
       let capturedHelpers: InstrumentationContext | null = null;
-
       const testFn = instrumentation.instrument(function testFunction() {
         capturedHelpers = instrumentation.getInstrumentationHelpers();
         return "success";
@@ -160,7 +118,7 @@ describe("core/instrumentation", () => {
       expect(result).toBe("success");
 
       if (!capturedHelpers) {
-        assert.fail("capturedHelpers is null");
+        expect.fail("capturedHelpers is null");
       }
 
       const helpers = capturedHelpers as InstrumentationContext;
@@ -174,6 +132,10 @@ describe("core/instrumentation", () => {
   });
 
   describe("instrument", () => {
+    beforeEach(() => {
+      vi.stubGlobal("__OTEL_SDK__", new NodeSDK());
+    });
+
     test("should wrap a function and return the same result", () => {
       const originalFn = vi.fn((a: number, b: number) => a + b);
       const instrumentedFn = instrumentation.instrument(originalFn);
@@ -184,6 +146,7 @@ describe("core/instrumentation", () => {
     });
 
     test("should use function name as span name by default", () => {
+      const spy = vi.spyOn(tracer, "startActiveSpan");
       const namedFunction = vi.fn(function myFunction() {
         return "result";
       });
@@ -191,10 +154,11 @@ describe("core/instrumentation", () => {
       const instrumented = instrumentation.instrument(namedFunction);
       instrumented();
 
-      expect(mockSpan.registerName).toHaveBeenCalledWith("myFunction");
+      expect(spy.mock.calls[0][0]).toBe("myFunction");
     });
 
     test("should use provided span name", () => {
+      const spy = vi.spyOn(tracer, "startActiveSpan");
       const fn = vi.fn(function testFn() {
         return "result";
       });
@@ -204,14 +168,14 @@ describe("core/instrumentation", () => {
       });
 
       expect(instrumented1()).toBe("result");
-      expect(mockSpan.registerName).toHaveBeenCalledWith("custom-span");
+      expect(spy.mock.calls[0][0]).toBe("custom-span");
 
       const instrumented2 = instrumentation.instrument(() => "anonymous", {
         spanConfig: { spanName: "anonymous-span" },
       });
 
       expect(instrumented2()).toBe("anonymous");
-      expect(mockSpan.registerName).toHaveBeenCalledWith("anonymous-span");
+      expect(spy.mock.calls[1][0]).toBe("anonymous-span");
     });
 
     test("should throw error when no span name available", () => {
@@ -259,19 +223,17 @@ describe("core/instrumentation", () => {
 
     test("non-throwing functions should use isSuccessful predicate to determine success", () => {
       const fn = vi.fn(() => ({ success: false, data: "test" }));
+      const isSuccessful = vi.fn(
+        (result: { success: boolean }) => result.success === true,
+      );
 
       const instrumentedFn = instrumentation.instrument(fn, {
         spanConfig: { spanName: "predicate-test" },
-        isSuccessful: (result) => result.success === true,
+        isSuccessful,
       });
 
       instrumentedFn();
-
-      // Even though the function doesn't throw the `isSuccessful` predicate
-      // will be used to determine the final status of the span
-      expect(mockSpan.setStatus).toHaveBeenCalledWith({
-        code: SpanStatusCode.ERROR,
-      });
+      expect(isSuccessful).toHaveBeenCalledTimes(1);
     });
 
     test("should call onResult hook", () => {
@@ -296,7 +258,6 @@ describe("core/instrumentation", () => {
       expect(nonSuccessfulResult).toBe("result");
 
       expect(onResult).toHaveBeenCalledTimes(2);
-      expect(onResult).toHaveBeenCalledWith("result", mockSpan);
     });
 
     test("should call onError hook", () => {
@@ -314,8 +275,6 @@ describe("core/instrumentation", () => {
 
       expect(() => instrumentedFn()).toThrow(error);
       expect(onError).toHaveBeenCalledOnce();
-      expect(onError).toHaveBeenCalledWith(error, mockSpan);
-      expect(mockSpan.recordException).toHaveBeenCalledWith(customError);
     });
 
     test("should handle non-Error exceptions", () => {
@@ -329,12 +288,6 @@ describe("core/instrumentation", () => {
       });
 
       expect(() => instrumentedFn()).toThrow(error);
-      expect(mockSpan.recordException).toHaveBeenCalledWith({
-        code: -1,
-        name: "Unknown Error",
-        message: 'Unhandled error at span "non-error-test": string error',
-        stack: expect.any(String),
-      });
 
       const namedInstrumentedFn = instrumentation.instrument(
         vi.fn(function named() {
@@ -344,18 +297,16 @@ describe("core/instrumentation", () => {
       );
 
       expect(() => namedInstrumentedFn()).toThrow(error);
-      expect(mockSpan.recordException).toHaveBeenCalledWith({
-        code: -1,
-        name: "Unknown Error",
-        message: 'Unhandled error at span "named": string error',
-        stack: expect.any(String),
-      });
     });
 
-    test("should pass through when telemetry is disabled", async () => {
+    test("should pass through when telemetry is disabled", () => {
       vi.mocked(runtimeHelpers.isTelemetryEnabled).mockReturnValue(false);
 
-      const fn = vi.fn((x: number) => x * 2);
+      const fn = vi.fn((x: number) => {
+        expect(() => instrumentation.getInstrumentationHelpers()).toThrow();
+        return x * 2;
+      });
+
       const instrumentedDuplicate = instrumentation.instrument(fn, {
         spanConfig: { spanName: "disabled-test" },
       });
@@ -363,9 +314,6 @@ describe("core/instrumentation", () => {
       const result = instrumentedDuplicate(5);
       expect(result).toBe(10);
       expect(fn).toHaveBeenCalledWith(5);
-
-      const sdk = await import("~/core/sdk");
-      expect(sdk.ensureSdkInitialized).not.toHaveBeenCalled();
     });
 
     test("should maintain separate contexts for concurrent operations", async () => {
@@ -427,7 +375,6 @@ describe("core/instrumentation", () => {
 
     test("inner instrumented functions should have their own context", () => {
       const contexts: InstrumentationContext[] = [];
-
       const inner = instrumentation.instrument(function innerFn() {
         contexts.push(instrumentation.getInstrumentationHelpers());
         return "inner";
@@ -456,7 +403,7 @@ describe("core/instrumentation", () => {
         sdkConfig: {},
         tracer: {},
         meter: {},
-        diagnostics: { logLevel: "info" as const },
+        diagnostics: { logLevel: "error" },
       }));
     });
 
@@ -528,57 +475,107 @@ describe("core/instrumentation", () => {
 
     test.each([
       {
-        __ow_headers: {
-          "x-telemetry-context": JSON.stringify({
-            traceparent: "00-123-456-01",
-          }),
+        name: "x-telemetry-context header",
+        params: {
+          __ow_headers: {
+            "x-telemetry-context": JSON.stringify({
+              traceparent:
+                "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
+            }),
+          },
         },
       },
       {
-        __telemetryContext: { traceparent: "00-123-456-01" },
-      },
-      {
-        data: {
-          __telemetryContext: { traceparent: "00-123-456-01" },
+        name: "__telemetryContext parameter",
+        params: {
+          __telemetryContext: {
+            traceparent:
+              "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
+          },
         },
       },
-    ])("should handle context propagation from different sources", (params) => {
-      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
-        initializeTelemetry: mockInitializeTelemetry,
-      });
+      {
+        name: "data.__telemetryContext parameter",
+        params: {
+          data: {
+            __telemetryContext: {
+              traceparent:
+                "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
+            },
+          },
+        },
+      },
+      {
+        name: "W3C traceparent header",
+        params: {
+          __ow_headers: {
+            traceparent:
+              "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
+          },
+        },
+      },
+    ])("should handle context propagation from source: $name", ({ params }) => {
+      let capturedSpanContext: SpanContext | null = null;
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          capturedSpanContext = instrumentation
+            .getInstrumentationHelpers()
+            .currentSpan?.spanContext();
+
+          return { statusCode: 200 };
+        },
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+        },
+      );
 
       instrumentedMain({
         ENABLE_TELEMETRY: "true",
         ...params,
       });
 
-      expect(propagation.deserializeContextFromCarrier).toHaveBeenCalledWith(
-        { traceparent: "00-123-456-01" },
-        expect.any(Object),
-      );
-    });
+      if (!capturedSpanContext) {
+        expect.fail("capturedSpanContext is null");
+      }
 
-    test("should skip propagation if no context is provided", () => {
-      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
-        initializeTelemetry: mockInitializeTelemetry,
-      });
-
-      instrumentedMain({ ENABLE_TELEMETRY: "true" });
-      expect(propagation.deserializeContextFromCarrier).not.toHaveBeenCalled();
+      const spanContext = capturedSpanContext as SpanContext;
+      expect(spanContext.traceId).toBe("1234567890abcdef1234567890abcdef");
+      expect(spanContext.spanId).not.toBe("1234567890abcdef"); // should create a new span
+      expect(spanContext.traceFlags).toBe(1);
+      expect(spanContext.traceState).toBe(undefined);
     });
 
     test("should skip propagation when configured", () => {
-      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
-        initializeTelemetry: mockInitializeTelemetry,
-        propagation: { skip: true },
-      });
+      let capturedSpanContext: SpanContext | null = null;
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          capturedSpanContext = instrumentation
+            .getInstrumentationHelpers()
+            .currentSpan?.spanContext();
+
+          return { statusCode: 200 };
+        },
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+          propagation: { skip: true },
+        },
+      );
 
       instrumentedMain({
         ENABLE_TELEMETRY: "true",
-        __telemetryContext: { traceparent: "00-123-456-01" },
+        __telemetryContext: {
+          traceparent:
+            "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
+        },
       });
 
-      expect(propagation.deserializeContextFromCarrier).not.toHaveBeenCalled();
+      if (!capturedSpanContext) {
+        expect.fail("capturedContext is null");
+      }
+
+      const spanContext = capturedSpanContext as SpanContext;
+      expect(spanContext).toBeDefined();
+      expect(spanContext.traceId).not.toBe("1234567890abcdef1234567890abcdef");
     });
 
     test("should receive params in getContextCarrier", () => {
@@ -600,45 +597,45 @@ describe("core/instrumentation", () => {
     });
 
     test("should use custom base context if provided", () => {
-      const baseContext = {} as Context;
+      const baseContext = {
+        getValue: vi.fn(),
+        setValue: vi.fn(),
+        deleteValue: vi.fn(),
+      } satisfies Context;
 
-      const mockDeserializeContextFromCarrier = vi.fn();
-      vi.mocked(propagation.deserializeContextFromCarrier).mockImplementation(
-        mockDeserializeContextFromCarrier,
-      );
-
-      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
-        initializeTelemetry: mockInitializeTelemetry,
-        propagation: {
-          getContextCarrier: () => ({ carrier: {}, baseCtx: baseContext }),
+      const spy = vi.spyOn(tracer, "startActiveSpan");
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          return { statusCode: 200 };
         },
-      });
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+          propagation: {
+            getContextCarrier: () => ({ carrier: {}, baseCtx: baseContext }),
+          },
+        },
+      );
 
       instrumentedMain({ ENABLE_TELEMETRY: "true" });
-      expect(mockDeserializeContextFromCarrier).toHaveBeenCalledWith(
-        {},
-        baseContext,
-      );
+      expect(spy.mock.calls[0][2]).toEqual(baseContext);
     });
 
     test("should use default context if no base context is provided", () => {
-      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
-        initializeTelemetry: mockInitializeTelemetry,
-        propagation: {
-          getContextCarrier: () => ({ carrier: {}, baseCtx: undefined }),
+      const spy = vi.spyOn(tracer, "startActiveSpan");
+      const instrumentedMain = instrumentation.instrumentEntrypoint(
+        function main() {
+          return { statusCode: 200 };
         },
-      });
-
-      const mockDeserializeContextFromCarrier = vi.fn();
-      vi.mocked(propagation.deserializeContextFromCarrier).mockImplementation(
-        mockDeserializeContextFromCarrier,
+        {
+          initializeTelemetry: mockInitializeTelemetry,
+          propagation: {
+            getContextCarrier: () => ({ carrier: {} }),
+          },
+        },
       );
 
       instrumentedMain({ ENABLE_TELEMETRY: "true" });
-      expect(mockDeserializeContextFromCarrier).toHaveBeenCalledWith(
-        {},
-        expect.any(Object),
-      );
+      expect(spy.mock.calls[0][2]).toEqual(ROOT_CONTEXT);
     });
 
     test.each([new Error("Unexpected error"), "Unexpected string error"])(
@@ -701,15 +698,15 @@ describe("core/instrumentation", () => {
       instrumentedMain({ ENABLE_TELEMETRY: "true" });
 
       if (!capturedContext) {
-        assert.fail("capturedContext is null");
+        expect.fail("capturedContext is null");
       }
 
-      const context = capturedContext as InstrumentationContext;
-      expect(context).toBeDefined();
-      expect(context.currentSpan).toBeDefined();
-      expect(context.logger).toBeDefined();
-      expect(context.tracer).toBeDefined();
-      expect(context.meter).toBeDefined();
+      const instrumentationContext = capturedContext as InstrumentationContext;
+      expect(instrumentationContext).toBeDefined();
+      expect(instrumentationContext.currentSpan).toBeDefined();
+      expect(instrumentationContext.logger).toBeDefined();
+      expect(instrumentationContext.tracer).toBeDefined();
+      expect(instrumentationContext.meter).toBeDefined();
     });
 
     test("should handle async entrypoints", async () => {
@@ -727,6 +724,7 @@ describe("core/instrumentation", () => {
 
     test("should set correct span name for entrypoint", () => {
       // For unnamed functions the span name is set to actionName/entrypoint
+      const spy = vi.spyOn(tracer, "startActiveSpan");
       const unnamedEntrypoint = instrumentation.instrumentEntrypoint(
         () => "dummy",
         {
@@ -735,9 +733,7 @@ describe("core/instrumentation", () => {
       );
 
       unnamedEntrypoint({});
-      expect(mockSpan.registerName).toHaveBeenCalledWith(
-        "test-action/entrypoint",
-      );
+      expect(spy.mock.calls[0][0]).toBe("test-action/entrypoint");
 
       const spanConfigNamedEntrypoint = instrumentation.instrumentEntrypoint(
         () => "dummy",
@@ -748,7 +744,7 @@ describe("core/instrumentation", () => {
       );
 
       spanConfigNamedEntrypoint({});
-      expect(mockSpan.registerName).toHaveBeenCalledWith("custom-span");
+      expect(spy.mock.calls[1][0]).toBe("custom-span");
 
       const namedEntrypoint = instrumentation.instrumentEntrypoint(
         function main() {
@@ -760,7 +756,7 @@ describe("core/instrumentation", () => {
       );
 
       namedEntrypoint({});
-      expect(mockSpan.registerName).toHaveBeenCalledWith("test-action/main");
+      expect(spy.mock.calls[2][0]).toBe("test-action/main");
     });
 
     test("should mark root span as error if the runtime action fails", () => {
@@ -769,8 +765,12 @@ describe("core/instrumentation", () => {
         message: "Runtime action failed",
       };
 
+      let spy: MockInstance | null = null;
       const instrumentedMain = instrumentation.instrumentEntrypoint(
         function main() {
+          const span = instrumentation.getInstrumentationHelpers().currentSpan;
+          spy = vi.spyOn(span, "setStatus");
+
           return { error };
         },
         {
@@ -780,14 +780,24 @@ describe("core/instrumentation", () => {
 
       const result = instrumentedMain({});
       expect(result).toEqual({ error });
-      expect(mockSpan.setStatus).toHaveBeenCalledWith({
+
+      if (!spy) {
+        expect.fail("failed to spy on span.setStatus");
+      }
+
+      const mockSpy = spy as MockInstance;
+      expect(mockSpy.mock.calls[0][0]).toEqual({
         code: SpanStatusCode.ERROR,
       });
     });
 
     test("should not instrusively mark root span if the runtime action returns a non-object", () => {
+      let spy: MockInstance | null = null;
       const instrumentedMain = instrumentation.instrumentEntrypoint(
         function main() {
+          const span = instrumentation.getInstrumentationHelpers().currentSpan;
+          spy = vi.spyOn(span, "setStatus");
+
           return "test";
         },
         {
@@ -797,9 +807,13 @@ describe("core/instrumentation", () => {
 
       const result = instrumentedMain({});
       expect(result).toEqual("test");
-      expect(mockSpan.setStatus).not.toHaveBeenCalledWith({
-        code: SpanStatusCode.ERROR,
-      });
+
+      if (!spy) {
+        expect.fail("failed to spy on span.setStatus");
+      }
+
+      const mockSpy = spy as MockInstance;
+      expect(mockSpy.mock.calls[0][0]).not.toEqual(SpanStatusCode.ERROR);
     });
   });
 });

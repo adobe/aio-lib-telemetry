@@ -12,6 +12,8 @@
 
 import { context, propagation } from "@opentelemetry/api";
 
+import type { TelemetryPropagationConfig } from "~/types";
+
 /**
  * Serializes the current context into a carrier.
  *
@@ -60,4 +62,55 @@ export function deserializeContextFromCarrier<
   Carrier extends Record<PropertyKey, string>,
 >(carrier: Carrier, baseCtx = context.active()) {
   return propagation.extract(baseCtx, carrier);
+}
+
+/**
+ * Infers the context carrier from the given parameters.
+ * @param params - The parameters of the action.
+ */
+function inferContextCarrier(params: Record<string, unknown>) {
+  // Try to infer the parent context from the following (in order):
+  // 1. A `x-telemetry-context` header.
+  // 2. A `__telemetryContext` input parameter.
+  // 3. A `__telemetryContext` property in `params.data`.
+  const headers = params.__ow_headers as Record<string, string>;
+  const telemetryContext =
+    // @deprecated: Remove custom __telemetryContext lookups in a future major release.
+    headers?.["x-telemetry-context"] ??
+    params.__telemetryContext ??
+    (params.data as Record<string, unknown>)?.__telemetryContext ??
+    null;
+
+  // If the telemetry context is not found among all the above lookups,
+  // default to the OpenWhisk headers (received when invoking via HTTP requests).
+  // OpenTelemetry will pick the correct W3C context info automatically.
+  const w3cContext = telemetryContext ?? headers ?? null;
+  return {
+    baseCtx: context.active(),
+    carrier:
+      typeof w3cContext === "string" ? JSON.parse(w3cContext) : w3cContext,
+  };
+}
+
+/**
+ * Retrieves the base context for the entrypoint.
+ * @param params - The parameters of the action.
+ * @param propagationConfig - The propagation configuration.
+ */
+export function getPropagatedContext(
+  params: Record<string, unknown>,
+  { skip, getContextCarrier = inferContextCarrier }: TelemetryPropagationConfig,
+) {
+  if (skip) {
+    return context.active();
+  }
+
+  const { carrier, baseCtx } = getContextCarrier(params);
+  let currentCtx = baseCtx ?? context.active();
+
+  if (carrier && Object.keys(carrier).length > 0) {
+    currentCtx = deserializeContextFromCarrier(carrier, currentCtx);
+  }
+
+  return currentCtx;
 }

@@ -124,6 +124,46 @@ Refer to the API reference documentation of this library for more information ab
 | `getPresetInstrumentations` | [API reference](./api-reference/functions/getPresetInstrumentations.md) |
 | `getAioRuntimeResource`     | [API reference](./api-reference/functions/getAioRuntimeResource.md)     |
 
+### Integrations
+
+Since version 1.1.0, this library supports an `integrations` feature that provides preconfigured patches for external systems. Integrations handle complex setup tasks like context propagation, span linking, and sampling decisions automatically.
+
+Available integrations are imported from `@adobe/aio-lib-telemetry/integrations`:
+
+```ts
+import { defineTelemetryConfig } from "@adobe/aio-lib-telemetry";
+import { commerceEvents } from "@adobe/aio-lib-telemetry/integrations";
+
+const telemetryConfig = defineTelemetryConfig((params, isDev) => {
+  return {
+    integrations: [commerceEvents()],
+    sdkConfig: {
+      // Your OpenTelemetry SDK configuration
+    },
+  };
+});
+```
+
+Integrations can be applied globally (in your telemetry configuration file), or per-action:
+
+```ts
+// Override global integrations for specific actions
+export const main = instrumentEntrypoint(
+  async function webhooksHandler(params) {
+    // Your webhook handler code
+  },
+  {
+    ...telemetryConfig,
+    integrations: [commerceWebhooks()],
+  },
+);
+```
+
+> [!IMPORTANT]
+> Integrations are configuration patches applied sequentially. Later integrations may override settings from earlier ones or your base configuration.
+
+For detailed documentation and a complete list of available integrations, see the [integrations guide](./use-cases/integrations/README.md).
+
 ## How to Use
 
 This section provides a comprehensive guide for instrumenting App Builder Runtime Actions and demonstrates how to leverage this module's API for streamlined telemetry implementation.
@@ -269,9 +309,13 @@ function callExternalInstrumentedService() {
 
 When invoking an external service instrumented with this module (such as another runtime action), you can include the context carrier in your request or event. Upon receiving the request, the library will automatically attempt to deserialize the context by checking these locations in order:
 
-1. The `x-telemetry-context` header, if you're invoking via HTTP requests
+> [!WARNING]
+> The `x-telemetry-context` header as a context propagation source is deprecated and will be removed in a future major release. You should always send the context information via HTTP headers following the [W3C Trace Context specification](https://www.w3.org/TR/trace-context/) (if you're instrumenting your code using OpenTelemetry, creating a context carrier following this specification is really simple with the [OpenTelemetry APIs](https://opentelemetry.io/docs/specs/otel/context/api-propagators/#propagators-distribution)).
+
+1. **[DEPRECATED]** The `x-telemetry-context` header, if you're invoking via HTTP requests
 2. The `params.__telemetryContext` parameter when invoking runtime actions directly through Openwhisk or Event Ingress
 3. The `params.data.__telemetryContext` parameter - a convenience option for cases where parameters are nested under a `data` object
+4. **[NEW]** The OpenTelemetry W3C context information automatically extracted from the incoming HTTP request headers (if you're invoking via HTTP requests)
 
 If you don't want this automatic behavior, you can opt-out by providing a `skip: true` option in the `propagation` configuration.
 

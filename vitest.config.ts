@@ -28,6 +28,7 @@ export default defineConfig({
       exclude: [
         ...coverageConfigDefaults.exclude,
         "source/{index,otel,types}.ts",
+        "source/integrations/index.ts",
         "tsdown.config.ts",
       ],
 
