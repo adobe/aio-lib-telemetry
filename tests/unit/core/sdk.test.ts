@@ -55,7 +55,9 @@ describe("core/sdk", () => {
     shutdown: shutdownSdk,
   };
 
-  const NodeSdk = vi.fn().mockImplementation(() => mockNodeSdk);
+  const NodeSdk = vi.fn().mockImplementation(function (this: never) {
+    return mockNodeSdk;
+  });
 
   beforeEach(async () => {
     vi.clearAllMocks();

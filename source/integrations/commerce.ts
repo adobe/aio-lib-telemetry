@@ -49,14 +49,10 @@ export type CommerceWebhooksIntegrationConfig = {
  */
 function tryExtractRemoteSpanContext(ctx: Context) {
   const span = trace.getSpan(ctx);
-  if (!span) {
-    return null;
-  }
+  const spanContext = span?.spanContext();
+  const valid = spanContext?.isRemote && isSpanContextValid(spanContext);
 
-  const spanContext = span.spanContext();
-  if (spanContext.isRemote && isSpanContextValid(spanContext)) {
-    return spanContext;
-  }
+  return valid ? spanContext : null;
 }
 
 /**

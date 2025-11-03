@@ -12,19 +12,20 @@
 
 import AioLogger from "@adobe/aio-lib-core-logging";
 import { DiagLogLevel, diag } from "@opentelemetry/api";
-import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { getLogger, setOtelDiagLogger } from "~/core/logging";
 import * as sdkModule from "~/core/sdk";
 import * as runtimeHelpers from "~/helpers/runtime";
 
+const mockOpenTelemetryTransport = vi.hoisted(() => vi.fn());
+
 vi.mock("@adobe/aio-lib-core-logging", () => ({
   default: vi.fn(),
 }));
 
 vi.mock("@opentelemetry/winston-transport", () => ({
-  OpenTelemetryTransportV3: vi.fn(),
+  OpenTelemetryTransportV3: mockOpenTelemetryTransport,
 }));
 
 vi.mock("@opentelemetry/api", () => ({
@@ -68,7 +69,6 @@ describe("core/logging", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
     vi.mocked(AioLogger).mockReturnValue(
       mockLogger as unknown as ReturnType<typeof AioLogger>,
     );
@@ -76,6 +76,10 @@ describe("core/logging", () => {
     vi.mocked(runtimeHelpers.getRuntimeActionMetadata).mockReturnValue({
       actionName: "test-action",
     } as ReturnType<typeof runtimeHelpers.getRuntimeActionMetadata>);
+
+    mockOpenTelemetryTransport.mockImplementation(function (this: unknown) {
+      return {};
+    });
   });
 
   describe("getLogger", () => {
@@ -107,32 +111,21 @@ describe("core/logging", () => {
 
     test("should add OpenTelemetry transport to the logger", () => {
       const mockTransport = {};
-
-      vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
-        mockTransport as unknown as InstanceType<
-          typeof OpenTelemetryTransportV3
-        >,
-      );
+      mockOpenTelemetryTransport.mockImplementation(function (this: unknown) {
+        return mockTransport;
+      });
 
       getLogger("test-logger");
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalledWith(mockTransport);
-      expect(OpenTelemetryTransportV3).toHaveBeenCalledWith({
+      expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
         level: "info",
       });
     });
 
     test("should use custom log level for transport", () => {
-      const mockTransport = {};
-
-      vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
-        mockTransport as unknown as InstanceType<
-          typeof OpenTelemetryTransportV3
-        >,
-      );
-
       getLogger("test-logger", { level: "warn" });
-      expect(OpenTelemetryTransportV3).toHaveBeenCalledWith({
+      expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
         level: "warn",
       });
     });
@@ -221,27 +214,22 @@ describe("core/logging", () => {
           exportLogs: true,
         });
 
-        expect(OpenTelemetryTransportV3).toHaveBeenCalledWith({ level });
         expect(mockLogger.logger.logger.add).toHaveBeenCalled();
+        expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({ level });
       },
     );
 
     test("should export logs only for info, warn, and error levels", () => {
-      const mockTransport = {};
-      vi.mocked(OpenTelemetryTransportV3).mockReturnValue(
-        mockTransport as unknown as InstanceType<
-          typeof OpenTelemetryTransportV3
-        >,
-      );
-
       // Test info level - should export
       setOtelDiagLogger({
         logLevel: "info",
         exportLogs: true,
       });
 
-      expect(OpenTelemetryTransportV3).toHaveBeenCalledWith({ level: "info" });
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
+      expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        level: "info",
+      });
 
       vi.clearAllMocks();
 
@@ -250,8 +238,11 @@ describe("core/logging", () => {
         logLevel: "debug",
         exportLogs: true,
       });
-      expect(OpenTelemetryTransportV3).toHaveBeenCalledWith({ level: "info" });
+
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
+      expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        level: "info",
+      });
     });
 
     test("should not add transport when exportLogs is false", () => {
