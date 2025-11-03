@@ -437,7 +437,8 @@ function someInstrumentedFunctionInYourCode() {
   // Use the pre-serialized carrier object to propagate the trace context.
   invokeExternalInstrumentedService({
     headers: {
-      "x-telemetry-context": JSON.stringify(contextCarrier),
+      // This will send headers according to the W3C Trace Context specification.
+      ...contextCarrier,
     },
   });
 }

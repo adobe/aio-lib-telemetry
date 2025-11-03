@@ -1,5 +1,15 @@
 # @adobe/aio-lib-telemetry
 
+## 1.1.0
+
+### Minor Changes
+
+- [#53](https://github.com/adobe/aio-lib-telemetry/pull/53) [`da43624`](https://github.com/adobe/aio-lib-telemetry/commit/da43624af232c1ac9031ac88493037b9dede969e) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Add support for an `integrations` feature to easily integrate with external systems that require a specific configuration. Introduces a `commerceEvents` and a `commerceWebhooks` integrations that are available from `@adobe/aio-lib-telemetry/integrations` which can be used to automatically configure context propagation for requests or events coming from [Adobe Commerce Webhooks](https://developer-stage.adobe.com/commerce/extensibility/webhooks/) or [Adobe Commerce Events](https://developer-stage.adobe.com/commerce/extensibility/events/).
+
+- [#47](https://github.com/adobe/aio-lib-telemetry/pull/47) [`6fb3032`](https://github.com/adobe/aio-lib-telemetry/commit/6fb30324206200bd72ef8a99d78f7c02c90e8864) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Automatically mark root spans with an error status if they return a response that matches an unsuccessful response shape (according to [App Builder documentation](https://developer.adobe.com/app-builder/docs/guides/runtime_guides/creating-actions#unsuccessful-response))
+
+- [#53](https://github.com/adobe/aio-lib-telemetry/pull/53) [`da43624`](https://github.com/adobe/aio-lib-telemetry/commit/da43624af232c1ac9031ac88493037b9dede969e) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Deprecate custom `x-telemetry-context` header. From now on, if invoking via HTTP requests, propagated context doesn't need to be nested inside that header. Following the W3C Trace Propagation spec, you can send the `traceparent` (and related) headers as normal headers. They will be picked from `__ow_headers` instead. **Note that this only applies for runtime actions invoked via HTTP requests**. When invoked via events you should still use the special `__telemetryContext` variables or specify yourself where to find the context carrier.
+
 ## 1.0.0
 
 ### Major Changes

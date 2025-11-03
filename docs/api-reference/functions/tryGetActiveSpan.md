@@ -1,10 +1,10 @@
 # `tryGetActiveSpan()`
 
 ```ts
-function tryGetActiveSpan(ctx: Context): null | Span;
+function tryGetActiveSpan(ctx: Context): Span | null;
 ```
 
-Defined in: [api/global.ts:52](https://github.com/adobe/aio-lib-telemetry/blob/8f52cfa8868b711535e2b8726ef8da98982edbdf/source/api/global.ts#L52)
+Defined in: [api/global.ts:52](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/api/global.ts#L52)
 
 Tries to get the active span from the given context.
 
@@ -16,7 +16,7 @@ Tries to get the active span from the given context.
 
 ## Returns
 
-`null` \| `Span`
+`Span` \| `null`
 
 ## Since
 
