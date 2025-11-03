@@ -21,8 +21,8 @@ import { NodeSDK } from "@opentelemetry/sdk-node";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Context, Meter, SpanContext, Tracer } from "@opentelemetry/api";
-import type { MockInstance } from "vitest";
-import type { InstrumentationContext } from "~/types";
+import type { Mock, MockInstance } from "vitest";
+import type { InstrumentationContext, TelemetryConfig } from "~/types";
 
 describe("core/instrumentation", () => {
   let instrumentation: typeof import("~/core/instrumentation");
@@ -147,9 +147,9 @@ describe("core/instrumentation", () => {
 
     test("should use function name as span name by default", () => {
       const spy = vi.spyOn(tracer, "startActiveSpan");
-      const namedFunction = vi.fn(function myFunction() {
+      const namedFunction = function myFunction() {
         return "result";
-      });
+      };
 
       const instrumented = instrumentation.instrument(namedFunction);
       instrumented();
@@ -394,17 +394,27 @@ describe("core/instrumentation", () => {
   });
 
   describe("instrumentEntrypoint", () => {
-    let mockInitializeTelemetry: ReturnType<typeof vi.fn>;
-    let mockMain: ReturnType<typeof vi.fn>;
+    let mockInitializeTelemetry: Mock<
+      (
+        params: Record<string, unknown>,
+        isDevelopment: boolean,
+      ) => TelemetryConfig
+    >;
+    let mockMain: Mock<
+      (params: Record<string, unknown>) => { statusCode: number }
+    >;
 
     beforeEach(() => {
-      mockMain = vi.fn(() => ({ statusCode: 200 }));
-      mockInitializeTelemetry = vi.fn(() => ({
-        sdkConfig: {},
-        tracer: {},
-        meter: {},
-        diagnostics: { logLevel: "error" },
+      mockMain = vi.fn((_params: Record<string, unknown>) => ({
+        statusCode: 200,
       }));
+
+      mockInitializeTelemetry = vi.fn(
+        (_params: Record<string, unknown>, _isDevelopment: boolean) => ({
+          sdkConfig: {},
+          diagnostics: { logLevel: "error" },
+        }),
+      );
     });
 
     test("should instrument entrypoint function and preserve behavior", async () => {
