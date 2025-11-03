@@ -24,8 +24,8 @@ export type CommerceWebhooksIntegrationConfig = {
    * subscription configuration.
    *
    * @remarks Commerce integrations can be configured with trace subscriptions
-   * (full tracing) or log-only subscriptions (no traces). For example, if you're using Commerce
-   * with a log-only subscription, it propagates trace context but marks it as non-sampled (for log correlation).
+   * (full tracing) or log-only/metrics-only subscriptions (no traces). For example, if you're using Commerce
+   * with a log-only/metrics-only subscription, it propagates trace context but marks it as non-sampled (for log correlation).
    *
    * With the default OpenTelemetry ParentBased sampler, this would cause runtime
    * action traces to also not be sampled, resulting in no trace data being exported.
@@ -45,7 +45,7 @@ export type CommerceWebhooksIntegrationConfig = {
 
 /**
  * Determines if the carrier has a valid sampled trace.
- * @param carrier - The carrier to deserialize the context from.
+ * @param ctx - The context to extract the span from.
  */
 function tryExtractRemoteSpanContext(ctx: Context) {
   const span = trace.getSpan(ctx);
@@ -84,18 +84,18 @@ export function commerceEvents(): TelemetryIntegration {
           skip: true,
         },
 
-        spanConfig: {
-          links:
-            spanContext !== null
-              ? [
+        spanConfig:
+          spanContext === null
+            ? undefined
+            : {
+                // Some backends still don't support span links, so we add the trace ID as an attribute.
+                attributes: { "commerce.traceid": spanContext.traceId },
+                links: [
                   {
-                    // Some backends still don't support span links, so we add the trace ID as an attribute.
-                    attributes: { "commerce.traceid": spanContext.traceId },
                     context: spanContext,
                   },
-                ]
-              : [],
-        },
+                ],
+              },
       });
     },
   };
