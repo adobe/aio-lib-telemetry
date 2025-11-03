@@ -27,7 +27,7 @@ const repoUrl = `https://github.com/${repo}`;
  */
 function formatMarkdownAnnouncement(packageInfo: PublishedPackage): string {
   let announcement = `:rocket: New version released for the <${repoUrl}|Adobe App Builder OpenTelemetry Library>\n\n`;
-  const pkgRelease = `${packageInfo.name}@${packageInfo.version}`;
+  const pkgRelease = `v${packageInfo.version}`;
   const pkgReleaseUrl = `${repoUrl}/releases/tag/${pkgRelease}`;
   const pkgNpmUrl = `https://www.npmjs.com/package/${packageInfo.name}`;
 
