@@ -583,7 +583,7 @@ const telemetryConfig = defineTelemetryConfig((params, isDev) => {
 export { telemetryConfig };
 ```
 
-See the API reference for the `diagnostics` property: [`TelemetryDiagnosticsConfig`](./api-reference/interfaces/TelemetryDiagnosticsConfig.md)
+See the API reference for the `diagnostics` property: [`TelemetryDiagnosticsConfig`](./api-reference/type-aliases/TelemetryDiagnosticsConfig.md)
 
 ### Known Issues
 

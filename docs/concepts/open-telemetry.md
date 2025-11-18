@@ -11,16 +11,9 @@ This overview serves as a curated collection of the most important concepts and 
 - [🔭 Introduction to OpenTelemetry](#-introduction-to-opentelemetry)
   - [What is OpenTelemetry?](#what-is-opentelemetry)
   - [OTLP Protocol](#otlp-protocol)
-    - [Supported Transmission Protocols](#supported-transmission-protocols)
-    - [Default Ports](#default-ports)
   - [Usage Patterns](#usage-patterns)
-    - [Application-Level Export](#application-level-export)
-    - [Collector-Based Export](#collector-based-export)
-      - [Architecture: Receivers, Processors, Exporters](#architecture-receivers-processors-exporters)
   - [Supported Services and Backends](#supported-services-and-backends)
   - [What does _instrumentation_ mean?](#what-does-instrumentation-mean)
-    - [Automatic Instrumentation](#automatic-instrumentation)
-    - [Manual Instrumentation](#manual-instrumentation)
   - [Next Up](#next-up)
 
 ## What is OpenTelemetry?
@@ -101,7 +94,7 @@ OpenTelemetry is highly versatile and is rapidly becoming the standard for obser
 
 ## What does _instrumentation_ mean?
 
-For a system to be [observable](https://opentelemetry.io/docs/concepts/observability-primer/#what-is-observability), it must be instrumented: that is, code from the system's components must emit [signals](https://opentelemetry.io/docs/concepts/signals/traces/), such as [traces](https://opentelemetry.io/docs/concepts/signals/), [metrics](https://opentelemetry.io/docs/concepts/signals/metrics/), and [logs](https://opentelemetry.io/docs/concepts/signals/logs/). Using OpenTelemetry, you can instrument your code in two primary ways:
+For a system to be [observable](https://opentelemetry.io/docs/concepts/observability-primer/#what-is-observability), it must be instrumented: that is, code from the system's components must emit [signals](https://opentelemetry.io/docs/concepts/signals/), such as [traces](https://opentelemetry.io/docs/concepts/signals/traces/), [metrics](https://opentelemetry.io/docs/concepts/signals/metrics/), and [logs](https://opentelemetry.io/docs/concepts/signals/logs/). Using OpenTelemetry, you can instrument your code in two primary ways:
 
 ### Automatic Instrumentation
 
