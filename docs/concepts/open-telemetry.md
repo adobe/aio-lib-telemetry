@@ -11,9 +11,16 @@ This overview serves as a curated collection of the most important concepts and 
 - [🔭 Introduction to OpenTelemetry](#-introduction-to-opentelemetry)
   - [What is OpenTelemetry?](#what-is-opentelemetry)
   - [OTLP Protocol](#otlp-protocol)
+    - [Supported Transmission Protocols](#supported-transmission-protocols)
+    - [Default Ports](#default-ports)
   - [Usage Patterns](#usage-patterns)
+    - [Application-Level Export](#application-level-export)
+    - [Collector-Based Export](#collector-based-export)
+      - [Architecture: Receivers, Processors, Exporters](#architecture-receivers-processors-exporters)
   - [Supported Services and Backends](#supported-services-and-backends)
   - [What does _instrumentation_ mean?](#what-does-instrumentation-mean)
+    - [Automatic Instrumentation](#automatic-instrumentation)
+    - [Manual Instrumentation](#manual-instrumentation)
   - [Next Up](#next-up)
 
 ## What is OpenTelemetry?
