@@ -22,6 +22,7 @@ Below is a summary table of the documented use cases. Key terms:
   <thead>
     <tr>
       <th>Guide</th>
+      <th>Approach</th>
       <th>Via</th>
       <th>Protocol</th>
       <th>Signals</th>
@@ -33,9 +34,23 @@ Below is a summary table of the documented use cases. Key terms:
     <tr>
       <td>
         <a href="./grafana.md">
-          <strong>Grafana (Tempo, Loki, Prometheus)</strong>
+          <strong>Grafana (Quick Start)</strong>
         </a>
       </td>
+      <td align="center">⚡ Recommended</td>
+      <td align="center">Docker LGTM</td>
+      <td align="center">HTTP/Protobuf</td>
+      <td align="center">Traces, Metrics, Logs</td>
+      <td align="center">Covered ✅</td>
+      <td align="center">Via Tunneling ⚠️</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="./grafana/advanced.md">
+          <strong>Grafana (Advanced)</strong>
+        </a>
+      </td>
+      <td align="center">🔧 Custom Setup</td>
       <td align="center">OpenTelemetry Collector</td>
       <td align="center">HTTP/Protobuf</td>
       <td align="center">Traces, Metrics, Logs</td>
@@ -48,6 +63,7 @@ Below is a summary table of the documented use cases. Key terms:
                 <strong>New Relic</strong>
             </a>
         </td>
+        <td align="center">☁️ Hosted</td>
         <td align="center">Direct Export</td>
         <td align="center">HTTP/Protobuf</td>
         <td align="center">Traces, Metrics, Logs</td>
