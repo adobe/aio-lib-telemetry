@@ -98,9 +98,11 @@ export const telemetryConfig = defineTelemetryConfig((params, isDev) => {
       // Not specifying a URL will default to http://localhost:4318
       // This is fine as the Docker Image has an OpenTelemetry Collector running on port 4318
       traceExporter: new OTLPTraceExporterProto(),
-      metricReader: new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporterProto(),
-      }),
+      metricReaders: [
+        new PeriodicExportingMetricReader({
+          exporter: new OTLPMetricExporterProto(),
+        }),
+      ],
       logRecordProcessors: [
         new SimpleLogRecordProcessor(new OTLPLogExporterProto()),
       ],
@@ -219,13 +221,15 @@ function makeCollectorConfig(exportUrl) {
 
   return {
     traceExporter: new OTLPTraceExporterProto(makeExporterConfig("v1/traces")),
-    metricReader: new PeriodicExportingMetricReader({
+    metricReaders: [new PeriodicExportingMetricReader({
       exporter: new OTLPMetricExporterProto(makeExporterConfig("v1/metrics")),
-    }),
+    })],
+
     logRecordProcessors: [
       new SimpleLogRecordProcessor(
-        new OTLPLogExporterProto(makeExporterConfig("v1/logs")),
-      ),
+          new OTLPLogExporterProto(makeExporterConfig("v1/logs"))
+        ),
+      ],
     ],
   };
 }

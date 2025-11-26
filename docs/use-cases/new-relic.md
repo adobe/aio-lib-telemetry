@@ -86,10 +86,11 @@ function newRelicConfig(params) {
   // Use the HTTP/Protobuf exporter (recommended by New Relic docs)
   return {
     traceExporter: new OTLPTraceExporterProto(makeExporterConfig("v1/traces")),
-
-    metricReader: new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporterProto(makeExporterConfig("v1/metrics")),
-    }),
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: new OTLPMetricExporterProto(makeExporterConfig("v1/metrics")),
+      }),
+    ],
 
     logRecordProcessors: [
       // Or BatchLogRecordProcessor
