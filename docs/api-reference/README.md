@@ -40,7 +40,7 @@ import {
 
 ### OpenTelemetry API
 
-OpenTelemetry features a modular architecture consisting of over 25 packages, which can make importing specific APIs rather complex. To streamline this process, our library offers a convenient "meta-package" import path. This allows you to import all the necessary OpenTelemetry APIs from a single source, simplifying the setup.
+OpenTelemetry features a modular architecture consisting of over 25 packages, which can make importing specific APIs rather complex. To streamline this process, our library offers a convenient "meta-package" [`otel` import path](_media/otel.ts). This allows you to import all the necessary OpenTelemetry APIs from a single source, simplifying the setup.
 
 While this does not include every OpenTelemetry API, it covers the most common ones you will need in your code. If you find any essential APIs missing, feel free to open an issue or submit a PR. You can also import the APIs you need from the individual OpenTelemetry packages, but this is a convenient way to import all the APIs you need in a single import.
 

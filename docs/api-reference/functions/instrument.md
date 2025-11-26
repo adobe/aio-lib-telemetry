@@ -7,7 +7,7 @@ function instrument<T>(
 ): (...args: Parameters<T>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:114](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/core/instrumentation.ts#L114)
+Defined in: [core/instrumentation.ts:114](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/core/instrumentation.ts#L114)
 
 Instruments a function.
 

@@ -7,7 +7,7 @@ function instrumentEntrypoint<T>(
 ): (params: Record<string, unknown>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:272](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/core/instrumentation.ts#L272)
+Defined in: [core/instrumentation.ts:272](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/core/instrumentation.ts#L272)
 
 Instruments the entrypoint of a runtime action.
 Needs to be used ONLY with the `main` function of a runtime action.

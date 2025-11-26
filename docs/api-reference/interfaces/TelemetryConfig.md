@@ -1,6 +1,6 @@
 # `TelemetryConfig`
 
-Defined in: [types.ts:200](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L200)
+Defined in: [types.ts:200](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L200)
 
 The configuration options for the telemetry module.
 
@@ -22,7 +22,7 @@ optional diagnostics:
   | TelemetryDiagnosticsConfig;
 ```
 
-Defined in: [types.ts:227](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L227)
+Defined in: [types.ts:227](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L227)
 
 The configuration options for the telemetry diagnostics.
 
@@ -38,7 +38,7 @@ The configuration options for the telemetry diagnostics.
 optional instrumentationConfig: Omit<EntrypointInstrumentationConfig, "initializeTelemetry">;
 ```
 
-Defined in: [types.ts:218](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L218)
+Defined in: [types.ts:218](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L218)
 
 The instrumentation configuration that will be used for the entrypoint function.
 
@@ -65,7 +65,7 @@ undefined;
 optional meter: Meter;
 ```
 
-Defined in: [types.ts:287](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L287)
+Defined in: [types.ts:287](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L287)
 
 The meter used to create metrics.
 
@@ -87,7 +87,7 @@ Partial.meter;
 sdkConfig: Partial<NodeSDKConfiguration>;
 ```
 
-Defined in: [types.ts:207](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L207)
+Defined in: [types.ts:207](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L207)
 
 The configuration options for the OpenTelemetry SDK.
 See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) interface.
@@ -104,7 +104,7 @@ See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js
 optional tracer: Tracer;
 ```
 
-Defined in: [types.ts:281](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L281)
+Defined in: [types.ts:281](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L281)
 
 The tracer used to create spans.
 
