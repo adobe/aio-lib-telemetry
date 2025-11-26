@@ -2,6 +2,7 @@
 
 - [`@adobe/aio-lib-telemetry`](#adobeaio-lib-telemetry)
   - [Installation](#installation)
+  - [Versioning Policy](#versioning-policy)
   - [Usage](#usage)
   - [Contributing](#contributing)
   - [License](#license)
@@ -14,6 +15,20 @@ A utility module for easy instrumentation of [Adobe App Builder](https://develop
 ```shell
 npm install @adobe/aio-lib-telemetry
 ```
+
+## Versioning Policy
+
+This library follows [semantic versioning](https://semver.org/) with one important exception: **breaking changes to the `otel` endpoint do not trigger major version releases**.
+
+The [`otel` endpoint](./docs/api-reference/README.md#opentelemetry-api) re-exports OpenTelemetry APIs, which remain experimental and receive frequent updates that may include breaking changes. Strictly adhering to semantic versioning would require releasing a new major version with each OpenTelemetry update, which would be disruptive given their rapid release cadence.
+
+**Our versioning approach:**
+
+- **Major versions** are reserved for breaking changes to our library's own API
+- **Minor/patch versions** may include breaking changes to the `otel` endpoint
+- All breaking changes, including those in `otel`, are documented in release notes with a `[BREAKING]` label
+
+**Recommendation:** Always review release notes before upgrading, especially if you use the `otel` endpoint directly.
 
 ## Usage
 
