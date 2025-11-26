@@ -7,7 +7,7 @@ function tryAddEventToActiveSpan(
 ): boolean;
 ```
 
-Defined in: [api/global.ts:88](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/api/global.ts#L88)
+Defined in: [api/global.ts:88](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/api/global.ts#L88)
 
 Tries to add an event to the active span.
 

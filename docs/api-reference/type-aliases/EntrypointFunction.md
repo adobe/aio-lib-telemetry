@@ -4,7 +4,7 @@
 type EntrypointFunction = (params: Record<string, unknown>) => unknown;
 ```
 
-Defined in: [types.ts:234](https://github.com/adobe/aio-lib-telemetry/blob/559503f2d0d79c50f3f552437165225cc1007a4f/source/types.ts#L234)
+Defined in: [types.ts:234](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L234)
 
 The shape of the entrypoint function.
 
