@@ -1,5 +1,13 @@
 # @adobe/aio-lib-telemetry
 
+## 1.1.1
+
+### Patch Changes
+
+- [`f1a95e9`](https://github.com/adobe/aio-lib-telemetry/commit/f1a95e9a1190b1aa135c5f419fae7f8ae61977c3) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Add [versioning policy](https://github.com/adobe/aio-lib-telemetry/blob/main/README.md#versioning-policy) to the README.
+
+- [`4b63239`](https://github.com/adobe/aio-lib-telemetry/commit/4b6323945cee3ab5ffb63e2fe081a79590da9a97) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - [[BREAKING]](https://github.com/adobe/aio-lib-telemetry/blob/main/README.md#versioning-policy) Update OpenTelemetry dependencies (see the [Renovate PR](https://github.com/adobe/aio-lib-telemetry/pull/62) for the full list). The `otel` entrypoint no longer re-exports the `NoopLogRecordProcessor` class, as it's no longer exported by the OpenTelemetry Logs SDK. If you were using it, removing it should be safe, as it basically does nothing and it's the same as not using the processor at all.
+
 ## 1.1.0
 
 ### Minor Changes
