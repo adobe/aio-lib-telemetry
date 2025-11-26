@@ -1,7 +1,6 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.3/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/core"],
-
   "files": {
     "ignoreUnknown": true
   },
@@ -58,24 +57,43 @@
           "level": "on",
           "options": {
             "groups": [
-              { "type": false, "source": ":NODE:" },
+              {
+                "type": false,
+                "source": ":NODE:"
+              },
               ":BLANK_LINE:",
               {
                 "type": false,
                 "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
               },
               ":BLANK_LINE:",
-              { "type": false, "source": ":ALIAS:" },
+              {
+                "type": false,
+                "source": ":ALIAS:"
+              },
               ":BLANK_LINE:",
-              { "type": false, "source": ":PATH:" },
+              {
+                "type": false,
+                "source": ":PATH:"
+              },
               ":BLANK_LINE:",
-              { "type": true, "source": ":NODE:" },
+
+              {
+                "type": true,
+                "source": ":NODE:"
+              },
               {
                 "type": true,
                 "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
               },
-              { "type": true, "source": ":ALIAS:" },
-              { "type": true, "source": ":PATH:" }
+              {
+                "type": true,
+                "source": ":ALIAS:"
+              },
+              {
+                "type": true,
+                "source": ":PATH:"
+              }
             ]
           }
         }

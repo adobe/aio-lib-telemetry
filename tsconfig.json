@@ -13,8 +13,8 @@
 
     "strict": true,
     "incremental": true,
-
     "lib": ["ESNext"],
+
     "module": "ESNext",
     "moduleResolution": "bundler",
 
@@ -34,7 +34,6 @@
       "~~/*": ["./*"]
     }
   },
-
   "exclude": ["node_modules", "dist"],
   "include": [
     "source/**/*.ts",

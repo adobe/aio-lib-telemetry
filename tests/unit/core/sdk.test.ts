@@ -185,15 +185,16 @@ describe("core/sdk", () => {
       processOnSpy.mockRestore();
     });
 
-    test.each(["SIGTERM", "SIGINT", "beforeExit"] as const)(
-      "should shutdown SDK on %s",
-      async (signal) => {
-        await simulateShutdown(coreSdk, signal);
+    test.each([
+      "SIGTERM",
+      "SIGINT",
+      "beforeExit",
+    ] as const)("should shutdown SDK on %s", async (signal) => {
+      await simulateShutdown(coreSdk, signal);
 
-        expect(shutdownSdk).toHaveBeenCalled();
-        expect(diagInfo).toHaveBeenCalledWith(expect.stringContaining(signal));
-      },
-    );
+      expect(shutdownSdk).toHaveBeenCalled();
+      expect(diagInfo).toHaveBeenCalledWith(expect.stringContaining(signal));
+    });
 
     test("should log error if shutdown fails", async () => {
       const shutdownError = new Error("Shutdown failed");
