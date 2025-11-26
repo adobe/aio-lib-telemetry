@@ -230,9 +230,11 @@ function localCollectorConfig(isDev) {
   return {
     // Not specifying any export URL will default to find an Open Telemetry Collector instance in localhost.
     traceExporter: new OTLPTraceExporterProto(),
-    metricReader: new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporterProto(),
-    }),
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: new OTLPMetricExporterProto(),
+      }),
+    ],
 
     logRecordProcessors: [
       new SimpleLogRecordProcessor(new OTLPLogExporterProto()),
@@ -398,9 +400,12 @@ function localCollectorConfig(exportUrl) {
 
   return {
     traceExporter: new OTLPTraceExporterProto(makeExporterConfig("v1/traces")),
-    metricReader: new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporterProto(makeExporterConfig("v1/metrics")),
-    }),
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: new OTLPMetricExporterProto(makeExporterConfig("v1/metrics")),
+      }),
+    ],
+
     logRecordProcessors: [
       new SimpleLogRecordProcessor(
         new OTLPLogExporterProto(makeExporterConfig("v1/logs")),
