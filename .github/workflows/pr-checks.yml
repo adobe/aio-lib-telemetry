@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   knip-and-publint:
-    name: Run Knip
+    name: Run Knip and Publint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
