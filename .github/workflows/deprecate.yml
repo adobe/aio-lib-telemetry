@@ -19,6 +19,12 @@ on:
         required: false
         type: boolean
         default: false
+      
+      dry_run:
+        description: 'Dry run (simulate without making actual changes)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   deprecate:
@@ -43,6 +49,7 @@ jobs:
           echo "Version input: ${{ inputs.version }}"
           echo "Message: ${{ inputs.message }}"
           echo "Also unpublish: ${{ inputs.unpublish }}"
+          echo "Dry run: ${{ inputs.dry_run }}"
           
           VERSION="${{ inputs.version }}"
           
@@ -72,7 +79,11 @@ jobs:
           VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
           
           echo "Deprecating: $VERSION"
-          npm deprecate "$VERSION" "${{ inputs.message }}"
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            npm deprecate "$VERSION" "${{ inputs.message }}" --dry-run
+          else
+            npm deprecate "$VERSION" "${{ inputs.message }}"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
 
@@ -85,7 +96,11 @@ jobs:
           echo "This action is irreversible and discouraged by npm."
           echo "Consider using deprecate instead."
           
-          npm unpublish "$VERSION" --force
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            npm unpublish "$VERSION" --dry-run
+          else
+            npm unpublish "$VERSION"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
 
@@ -96,11 +111,21 @@ jobs:
           # Extract just the version number
           VERSION_NUM="${VERSION##*@}"
           
-          echo "Action completed successfully"
-          echo "✅ Version $VERSION_NUM has been deprecated"
-          echo "📝 Message: ${{ inputs.message }}"
-          
-          if [[ "${{ inputs.unpublish }}" == "true" ]]; then
-            echo "✅ Version $VERSION_NUM has also been unpublished"
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            echo "🔍 DRY RUN completed successfully - no actual changes were made"
+            echo "Would have deprecated version $VERSION_NUM"
+            echo "📝 With message: ${{ inputs.message }}"
+            
+            if [[ "${{ inputs.unpublish }}" == "true" ]]; then
+              echo "Would have also unpublished version $VERSION_NUM"
+            fi
+          else
+            echo "Action completed successfully"
+            echo "✅ Version $VERSION_NUM has been deprecated"
+            echo "📝 Message: ${{ inputs.message }}"
+            
+            if [[ "${{ inputs.unpublish }}" == "true" ]]; then
+              echo "✅ Version $VERSION_NUM has also been unpublished"
+            fi
           fi
 
