@@ -1,0 +1,107 @@
+name: Deprecate Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deprecate (e.g., 1.0.0 or @adobe/aio-lib-telemetry@1.0.0)'
+        required: true
+        type: string
+
+      message:
+        description: 'Deprecation message'
+        required: true
+        type: string
+        default: 'This version has been deprecated. Please upgrade to the latest version.'
+      
+      unpublish:
+        description: 'Unpublish instead of deprecate (WARNING: Irreversible and discouraged by npm)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  deprecate:
+    name: Deprecate Package Version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Validate and normalize version
+        id: version
+        run: |
+          echo "Version input: ${{ inputs.version }}"
+          echo "Message: ${{ inputs.message }}"
+          echo "Unpublish: ${{ inputs.unpublish }}"
+          
+          VERSION="${{ inputs.version }}"
+          
+          # Validate version format (major.minor.patch only)
+          # Regex source: Simplified semantic versioning pattern matching X.Y.Z format
+          # Reference: https://semver.org/ (basic version core: MAJOR.MINOR.PATCH)
+          if [[ "$VERSION" =~ ^(@[a-z0-9-]+/[a-z0-9-]+@)?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # Valid format
+            if [[ "$VERSION" =~ ^@.+/.+@ ]]; then
+              # Already has package name
+              VALIDATED_VERSION="$VERSION"
+            else
+              # Add package name
+              VALIDATED_VERSION="@adobe/aio-lib-telemetry@$VERSION"
+            fi
+          else
+            echo "::error::Invalid version format. Expected: 'X.Y.Z' (e.g., '1.0.0') or '@adobe/aio-lib-telemetry@X.Y.Z'"
+            echo "::error::Pre-release versions and build metadata are not supported."
+            exit 1
+          fi
+          
+          echo "Validated version: $VALIDATED_VERSION"
+          echo "VALIDATED_VERSION=$VALIDATED_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Deprecate package version
+        if: ${{ !inputs.unpublish }}
+        run: |
+          VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
+          
+          echo "Deprecating: $VERSION"
+          npm deprecate "$VERSION" "${{ inputs.message }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+
+      - name: Unpublish package version
+        if: ${{ inputs.unpublish }}
+        run: |
+          VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
+          
+          echo "⚠️  WARNING: Unpublishing: $VERSION"
+          echo "This action is irreversible and discouraged by npm."
+          echo "Consider using deprecate instead."
+          
+          npm unpublish "$VERSION" --force
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+
+      - name: Verify action
+        run: |
+          VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
+          
+          # Extract just the version number
+          VERSION_NUM="${VERSION##*@}"
+          
+          echo "Action completed successfully"
+          if [[ "${{ inputs.unpublish }}" == "true" ]]; then
+            echo "✅ Version $VERSION_NUM has been unpublished"
+          else
+            echo "✅ Version $VERSION_NUM has been deprecated"
+            echo "📝 Message: ${{ inputs.message }}"
+          fi
+
