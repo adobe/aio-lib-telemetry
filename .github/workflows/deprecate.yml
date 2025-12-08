@@ -15,7 +15,7 @@ on:
         default: 'This version has been deprecated. Please upgrade to the latest version.'
       
       unpublish:
-        description: 'Unpublish instead of deprecate (WARNING: Irreversible and discouraged by npm)'
+        description: 'Also unpublish the version (WARNING: Irreversible and discouraged by npm)'
         required: false
         type: boolean
         default: false
@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "Version input: ${{ inputs.version }}"
           echo "Message: ${{ inputs.message }}"
-          echo "Unpublish: ${{ inputs.unpublish }}"
+          echo "Also unpublish: ${{ inputs.unpublish }}"
           
           VERSION="${{ inputs.version }}"
           
@@ -68,7 +68,6 @@ jobs:
           echo "VALIDATED_VERSION=$VALIDATED_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Deprecate package version
-        if: ${{ !inputs.unpublish }}
         run: |
           VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
           
@@ -98,10 +97,10 @@ jobs:
           VERSION_NUM="${VERSION##*@}"
           
           echo "Action completed successfully"
+          echo "✅ Version $VERSION_NUM has been deprecated"
+          echo "📝 Message: ${{ inputs.message }}"
+          
           if [[ "${{ inputs.unpublish }}" == "true" ]]; then
-            echo "✅ Version $VERSION_NUM has been unpublished"
-          else
-            echo "✅ Version $VERSION_NUM has been deprecated"
-            echo "📝 Message: ${{ inputs.message }}"
+            echo "✅ Version $VERSION_NUM has also been unpublished"
           fi
 
