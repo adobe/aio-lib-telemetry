@@ -21,24 +21,39 @@
   "engines": {
     "node": ">=20 <=24"
   },
-  "main": "./dist/cjs/index.cjs",
-  "module": "./dist/es/index.js",
-  "types": "./dist/cjs/index.d.cts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
-      "types": "./dist/cjs/index.d.cts",
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "import": "./dist/index.cjs"
+      }
     },
     "./otel": {
-      "types": "./dist/cjs/otel.d.cts",
-      "import": "./dist/es/otel.js",
-      "require": "./dist/cjs/otel.cjs"
+      "import": {
+        "types": "./dist/otel.d.mts",
+        "import": "./dist/otel.mjs"
+      },
+      "require": {
+        "types": "./dist/otel.d.cts",
+        "import": "./dist/otel.cjs"
+      }
     },
     "./integrations": {
-      "types": "./dist/integrations.d.cts",
-      "import": "./dist/es/integrations/index.js",
-      "require": "./dist/cjs/integrations/index.cjs"
+      "import": {
+        "types": "./dist/integrations/index.d.mts",
+        "import": "./dist/integrations/index.mjs"
+      },
+      "require": {
+        "types": "./dist/integrations/index.d.cts",
+        "import": "./dist/integrations/index.cjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -51,6 +66,7 @@
     "assist": "biome check --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
     "assist:apply": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --no-errors-on-unmatched",
     "build": "tsdown",
+    "publint": "publint",
     "changeset": "changeset",
     "check:ci": "biome ci --formatter-enabled=true --linter-enabled=true --assist-enabled=true --no-errors-on-unmatched",
     "docs": "typedoc",
@@ -111,6 +127,7 @@
     "knip": "^5.61.3",
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
+    "publint": "^0.3.15",
     "tsdown": "^0.16.0",
     "typedoc": "^0.28.5",
     "typedoc-plugin-markdown": "^4.6.3",

@@ -10,8 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { readdir, rename } from "node:fs/promises";
-
 import { defineConfig } from "tsdown";
 
 const OUT_DIR = "./dist";
@@ -56,30 +54,5 @@ export default defineConfig({
   banner: {
     js: ADOBE_LICENSE_BANNER,
     dts: ADOBE_LICENSE_BANNER,
-  },
-
-  hooks: {
-    "build:before": (ctx) => {
-      if (ctx.buildOptions.output) {
-        // Move each output into its own directory.
-        const { format } = ctx.buildOptions.output;
-        ctx.buildOptions.output.dir += `/${format}`;
-      }
-    },
-
-    "build:done": async (_) => {
-      // For some reason the types for CJS are being placed out of the CJS directory.
-      // This is a workaround to move them into the CJS directory.
-      const files = await readdir(OUT_DIR);
-      const ctsFiles = files.filter((file) => file.endsWith(".d.cts"));
-
-      const renamePromises = ctsFiles.map((file) => {
-        const sourcePath = `${OUT_DIR}/${file}`;
-        const targetPath = `${OUT_DIR}/cjs/${file}`;
-        return rename(sourcePath, targetPath);
-      });
-
-      await Promise.all(renamePromises);
-    },
   },
 });
