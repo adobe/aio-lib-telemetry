@@ -78,10 +78,11 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
           
-          echo "Deprecating: $VERSION"
           if [[ "${{ inputs.dry_run }}" == "true" ]]; then
-            npm deprecate "$VERSION" "${{ inputs.message }}" --dry-run
+            echo "🔍 DRY RUN: Would deprecate: $VERSION"
+            echo "🔍 DRY RUN: With message: ${{ inputs.message }}"
           else
+            echo "Deprecating: $VERSION"
             npm deprecate "$VERSION" "${{ inputs.message }}"
           fi
         env:
@@ -92,13 +93,13 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.VALIDATED_VERSION }}"
           
-          echo "⚠️  WARNING: Unpublishing: $VERSION"
-          echo "This action is irreversible and discouraged by npm."
-          echo "Consider using deprecate instead."
-          
           if [[ "${{ inputs.dry_run }}" == "true" ]]; then
-            npm unpublish "$VERSION" --dry-run
+            echo "🔍 DRY RUN: Would unpublish: $VERSION"
+            echo "⚠️  WARNING: This action would be irreversible and is discouraged by npm."
+            echo "This action is irreversible and discouraged by npm."
+            echo "Consider using deprecate instead."
           else
+            echo "Unpublishing: $VERSION"
             npm unpublish "$VERSION"
           fi
         env:
