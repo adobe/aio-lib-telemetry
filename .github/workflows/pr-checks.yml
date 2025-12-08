@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  knip-and-publint:
-    name: Run Knip and Publint
+  knip:
+    name: Run Knip
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,12 +30,8 @@ jobs:
       - name: Run Knip
         run: npx knip
 
-        # Same with `publint`
-      - name: Run Publint
-        run: npx publint
-
   check-build-test:
-    name: Check, Build & Test (Node ${{ matrix.node-version }})
+    name: Check, Build, Test, and Publint (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       # We want to run checks on all versions, even if some fail.
@@ -65,3 +61,6 @@ jobs:
 
       - name: Run Tests
         run: npm run test
+
+      - name: Run Publint
+        run: npm run publint
