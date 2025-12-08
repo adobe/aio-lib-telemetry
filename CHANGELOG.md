@@ -1,5 +1,11 @@
 # @adobe/aio-lib-telemetry
 
+## 1.1.2
+
+### Patch Changes
+
+- [#73](https://github.com/adobe/aio-lib-telemetry/pull/73) [`670dfc9`](https://github.com/adobe/aio-lib-telemetry/commit/670dfc9244b80f89271b08b4ce8df7e831a2a080) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Fixes the `export` paths for ESM which were pointing to wrong files
+
 ## 1.1.1
 
 ### Patch Changes
