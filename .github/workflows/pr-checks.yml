@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  knip:
+  knip-and-publint:
     name: Run Knip
     runs-on: ubuntu-latest
     steps:
@@ -30,8 +30,12 @@ jobs:
       - name: Run Knip
         run: npx knip
 
-  code-quality:
-    name: Check Code Quality (Node ${{ matrix.node-version }})
+        # Same with `publint`
+      - name: Run Publint
+        run: npx publint
+
+  check-build-test:
+    name: Check, Build & Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       # We want to run checks on all versions, even if some fail.
@@ -56,46 +60,8 @@ jobs:
       - name: Check types
         run: npm run typecheck
 
-  build:
-    name: Build (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Previous LTS (Maintenance), Current LTS, Latest stable
-        node-version: [20, 22, 24]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup environment
-        uses: ./.github/actions/setup-ci-env
-        with:
-          install-deps: true
-          node-version: ${{ matrix.node-version }}
-
       - name: Run Build
         run: npm run build
-
-  test:
-    name: Test (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Previous LTS (Maintenance), Current LTS, Latest stable
-        node-version: [20, 22, 24]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup environment
-        uses: ./.github/actions/setup-ci-env
-        with:
-          install-deps: true
-          node-version: ${{ matrix.node-version }}
 
       - name: Run Tests
         run: npm run test
