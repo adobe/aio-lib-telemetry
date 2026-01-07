@@ -1,5 +1,11 @@
 # @adobe/aio-lib-telemetry
 
+## 1.1.3
+
+### Patch Changes
+
+- [#80](https://github.com/adobe/aio-lib-telemetry/pull/80) [`e8f2c96`](https://github.com/adobe/aio-lib-telemetry/commit/e8f2c96eb79e8425b9649bebd964bbc1020d8aa5) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Fixes a misconfiguration in the `package.json` export paths that was preventing correct usage of the library.
+
 ## 1.1.2
 
 ### Patch Changes
