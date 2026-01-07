@@ -28,31 +28,31 @@
     ".": {
       "import": {
         "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs"
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
-        "import": "./dist/index.cjs"
+        "default": "./dist/index.cjs"
       }
     },
     "./otel": {
       "import": {
         "types": "./dist/otel.d.mts",
-        "import": "./dist/otel.mjs"
+        "default": "./dist/otel.mjs"
       },
       "require": {
         "types": "./dist/otel.d.cts",
-        "import": "./dist/otel.cjs"
+        "default": "./dist/otel.cjs"
       }
     },
     "./integrations": {
       "import": {
         "types": "./dist/integrations/index.d.mts",
-        "import": "./dist/integrations/index.mjs"
+        "default": "./dist/integrations/index.mjs"
       },
       "require": {
         "types": "./dist/integrations/index.d.cts",
-        "import": "./dist/integrations/index.cjs"
+        "default": "./dist/integrations/index.cjs"
       }
     },
     "./package.json": "./package.json"
