@@ -36,7 +36,20 @@ export default defineConfig({
     "./source/integrations/index.ts",
   ],
 
-  format: ["cjs", "esm"],
+  format: {
+    cjs: {
+      outputOptions: {
+        dir: `${OUT_DIR}/cjs`,
+      },
+    },
+    esm: {
+      outputOptions: {
+        dir: `${OUT_DIR}/es`,
+      },
+    },
+  },
+
+  publint: true,
   outputOptions: {
     legalComments: "inline",
     dir: OUT_DIR,

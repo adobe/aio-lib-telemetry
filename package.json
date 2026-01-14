@@ -21,38 +21,38 @@
   "engines": {
     "node": ">=20 <=24"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/es/index.mjs",
+  "types": "./dist/cjs/index.d.cts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "types": "./dist/es/index.d.mts",
+        "default": "./dist/es/index.mjs"
       },
       "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
       }
     },
     "./otel": {
       "import": {
-        "types": "./dist/otel.d.mts",
-        "default": "./dist/otel.mjs"
+        "types": "./dist/es/otel.d.mts",
+        "default": "./dist/es/otel.mjs"
       },
       "require": {
-        "types": "./dist/otel.d.cts",
-        "default": "./dist/otel.cjs"
+        "types": "./dist/cjs/otel.d.cts",
+        "default": "./dist/cjs/otel.cjs"
       }
     },
     "./integrations": {
       "import": {
-        "types": "./dist/integrations/index.d.mts",
-        "default": "./dist/integrations/index.mjs"
+        "types": "./dist/es/integrations/index.d.mts",
+        "default": "./dist/es/integrations/index.mjs"
       },
       "require": {
-        "types": "./dist/integrations/index.d.cts",
-        "default": "./dist/integrations/index.cjs"
+        "types": "./dist/cjs/integrations/index.d.cts",
+        "default": "./dist/cjs/integrations/index.cjs"
       }
     },
     "./package.json": "./package.json"
