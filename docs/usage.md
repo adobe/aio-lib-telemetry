@@ -133,7 +133,7 @@ For instance, let's say that you have two different environments, `prod` and `st
 | Helper                                | Description                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `getAioRuntimeResource`               | Returns a resource with some default attributes inferred from the I/O runtime                 | [API reference](./api-reference/functions/getAioRuntimeResource.md)               |
-| `getAioRuntimeResourceWithAttributes` | Same as `getAioRuntimeResource` but with extra custom attributes that you can add on your own | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
+| `getAioRuntimeResourceWithAttributes` | Returns a resource with some default attributes inferred from the I/O runtime like `getAioRuntimeResource`, but you can add custom attributes | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
 
 ```ts
 // telemetry.{js|ts}
