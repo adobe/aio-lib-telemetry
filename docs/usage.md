@@ -126,14 +126,14 @@ Refer to the API reference documentation of this library for more information ab
 
 #### Resource Attributes
 
-The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. 
-
-For instance, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. When configuring a `resource`, you have two helpers that you can import from the library:
+The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. The library provides two helpers that you can use to easily create your a `resource`:
 
 | Helper                                | Description                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `getAioRuntimeResource`               | Returns a resource with some default attributes inferred from the I/O runtime                 | [API reference](./api-reference/functions/getAioRuntimeResource.md)               |
 | `getAioRuntimeResourceWithAttributes` | Returns a resource with some default attributes inferred from the I/O runtime like `getAioRuntimeResource`, but you can add custom attributes | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
+
+For instance, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. See the configuration for this example below:
 
 ```ts
 // telemetry.{js|ts}
