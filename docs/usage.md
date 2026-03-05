@@ -133,7 +133,7 @@ The `sdkConfig` has the `resource` property. This is essentially a key-value map
 | `getAioRuntimeResource`               | Returns a resource with some default attributes inferred from the I/O runtime                 | [API reference](./api-reference/functions/getAioRuntimeResource.md)               |
 | `getAioRuntimeResourceWithAttributes` | Returns a resource with some default attributes inferred from the I/O runtime like `getAioRuntimeResource`, but you can add custom attributes | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
 
-For instance, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. See the configuration for this example below:
+For example, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. See the configuration for this example below:
 
 ```ts
 // telemetry.{js|ts}
