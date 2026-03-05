@@ -124,6 +124,41 @@ Refer to the API reference documentation of this library for more information ab
 | `getPresetInstrumentations` | [API reference](./api-reference/functions/getPresetInstrumentations.md) |
 | `getAioRuntimeResource`     | [API reference](./api-reference/functions/getAioRuntimeResource.md)     |
 
+#### Resource Attributes
+
+The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. The library provides two helpers that you can use to easily create a `resource`:
+
+| Helper                                | Description                                                                                   | Documentation                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `getAioRuntimeResource`               | Returns a resource with some default attributes inferred from the I/O runtime                 | [API reference](./api-reference/functions/getAioRuntimeResource.md)               |
+| `getAioRuntimeResourceWithAttributes` | Returns a resource with some default attributes inferred from the I/O runtime like `getAioRuntimeResource`, but you can add custom attributes | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
+
+For example, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. See the configuration for this example below:
+
+```ts
+// telemetry.{js|ts}
+
+import {
+  defineTelemetryConfig,
+  getAioRuntimeResourceWithAttributes,
+} from "@adobe/aio-lib-telemetry";
+
+const telemetryConfig = defineTelemetryConfig((params, isDev) => {
+  return {
+    sdkConfig: {
+      // Now all your signals will have an `environment` attribute attached to them
+      resource: getAioRuntimeResourceWithAttributes({
+        environment: params.ENVIRONMENT ?? "prod"
+      }),
+
+      // ... rest of the configuration
+    },
+  };
+});
+
+export { telemetryConfig };
+```
+
 ### Integrations
 
 Since version 1.1.0, this library supports an `integrations` feature that provides preconfigured patches for external systems. Integrations handle complex setup tasks like context propagation, span linking, and sampling decisions automatically.
