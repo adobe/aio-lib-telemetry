@@ -126,7 +126,7 @@ Refer to the API reference documentation of this library for more information ab
 
 #### Resource Attributes
 
-The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. The library provides two helpers that you can use to easily create your a `resource`:
+The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. The library provides two helpers that you can use to easily create a `resource`:
 
 | Helper                                | Description                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
