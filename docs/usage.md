@@ -128,7 +128,7 @@ Refer to the API reference documentation of this library for more information ab
 
 The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. 
 
-For instance, let's say that you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (e.g. `logs`) and make all of them have this information automatically attached so that you can later filter logs per-environment. This is a perfect use case for resource attributes. When configuring a `resource`, you have 2 helpers that you can import from the library:
+For instance, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. When configuring a `resource`, you have two helpers that you can import from the library:
 
 | Helper                                | Description                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
