@@ -8,10 +8,10 @@
     "group:monorepos",
     "group:definitelyTyped",
     "helpers:disableTypesNodeMajor",
+    "helpers:pinGitHubActionDigestsToSemver",
     "security:minimumReleaseAgeNpm",
     ":automergeDisabled",
     ":ignoreUnstable",
-    ":maintainLockFilesWeekly",
     ":prConcurrentLimitNone",
     ":preserveSemverRanges",
     ":rebaseStalePrs",
@@ -20,23 +20,31 @@
     ":separateMultipleMajorReleases"
   ],
   "automerge": false,
+  "vulnerabilityAlerts": {
+    "automerge": true
+  },
+  "osvVulnerabilityAlerts": true,
   "branchPrefix": "renovate/",
   "commitMessagePrefix": "chore(renovate): ",
   "labels": ["dependencies"],
   "postUpdateOptions": ["npmDedupe"],
   "packageRules": [
     {
-      "matchManagers": ["github-actions"],
-      "pinDigests": false
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-non-major",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "schedule": ["on Monday"]
     },
     {
-      "groupName": "OpenTelemetry packages",
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchPackageNames": ["/^@opentelemetry//"]
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "automerge": true,
+      "schedule": ["on Monday"]
     },
     {
       "groupName": "biome and ultracite",
       "matchPackageNames": ["@biomejs/biome", "ultracite"],
+      "automerge": true,
       "separateMajorMinor": false,
       "postUpgradeTasks": {
         "commands": ["npm run lint:fix", "npm run format"],
