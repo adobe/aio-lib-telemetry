@@ -199,12 +199,10 @@ export type TelemetryIntegration = {
  */
 export interface TelemetryConfig extends Partial<TelemetryApi> {
   /**
-   * The configuration options for the OpenTelemetry SDK.
-   * See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) interface.
-   *
+   * The configuration options for the telemetry diagnostics.
    * @since 0.1.0
    */
-  sdkConfig: Partial<NodeSDKConfiguration>;
+  diagnostics?: false | TelemetryDiagnosticsConfig;
 
   /**
    * The instrumentation configuration that will be used for the entrypoint function.
@@ -219,12 +217,13 @@ export interface TelemetryConfig extends Partial<TelemetryApi> {
     EntrypointInstrumentationConfig,
     "initializeTelemetry"
   >;
-
   /**
-   * The configuration options for the telemetry diagnostics.
+   * The configuration options for the OpenTelemetry SDK.
+   * See the [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) interface.
+   *
    * @since 0.1.0
    */
-  diagnostics?: false | TelemetryDiagnosticsConfig;
+  sdkConfig: Partial<NodeSDKConfiguration>;
 }
 
 /**
@@ -240,21 +239,6 @@ export type EntrypointFunction = (params: Record<string, unknown>) => unknown;
 export interface EntrypointInstrumentationConfig
   extends InstrumentationConfig<EntrypointFunction> {
   /**
-   * Configuration options related to context propagation.
-   * See the {@link TelemetryPropagationConfig} for the interface.
-   *
-   * @since 0.1.0
-   */
-  propagation?: TelemetryPropagationConfig;
-
-  /**
-   * Integrations with external telemetry systems.
-   * @since 1.1.0
-   * @default []
-   */
-  integrations?: TelemetryIntegration[];
-
-  /**
    * This function is called at the start of the action.
    *
    * @since 0.1.0
@@ -267,6 +251,20 @@ export interface EntrypointInstrumentationConfig
     params: Record<string, unknown>,
     isDevelopment: boolean,
   ) => TelemetryConfig;
+
+  /**
+   * Integrations with external telemetry systems.
+   * @since 1.1.0
+   * @default []
+   */
+  integrations?: TelemetryIntegration[];
+  /**
+   * Configuration options related to context propagation.
+   * See the {@link TelemetryPropagationConfig} for the interface.
+   *
+   * @since 0.1.0
+   */
+  propagation?: TelemetryPropagationConfig;
 }
 
 /**

@@ -121,7 +121,7 @@ function createServiceName(meta: RuntimeMetadata) {
   if (meta.isDevelopment) {
     // The package name is not (always) available in development
     const packageSuffix =
-      meta.packageName !== "unknown" ? `/${meta.packageName}` : "";
+      meta.packageName === "unknown" ? "" : `/${meta.packageName}`;
 
     return `${meta.namespace}-local-development${packageSuffix}`;
   }
