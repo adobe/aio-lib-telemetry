@@ -30,7 +30,6 @@ async function simulateShutdown(
     (call) => call[0] === signal,
   )?.[1] as (() => Promise<void>) | undefined;
 
-  // biome-ignore lint/suspicious/noMisplacedAssertion: for easy testing
   expect(shutdownHandler).toBeDefined();
   onBeforeShutdown?.();
   await shutdownHandler?.();
