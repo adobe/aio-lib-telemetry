@@ -18,6 +18,8 @@ Interactive setup guide. Gather user requirements through conversation, then gen
 
 Ask the user to understand their needs before generating code. Adapt questions based on answers:
 
+If the user already provides the backend, action scope, integration needs, distributed tracing requirement, and expected output files, skip the questionnaire and generate the complete implementation directly. In that direct-output mode, produce the requested files in one pass instead of staging the answer across multiple turns.
+
 **1. Situation assessment** (skip if obvious from context):
 
 - New project or adding to existing instrumented actions?
@@ -55,6 +57,8 @@ Ask the user to understand their needs before generating code. Adapt questions b
 - Testing deployed actions locally? (needs tunneling — see local dev reference)
 
 Generate code incrementally as the conversation progresses. Don't dump everything at once.
+
+When the request is an implementation task with explicit deliverables such as `telemetry.js`, `app.config.yaml`, or an action entrypoint file, prefer a complete working output over an exploratory conversation.
 
 ## Setup Steps
 
@@ -142,6 +146,13 @@ const instrumentedMain = instrumentEntrypoint(main, {
 
 For integration details, see [references/integrations.md](references/integrations.md).
 
+For Adobe Commerce event handlers that invoke another action, the complete pattern has two separate parts:
+
+1. Apply `commerceEvents()` to link the incoming Commerce trace to the handler span.
+2. Forward `contextCarrier` on any downstream OpenWhisk invocation so the next action joins the trace.
+
+Do not use `x-telemetry-context` or `__telemetryContext` when authoring new code. Those are legacy extraction paths, not the recommended propagation mechanism.
+
 ### Step 5: Instrument your action (next skill)
 
 With the entrypoint wrapped, your action produces a root span. To add deeper instrumentation — child spans for internal functions, custom metrics, structured logging, span attributes/events — use the `aio-telemetry-instrument` skill. It provides a guided, per-action approach to decide what to instrument and at what depth.
@@ -164,9 +175,22 @@ function callExternalService() {
 }
 ```
 
+For OpenWhisk action-to-action calls, pass the carrier in the params body rather than HTTP headers:
+
+```ts
+function invokeFulfillment(openwhisk, payload) {
+  const { contextCarrier } = getInstrumentationHelpers();
+
+  return openwhisk.actions.invoke({
+    name: "fulfill-order",
+    params: { ...payload, ...contextCarrier },
+  });
+}
+```
+
 **Receiving side** — depends on the target:
 
-- **Another App Builder action**: Automatic extraction if it uses `instrumentEntrypoint`
+- **Another App Builder action**: Automatic extraction if it uses `instrumentEntrypoint`. For new code, send W3C `contextCarrier`; don't introduce deprecated `x-telemetry-context` headers or `__telemetryContext` fields manually.
 - **External service with OTel**: Their SDK handles W3C header extraction automatically
 - **Custom setup**: They need to extract `traceparent`/`tracestate` from headers
 

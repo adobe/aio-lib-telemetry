@@ -21,6 +21,8 @@ Add telemetry instrumentation to one App Builder runtime action at a time. Start
 
 The user may provide enough context in their initial message to skip phases. If their request already implies a specific action, signals, or depth (e.g., "add a counter metric to my checkout action"), correlate that with the skill's phases and jump to the appropriate step silently. Don't ask questions you already have answers to.
 
+If the request names a single action, states the observability goal, and asks for code changes or explicit output files, switch to direct implementation mode: read the action, decide the minimal instrumentation, and produce the code changes without waiting for an extra approval checkpoint.
+
 ## Scope
 
 One action per session. If the user asks to instrument multiple actions or "the whole project":
@@ -52,6 +54,8 @@ The following are **per-action steps** that this skill can handle if needed:
 
 If these aren't done for the target action yet, handle them as part of Phase 4 (Implement).
 
+For single-turn implementation tasks, prefer concrete code over advice. Produce the updated action file, any module-level metrics file, and a short explanation of what was instrumented.
+
 ## Phase 0: Discover the Action
 
 **Before anything else**, identify which action to instrument.
@@ -75,6 +79,14 @@ Read the action's source code systematically. Follow the checklist in [reference
    - API proxy, event handler, data pipeline, orchestrator, CRUD handler, or trivial
 4. Check what's already instrumented — avoid duplicating existing work
 5. Check auto-instrumentation coverage — if a preset is configured ("simple" = HTTP/GraphQL/Undici, "full" = all Node auto-instrumentations), outbound HTTP calls may already produce spans. Not all auto-instrumentations work reliably in App Builder runtime.
+
+For data-pipeline and event-ingestion actions, apply these defaults unless the request clearly asks for something else:
+
+- Use `instrument()` for I/O boundaries such as storage writes, downstream notifications, or SDK/network calls.
+- Do not wrap pure computation helpers such as validation, mapping, aggregation, or formatting unless they perform I/O.
+- Define custom metrics with `defineMetrics()` at module scope, not inside the handler.
+- Prefer named functions in `instrument()` calls. If using an arrow function, set `spanConfig.spanName` explicitly.
+- Add low-cardinality span attributes for counts and outcomes on the root span or child spans.
 
 Present a brief summary to the user:
 
@@ -138,7 +150,7 @@ Present the proposal and wait for approval:
 
 > "Here's my plan for instrumenting [action name]. Does this cover what you need, or would you like to adjust anything before I make the changes?"
 
-Do not proceed to Phase 4 without user approval.
+Do not proceed to Phase 4 without user approval unless you are in direct implementation mode from the user's initial request.
 
 ## Phase 4: Implement
 

@@ -1,6 +1,6 @@
 # Integrations
 
-Integrations are preconfigured patches that handle context propagation, span linking, and sampling for external systems. Import from `@adobe/aio-lib-telemetry/integrations`.
+Integrations are preconfigured patches that handle incoming trace extraction, span linking, and sampling for external systems. Import from `@adobe/aio-lib-telemetry/integrations`.
 
 ## Adobe Commerce Events
 
@@ -14,7 +14,7 @@ import { commerceEvents } from "@adobe/aio-lib-telemetry/integrations";
 
 1. Extracts trace context from `data._metadata` field (traceparent/tracestate)
 2. Creates span links to Commerce event trace (not parent-child, since events are async)
-3. Skips context propagation (events aren't part of the same execution trace)
+3. Handles only the incoming Commerce event linkage; it does not propagate trace context to any downstream action you invoke
 4. Adds `commerce.traceid` attribute for backends without span link support
 
 **Usage (global):**
@@ -38,6 +38,8 @@ export const main = instrumentEntrypoint(handler, {
 ```
 
 **When to use:** Actions registered as Commerce event subscribers.
+
+If the action invokes another instrumented service after processing the event, also pass `contextCarrier` on that outbound call.
 
 ## Adobe Commerce Webhooks
 
