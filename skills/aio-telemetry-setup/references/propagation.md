@@ -4,9 +4,9 @@ Distributed tracing requires passing trace context between services. This applie
 
 ## Automatic Propagation (default)
 
-The library automatically extracts context from several incoming shapes for compatibility. When authoring new code, always propagate W3C Trace Context using `contextCarrier` (`traceparent` / `tracestate`) instead of deprecated `x-telemetry-context` or `__telemetryContext` values.
+The library automatically extracts context from several incoming shapes for compatibility. For new code, treat W3C Trace Context via `contextCarrier` (`traceparent` / `tracestate`) as the default and treat the legacy shapes below as compatibility-only.
 
-The library automatically extracts context from incoming requests by checking these locations in order:
+The library can extract context from these incoming locations:
 
 1. **[DEPRECATED]** `x-telemetry-context` HTTP header
 2. `params.__telemetryContext` parameter (Openwhisk/Event Ingress)
@@ -82,6 +82,12 @@ instrumentEntrypoint(main, {
 
 - Sender: Send `contextCarrier` in params body
 - Receiver: Automatic extraction from the incoming params if it uses `instrumentEntrypoint`
+- Use `propagation.getContextCarrier` only if you deliberately place the carrier in a non-standard nested shape
+
+Avoid these legacy patterns in new code:
+
+- `headers: { "x-telemetry-context": ... }`
+- `params: { __telemetryContext: ... }`
 
 **Action calls an external API / microservice (managed by developer):**
 
