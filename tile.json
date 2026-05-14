@@ -1,0 +1,19 @@
+{
+  "name": "adobe-aio-lib-telemetry/library",
+  "version": "0.1.0",
+  "private": true,
+  "describes": "pkg:npm/@adobe/aio-lib-telemetry@1.1.3",
+  "summary": "Skills for Adobe I/O Telemetry Library",
+  "docs": "README.md",
+  "skills": {
+    "aio-telemetry-setup": {
+      "path": "skills/aio-telemetry-setup/SKILL.md"
+    },
+    "aio-telemetry-troubleshooting": {
+      "path": "skills/aio-telemetry-troubleshooting/SKILL.md"
+    },
+    "aio-telemetry-instrument": {
+      "path": "skills/aio-telemetry-instrument/SKILL.md"
+    }
+  }
+}

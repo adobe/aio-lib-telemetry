@@ -1,0 +1,9 @@
+{
+  "name": "adobe-aio-lib-telemetry/aio-lib-telemetry",
+  "mode": "vendored",
+  "dependencies": {
+    "tessl-labs/review-model-performance": {
+      "version": "0.1.2"
+    }
+  }
+}

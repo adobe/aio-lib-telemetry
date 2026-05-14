@@ -1,0 +1,12 @@
+application:
+  runtimeManifest:
+    packages:
+      commerce-integration:
+        license: Apache-2.0
+        actions:
+          commerce-event-handler:
+            function: actions/commerce-event-handler/index.js
+            web: 'no'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: info
