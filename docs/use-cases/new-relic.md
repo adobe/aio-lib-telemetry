@@ -123,7 +123,7 @@ export const telemetryConfig = defineTelemetryConfig((params, isDev) => {
 
 ### How to Use
 
-Exporting directly to New Relic works in both development and production environments (no configuration changes required). Follow the [library documentation](../../README.md#-how-to-use) to instrument your runtime actions.
+Exporting directly to New Relic works in both development and production environments (no configuration changes required). Follow the [library documentation](../../README.md#usage) to instrument your runtime actions.
 
 ## Visualize the Data
 

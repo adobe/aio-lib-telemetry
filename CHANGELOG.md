@@ -1,4 +1,4 @@
-# @adobe/aio-lib-telemetry
+# `@adobe/aio-lib-telemetry`
 
 ## 1.2.0
 
@@ -81,7 +81,7 @@
 
 - [`0bc0a0e`](https://github.com/adobe/aio-lib-telemetry/commit/0bc0a0e481156051cdf141b07486500fd1cd1aba) Thanks [@renovate[bot]](https://github.com/renovate%5Bbot%5D)! - The `LogRecord` type (exported from the `otel` entrypoint) has been renamed to `SdkLogRecord` and it's no longer a class but a TypeScript interface.
 
-- [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - [`getPresetInstrumentations`](../docs/api-reference/functions/getPresetInstrumentations.md) now throws an `Error` if the given `preset` is unknown. This change has been made to prevent silent failures.
+- [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - [`getPresetInstrumentations`](./docs/api-reference/functions/getPresetInstrumentations.md) now throws an `Error` if the given `preset` is unknown. This change has been made to prevent silent failures.
 
   There's no need to update your code if you're using correctly the presets provided by the library. At most you may want to add a `try`/`catch` block to handle the error.
 
@@ -109,9 +109,9 @@
 
 - [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Add default span name to the entrypoint if the function name is not available.
 
-- [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Fix `Carrier` generic type in [`serializeContextIntoCarrier`](../docs/api-reference/functions/serializeContextIntoCarrier.md) and [`deserializeContextFromCarrier`](../docs/api-reference/functions/deserializeContextFromCarrier.md) to use `PropertyKey` as the `Record` key.
+- [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Fix `Carrier` generic type in [`serializeContextIntoCarrier`](./docs/api-reference/functions/serializeContextIntoCarrier.md) and [`deserializeContextFromCarrier`](./docs/api-reference/functions/deserializeContextFromCarrier.md) to use `PropertyKey` as the `Record` key.
 
-  Applies this change also in the `carrier` return type of [`getContextCarrier`](../docs/api-reference/interfaces/TelemetryPropagationConfig.md#getcontextcarrier) and the `contextCarrier` parameter of [`InstrumentationContext`](../docs/api-reference/interfaces/InstrumentationContext.md#contextcarrier).
+  Applies this change also in the `carrier` return type of [`getContextCarrier`](./docs/api-reference/type-aliases/TelemetryPropagationConfig.md#getcontextcarrier) and the `contextCarrier` parameter of [`InstrumentationContext`](./docs/api-reference/type-aliases/InstrumentationContext.md#contextcarrier).
 
 - [#16](https://github.com/adobe/aio-lib-telemetry/pull/16) [`efae3f9`](https://github.com/adobe/aio-lib-telemetry/commit/efae3f97cea34a6199241e1e7e64bc072707607b) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Fix error handling in entrypoint by letting runtime errors bubble up and only throwing if the error happens during instrumentation wrapping.
 

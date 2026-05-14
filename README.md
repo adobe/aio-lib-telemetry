@@ -4,6 +4,7 @@
   - [Installation](#installation)
   - [Versioning Policy](#versioning-policy)
   - [Usage](#usage)
+  - [Changelog](#changelog)
   - [Contributing](#contributing)
   - [License](#license)
   - [Governance](#governance)
@@ -34,6 +35,10 @@ The [`otel` entrypoint](./docs/api-reference/README.md#opentelemetry-api) re-exp
 ## Usage
 
 See the [Usage Guide](./docs/usage.md) for more information.
+
+## Changelog
+
+See [`CHANGELOG.md`](CHANGELOG.md) for a list of changes in each release.
 
 ## Contributing
 

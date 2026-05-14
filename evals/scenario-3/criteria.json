@@ -1,0 +1,56 @@
+{
+  "context": "Tests whether the agent can correctly identify multiple configuration errors in a broken @adobe/aio-lib-telemetry setup: invalid import paths, wrong exporter class names, incorrect config nesting, invalid sdkConfig properties, wrong auth header name, wrong ENABLE_TELEMETRY value, and missing ENABLE_TELEMETRY for one action.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Invalid import path identified",
+      "description": "Identifies that `@adobe/aio-lib-telemetry/exporters` is not a valid import path and the correct path is `@adobe/aio-lib-telemetry/otel`",
+      "max_score": 10
+    },
+    {
+      "name": "Wrong exporter class names identified",
+      "description": "Identifies that `OTLPTraceExporter`, `OTLPMetricExporter`, `OTLPLogExporter` do not exist and the correct names are `OTLPTraceExporterProto`, `OTLPMetricExporterProto`, `OTLPLogExporterProto` (or Http/Grpc variants)",
+      "max_score": 10
+    },
+    {
+      "name": "serviceName at wrong level identified",
+      "description": "Identifies that `serviceName` is placed at the top level of the config object instead of inside `sdkConfig`",
+      "max_score": 10
+    },
+    {
+      "name": "Invalid exporters property identified",
+      "description": "Identifies that `exporters: { traces, metrics, logs }` is not a valid `sdkConfig` property — each signal type must be configured separately via `traceExporter`, `metricReaders`, `logRecordProcessors`",
+      "max_score": 10
+    },
+    {
+      "name": "Wrong auth header name identified",
+      "description": "Identifies that `Authorization: Api-Key ...` is wrong for New Relic — the correct header is `\"api-key\": params.NEW_RELIC_LICENSE_KEY`",
+      "max_score": 10
+    },
+    {
+      "name": "ENABLE_TELEMETRY case issue identified",
+      "description": "Identifies that `ENABLE_TELEMETRY: TRUE` (uppercase) will not work — the value must be lowercase `true`",
+      "max_score": 10
+    },
+    {
+      "name": "Missing ENABLE_TELEMETRY for update-inventory",
+      "description": "Identifies that the `update-inventory` action is missing `ENABLE_TELEMETRY: true` in its inputs",
+      "max_score": 10
+    },
+    {
+      "name": "Corrected import path",
+      "description": "The corrected telemetry.js imports exporters from `@adobe/aio-lib-telemetry/otel`",
+      "max_score": 8
+    },
+    {
+      "name": "Corrected signal wiring",
+      "description": "The corrected telemetry.js uses `traceExporter`, `metricReaders: [new PeriodicExportingMetricReader({exporter})]`, and `logRecordProcessors: [new SimpleLogRecordProcessor(exporter)]`",
+      "max_score": 14
+    },
+    {
+      "name": "serviceName inside sdkConfig in fix",
+      "description": "The corrected telemetry.js places `serviceName` inside the `sdkConfig` object",
+      "max_score": 8
+    }
+  ]
+}
