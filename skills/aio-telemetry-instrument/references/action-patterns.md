@@ -36,7 +36,7 @@ main(params) -> validateInput() -> callExternalApi() -> transformResponse() -> r
 main(params) -> parseEvent() -> processEvent() -> [triggerSideEffect()] -> return
 ```
 
-**Integration awareness**: If this handles Commerce webhooks, suggest `commerceWebhooks()`. If it processes Commerce events, suggest `commerceEvents()`. These integrations handle context propagation automatically.
+**Integration awareness**: If this handles Commerce webhooks, suggest `commerceWebhooks()`. If it processes Commerce events, suggest `commerceEvents()`. These integrations handle incoming trace extraction and linkage, but outbound calls still need `contextCarrier` when you want downstream trace continuity.
 
 | Depth         | What                     | Signal                                  | Rationale                               |
 | ------------- | ------------------------ | --------------------------------------- | --------------------------------------- |
@@ -56,15 +56,15 @@ main(params) -> parseEvent() -> processEvent() -> [triggerSideEffect()] -> retur
 main(params) -> fetchData() -> transform() -> [store()] -> return
 ```
 
-| Depth         | What                 | Signal                    | Rationale                                |
-| ------------- | -------------------- | ------------------------- | ---------------------------------------- |
-| Essential     | Record count         | Span attribute on root    | Explains why an action was slow          |
-| Standard      | `fetchData`          | Child span                | See fetch duration vs transform duration |
-| Standard      | `store`              | Child span                | Track write latency separately           |
-| Standard      | Records processed    | Histogram metric          | Distribution of batch sizes              |
-| Comprehensive | `transform`          | Child span                | Isolate transformation performance       |
-| Comprehensive | Data quality issues  | Span events               | Schema violations, null values           |
-| Comprehensive | Pipeline stage sizes | Span attributes per stage | Track data shape through pipeline        |
+| Depth         | What                 | Signal                                                  | Rationale                                                                |
+| ------------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Essential     | Record count         | Span attribute on root                                  | Explains why an action was slow                                          |
+| Standard      | `fetchData`          | Child span                                              | See fetch duration vs transform duration                                 |
+| Standard      | `store`              | Child span                                              | Track write latency separately                                           |
+| Standard      | Records processed    | Histogram metric                                        | Distribution of batch sizes                                              |
+| Comprehensive | `transform`          | Child span when it performs I/O or expensive async work | Isolate transformation performance without wrapping trivial pure helpers |
+| Comprehensive | Data quality issues  | Span events                                             | Schema violations, null values                                           |
+| Comprehensive | Pipeline stage sizes | Span attributes per stage                               | Track data shape through pipeline                                        |
 
 ## Orchestrator
 

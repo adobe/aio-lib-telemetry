@@ -4,6 +4,8 @@ Distributed tracing requires passing trace context between services. This applie
 
 ## Automatic Propagation (default)
 
+The library automatically extracts context from several incoming shapes for compatibility. When authoring new code, always propagate W3C Trace Context using `contextCarrier` (`traceparent` / `tracestate`) instead of deprecated `x-telemetry-context` or `__telemetryContext` values.
+
 The library automatically extracts context from incoming requests by checking these locations in order:
 
 1. **[DEPRECATED]** `x-telemetry-context` HTTP header
@@ -28,7 +30,7 @@ function callOtherAction() {
   // HTTP call - send as headers
   fetch(url, { headers: { ...contextCarrier } });
 
-  // Action-to-action - send in params
+  // Action-to-action - send in params body
   invokeAction("other-action", { ...contextCarrier });
 }
 ```
@@ -78,8 +80,8 @@ instrumentEntrypoint(main, {
 
 **Action triggers another Action via Openwhisk invoke:**
 
-- Sender: Send carrier in params body
-- Receiver: Automatic extraction from `params.__telemetryContext`
+- Sender: Send `contextCarrier` in params body
+- Receiver: Automatic extraction from the incoming params if it uses `instrumentEntrypoint`
 
 **Action calls an external API / microservice (managed by developer):**
 
@@ -94,6 +96,7 @@ instrumentEntrypoint(main, {
 **Action receives Commerce Event (async):**
 
 - Use `commerceEvents()` integration (creates span link, not parent-child)
+- If the handler invokes another action, also forward `contextCarrier` on that outbound call; the integration does not do that for you
 
 **Action receives Commerce Webhook (sync HTTP):**
 
