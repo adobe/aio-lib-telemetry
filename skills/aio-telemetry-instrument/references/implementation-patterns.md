@@ -267,7 +267,7 @@ openwhisk().actions.invoke({
 
 The `contextCarrier` contains W3C Trace Context headers (`traceparent`, `tracestate`).
 
-**Receiving side caveats**: The library's `instrumentEntrypoint` tries to auto-extract context from predictable locations (`__ow_headers`, `x-telemetry-context` header, `__telemetryContext` param, `params.data.__telemetryContext`). However, this won't always work — for example, runtime action invocations via OpenWhisk may not pass headers in a format the library expects. If auto-extraction doesn't work, the receiving action can use a custom `propagation.getContextCarrier` to specify where the context lives in the incoming params.
+**Receiving side caveats**: For normal action-to-action propagation, send `contextCarrier` in the standard params body or HTTP headers and let `instrumentEntrypoint` extract it automatically. Use `propagation.getContextCarrier` only when the carrier is intentionally stored in a custom incoming shape. Deprecated `x-telemetry-context` and `__telemetryContext` paths may still be accepted for compatibility, but they should not be introduced in new code.
 
 ## Auto-Instrumentation Presets
 

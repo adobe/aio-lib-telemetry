@@ -146,6 +146,8 @@ const instrumentedMain = instrumentEntrypoint(main, {
 
 For integration details, see [references/integrations.md](references/integrations.md).
 
+Choose one placement for an integration: either define it in the shared telemetry config for all relevant actions, or add it in a specific `instrumentEntrypoint` call for one action. Do not apply the same integration in both places.
+
 For Adobe Commerce event handlers that invoke another action, the complete pattern has two separate parts:
 
 1. Apply `commerceEvents()` to link the incoming Commerce trace to the handler span.
@@ -191,6 +193,7 @@ function invokeFulfillment(openwhisk, payload) {
 **Receiving side** — depends on the target:
 
 - **Another App Builder action**: Automatic extraction if it uses `instrumentEntrypoint`. For new code, send W3C `contextCarrier`; don't introduce deprecated `x-telemetry-context` headers or `__telemetryContext` fields manually.
+- **Another App Builder action**: Automatic extraction if it uses `instrumentEntrypoint` and you pass `contextCarrier` in the normal params body or HTTP headers. Reach for `propagation.getContextCarrier` only when the carrier lives in a custom shape.
 - **External service with OTel**: Their SDK handles W3C header extraction automatically
 - **Custom setup**: They need to extract `traceparent`/`tracestate` from headers
 

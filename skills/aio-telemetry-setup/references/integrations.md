@@ -37,6 +37,8 @@ export const main = instrumentEntrypoint(handler, {
 });
 ```
 
+Pick one placement strategy. If `commerceEvents()` is already configured globally, keep the per-action entrypoint as `instrumentEntrypoint(handler, telemetryConfig)` rather than adding the integration again.
+
 **When to use:** Actions registered as Commerce event subscribers.
 
 If the action invokes another instrumented service after processing the event, also pass `contextCarrier` on that outbound call.
@@ -70,7 +72,7 @@ commerceWebhooks({
 
 ## Applying Integrations
 
-Integrations are applied sequentially. Later integrations can override earlier ones.
+Integrations are applied sequentially. Later integrations can override earlier ones, so duplicate placement can create avoidable ambiguity.
 
 **Global** (all actions):
 
