@@ -7,7 +7,7 @@ function instrumentEntrypoint<T>(
 ): (params: Record<string, unknown>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:272](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/core/instrumentation.ts#L272)
+Defined in: [core/instrumentation.ts:272](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/core/instrumentation.ts#L272)
 
 Instruments the entrypoint of a runtime action.
 Needs to be used ONLY with the `main` function of a runtime action.
@@ -29,19 +29,7 @@ Needs to be used ONLY with the `main` function of a runtime action.
 
 A wrapped function with the same signature as the original function, but with telemetry instrumentation.
 
-```ts
-(params: Record<string, unknown>): ReturnType<T>;
-```
-
-### Parameters
-
-| Parameter | Type                            |
-| --------- | ------------------------------- |
-| `params`  | `Record`\<`string`, `unknown`\> |
-
-### Returns
-
-`ReturnType`\<`T`\>
+(`params`: `Record`\<`string`, `unknown`\>) => `ReturnType`\<`T`\>
 
 ## Throws
 

@@ -8,7 +8,7 @@ type TelemetryDiagnosticsConfig = {
 };
 ```
 
-Defined in: [types.ts:41](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L41)
+Defined in: [types.ts:41](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L41)
 
 The configuration for the telemetry diagnostics.
 
@@ -21,10 +21,10 @@ The configuration for the telemetry diagnostics.
 ### exportLogs?
 
 ```ts
-optional exportLogs: boolean;
+optional exportLogs?: boolean;
 ```
 
-Defined in: [types.ts:63](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L63)
+Defined in: [types.ts:63](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L63)
 
 Whether to make OpenTelemetry also export the diagnostic logs to the configured exporters.
 Set to `false` if you don't want to see diagnostic logs in your observability platform.
@@ -44,10 +44,10 @@ true;
 ### loggerName?
 
 ```ts
-optional loggerName: string;
+optional loggerName?: string;
 ```
 
-Defined in: [types.ts:54](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L54)
+Defined in: [types.ts:54](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L54)
 
 The name of the logger to use for the diagnostics.
 
@@ -67,7 +67,7 @@ The name of the logger to use for the diagnostics.
 logLevel: DiagnosticsLogLevel;
 ```
 
-Defined in: [types.ts:46](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L46)
+Defined in: [types.ts:46](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L46)
 
 The log level to use for the diagnostics.
 

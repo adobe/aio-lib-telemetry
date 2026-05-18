@@ -1,10 +1,10 @@
-# `EntrypointFunction()`
+# `EntrypointFunction`
 
 ```ts
 type EntrypointFunction = (params: Record<string, unknown>) => unknown;
 ```
 
-Defined in: [types.ts:234](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L234)
+Defined in: [types.ts:233](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L233)
 
 The shape of the entrypoint function.
 
