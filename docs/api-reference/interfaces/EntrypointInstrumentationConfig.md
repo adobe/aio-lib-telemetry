@@ -1,6 +1,6 @@
 # `EntrypointInstrumentationConfig`
 
-Defined in: [types.ts:240](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L240)
+Defined in: [types.ts:239](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L239)
 
 The configuration for entrypoint instrumentation.
 
@@ -17,20 +17,20 @@ The configuration for entrypoint instrumentation.
 ### hooks?
 
 ```ts
-optional hooks: {
+optional hooks?: {
   onError?: (error: unknown, span: Span) => Error | undefined;
   onResult?: (result: unknown, span: Span) => void;
 };
 ```
 
-Defined in: [types.ts:138](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L138)
+Defined in: [types.ts:138](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L138)
 
 Hooks that can be used to act on a span depending on the result of the function.
 
-#### onError()?
+#### onError?
 
 ```ts
-optional onError: (error: unknown, span: Span) => Error | undefined;
+optional onError?: (error: unknown, span: Span) => Error | undefined;
 ```
 
 A function that will be called when the instrumented function fails.
@@ -51,10 +51,10 @@ You can use it to do something with the Span.
 
 0.1.0
 
-#### onResult()?
+#### onResult?
 
 ```ts
-optional onResult: (result: unknown, span: Span) => void;
+optional onResult?: (result: unknown, span: Span) => void;
 ```
 
 A function that will be called with the result of the instrumented function (if any, and no error was thrown).
@@ -83,7 +83,7 @@ InstrumentationConfig.hooks;
 
 ---
 
-### initializeTelemetry()
+### initializeTelemetry
 
 ```ts
 initializeTelemetry: (
@@ -92,7 +92,7 @@ initializeTelemetry: (
 ) => TelemetryConfig;
 ```
 
-Defined in: [types.ts:266](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L266)
+Defined in: [types.ts:250](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L250)
 
 This function is called at the start of the action.
 
@@ -118,10 +118,10 @@ The telemetry configuration to use for the action.
 ### integrations?
 
 ```ts
-optional integrations: TelemetryIntegration[];
+optional integrations?: TelemetryIntegration[];
 ```
 
-Defined in: [types.ts:255](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L255)
+Defined in: [types.ts:260](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L260)
 
 Integrations with external telemetry systems.
 
@@ -137,13 +137,13 @@ Integrations with external telemetry systems.
 
 ---
 
-### isSuccessful()?
+### isSuccessful?
 
 ```ts
-optional isSuccessful: (result: unknown) => boolean;
+optional isSuccessful?: (result: unknown) => boolean;
 ```
 
-Defined in: [types.ts:135](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L135)
+Defined in: [types.ts:135](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L135)
 
 A function that will be called to determine if the instrumented function was successful.
 By default, the function is considered successful if it doesn't throw an error.
@@ -175,10 +175,10 @@ InstrumentationConfig.isSuccessful;
 ### propagation?
 
 ```ts
-optional propagation: TelemetryPropagationConfig;
+optional propagation?: TelemetryPropagationConfig;
 ```
 
-Defined in: [types.ts:248](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L248)
+Defined in: [types.ts:267](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L267)
 
 Configuration options related to context propagation.
 See the [TelemetryPropagationConfig](../type-aliases/TelemetryPropagationConfig.md) for the interface.
@@ -192,23 +192,23 @@ See the [TelemetryPropagationConfig](../type-aliases/TelemetryPropagationConfig.
 ### spanConfig?
 
 ```ts
-optional spanConfig: SpanOptions & {
+optional spanConfig?: SpanOptions & {
   getBaseContext?: (...args: [Record<string, unknown>]) => Context;
   spanName?: string;
 };
 ```
 
-Defined in: [types.ts:106](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L106)
+Defined in: [types.ts:106](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L106)
 
 Configuration options related to the span started by the instrumented function.
 See also the [SpanOptions](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.SpanOptions.html) interface.
 
 #### Type Declaration
 
-##### getBaseContext()?
+##### getBaseContext?
 
 ```ts
-optional getBaseContext: (...args: [Record<string, unknown>]) => Context;
+optional getBaseContext?: (...args: [Record<string, unknown>]) => Context;
 ```
 
 The base context to use for the started span.
@@ -232,7 +232,7 @@ The base context to use for the started span.
 ##### spanName?
 
 ```ts
-optional spanName: string;
+optional spanName?: string;
 ```
 
 The name of the span. Defaults to the name of given function.

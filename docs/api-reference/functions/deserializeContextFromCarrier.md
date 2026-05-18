@@ -3,11 +3,11 @@
 ```ts
 function deserializeContextFromCarrier<Carrier>(
   carrier: Carrier,
-  baseCtx: Context,
+  baseCtx?: Context,
 ): Context;
 ```
 
-Defined in: [api/propagation.ts:61](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/api/propagation.ts#L61)
+Defined in: [api/propagation.ts:61](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/api/propagation.ts#L61)
 
 Deserializes the context from a carrier and augments the given base context with it.
 

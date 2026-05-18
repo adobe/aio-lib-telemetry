@@ -3,11 +3,11 @@
 ```ts
 function instrument<T>(
   fn: T,
-  config: InstrumentationConfig<T>,
+  config?: InstrumentationConfig<T>,
 ): (...args: Parameters<T>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:114](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/core/instrumentation.ts#L114)
+Defined in: [core/instrumentation.ts:114](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/core/instrumentation.ts#L114)
 
 Instruments a function.
 
@@ -28,19 +28,7 @@ Instruments a function.
 
 A wrapped function with the same signature as the original function, but with telemetry instrumentation.
 
-```ts
-(...args: Parameters<T>): ReturnType<T>;
-```
-
-### Parameters
-
-| Parameter | Type                |
-| --------- | ------------------- |
-| ...`args` | `Parameters`\<`T`\> |
-
-### Returns
-
-`ReturnType`\<`T`\>
+(...`args`: `Parameters`\<`T`\>) => `ReturnType`\<`T`\>
 
 ## Throws
 

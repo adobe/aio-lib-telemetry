@@ -10,7 +10,7 @@ type TelemetryPropagationConfig = {
 };
 ```
 
-Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L70)
+Defined in: [types.ts:70](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L70)
 
 Configuration related to context propagation (for distributed tracing).
 
@@ -20,16 +20,16 @@ Configuration related to context propagation (for distributed tracing).
 
 ## Properties
 
-### getContextCarrier()?
+### getContextCarrier?
 
 ```ts
-optional getContextCarrier: (params: Record<string, unknown>) => {
+optional getContextCarrier?: (params: Record<string, unknown>) => {
   baseCtx?: Context;
   carrier: Record<PropertyKey, string>;
 };
 ```
 
-Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L89)
+Defined in: [types.ts:89](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L89)
 
 A function that returns the carrier for the current context.
 Use it to specify where your carrier is located in the incoming parameters, when it's not one of the defaults.
@@ -54,7 +54,7 @@ The carrier of the context to retrieve and an optional base context to use for t
 ##### baseCtx?
 
 ```ts
-optional baseCtx: Context;
+optional baseCtx?: Context;
 ```
 
 ##### carrier
@@ -72,10 +72,10 @@ carrier: Record<PropertyKey, string>;
 ### skip?
 
 ```ts
-optional skip: boolean;
+optional skip?: boolean;
 ```
 
-Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/317842f77a9a2210592cfbae768ca97d536e39af/source/types.ts#L78)
+Defined in: [types.ts:78](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L78)
 
 By default, an instrumented entrypoint will try to automatically read (and use) the context from the incoming request.
 Set to `true` if you want to skip this automatic context propagation.
