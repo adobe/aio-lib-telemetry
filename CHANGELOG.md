@@ -1,5 +1,11 @@
 # @adobe/aio-lib-telemetry
 
+## 1.2.0
+
+### Minor Changes
+
+- [#112](https://github.com/adobe/aio-lib-telemetry/pull/112) [`d6100ad`](https://github.com/adobe/aio-lib-telemetry/commit/d6100adc7398ac148cb50ef017650592fe0a27e6) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Drop Node 20 support (EOL April 2026)
+
 ## 1.1.4
 
 ### Patch Changes
