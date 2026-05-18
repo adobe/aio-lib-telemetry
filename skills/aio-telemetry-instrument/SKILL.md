@@ -15,59 +15,39 @@ description: >-
 
 # Instrument a Runtime Action
 
-Add telemetry instrumentation to one App Builder runtime action at a time. Start from what you need to observe, work backward to the minimum code changes.
+Instrument one App Builder runtime action at a time. Start from the observability goal and add the minimum code needed.
 
-## Adaptive Flow
+Skip phases that are already answered. If the first message already identifies the action, goal, and requested code changes, implement directly.
 
-The user may provide enough context in their initial message to skip phases. If their request already implies a specific action, signals, or depth (e.g., "add a counter metric to my checkout action"), correlate that with the skill's phases and jump to the appropriate step silently. Don't ask questions you already have answers to.
-
-If the request names a single action, states the observability goal, and asks for code changes or explicit output files, switch to direct implementation mode: read the action, decide the minimal instrumentation, and produce the code changes without waiting for an extra approval checkpoint.
+For fixed-choice questions, use the runtime's selectable-question tool.
 
 ## Scope
 
-One action per session. If the user asks to instrument multiple actions or "the whole project":
-
-1. Acknowledge the goal
-2. Explain that effective instrumentation requires understanding each action's responsibilities individually
-3. Ask them to pick the action they care about most, or the one they need observability for right now
-4. After completing one action, offer to continue with the next
+Work on one action per session. If the user asks for multiple actions or "the whole project," have them choose the first action and continue one at a time.
 
 ## Key Principles
 
-`@adobe/aio-lib-telemetry` is a **thin wrapper** over the OpenTelemetry JS SDK. When unsure about specific API options, instrumentation patterns, or OTel SDK behavior, consult the documentation sources listed at the bottom of this file.
-
-A single `defineTelemetryConfig` shared across actions is usually enough. The config callback receives `params` and `isDev` — use conditional logic inside it rather than creating separate config files (see [references/implementation-patterns.md](references/implementation-patterns.md) for examples). Only suggest separate configs if the use case genuinely requires it.
+- Keep one shared `defineTelemetryConfig` and branch on `params` or `isDev` inside it. Separate config files are rare (see [references/implementation-patterns.md](references/implementation-patterns.md)).
+- If API shape or OTel behavior is unclear, use [references/documentation-sources.md](references/documentation-sources.md).
 
 ## Prerequisites
 
-The general telemetry setup must be in place before instrumenting. Check the user's codebase for:
+Before instrumenting, confirm that `@adobe/aio-lib-telemetry` is installed and that the project already has a `defineTelemetryConfig` call. If either is missing, route to `aio-telemetry-setup`.
 
-1. `@adobe/aio-lib-telemetry` installed as a dependency
-2. A `defineTelemetryConfig` call somewhere in the project (usually in a shared `telemetry.ts` or `telemetry.js`)
+This skill can still add per-action setup such as `instrumentEntrypoint` and `ENABLE_TELEMETRY: true` for the target action.
 
-If either is missing, route to the `aio-telemetry-setup` skill — don't attempt general setup here.
-
-The following are **per-action steps** that this skill can handle if needed:
-
-- Wrapping the action's main function with `instrumentEntrypoint`
-- Adding `ENABLE_TELEMETRY: true` in `app.config.yaml` for the action
-
-If these aren't done for the target action yet, handle them as part of Phase 4 (Implement).
-
-For single-turn implementation tasks, prefer concrete code over advice. Produce the updated action file, any module-level metrics file, and a short explanation of what was instrumented.
+For single-turn implementation tasks, prefer concrete code over advice.
 
 ## Phase 0: Discover the Action
 
 **Before anything else**, identify which action to instrument.
 
-1. Read `app.config.yaml` at the project root
-2. Search for any `ext.config.yaml` files in the project
-3. Parse the declared actions from both files
-4. Present the list to the user and ask which one they want to instrument
+1. Read `app.config.yaml` at the project root and any `ext.config.yaml` files
+2. Parse the declared actions and ask which one to instrument
 
 If no actions are declared in config files, ask the user to point to the action file directly.
 
-Once the action is identified, **let the user explain what they want**. Give them space to describe their goal, any specific problems they're trying to observe, or the context behind this request. Their explanation may answer many of the Phase 2 questions preemptively — listen before asking.
+Once the action is identified, let the user describe the goal before filling any gaps with follow-up questions.
 
 ## Phase 1: Understand the Action
 
@@ -85,7 +65,6 @@ For data-pipeline and event-ingestion actions, apply these defaults unless the r
 - Use `instrument()` for I/O boundaries such as storage writes, downstream notifications, or SDK/network calls.
 - Do not wrap pure computation helpers such as validation, mapping, aggregation, or formatting unless they perform I/O.
 - Define custom metrics with `defineMetrics()` at module scope, not inside the handler.
-- Prefer named functions in `instrument()` calls. If using an arrow function, set `spanConfig.spanName` explicitly.
 - Add low-cardinality span attributes for counts and outcomes on the root span or child spans.
 
 Present a brief summary to the user:
@@ -94,33 +73,12 @@ Present a brief summary to the user:
 
 ## Phase 2: Discover Observability Goals
 
-Ask guided questions based on what you **don't already know** from context. If the user already explained their goals in Phase 0, skip to the relevant questions. Adapt based on the action's pattern from Phase 1.
+Ask only for missing inputs:
 
-### Instrumentation depth
-
-Explain the three levels and let the user choose. Recommend a level based on the action's complexity, but let them decide. See [references/signal-decision.md](references/signal-decision.md) for details.
-
-- **Essential**: Rely on root span + auto-instrumentation, add a few key attributes. Minimal code changes.
-- **Standard**: Wrap key functions with `instrument()`, add attributes, maybe a metric. Good balance.
-- **Comprehensive**: Full per-function spans, metrics, structured logging, span events. Maximum visibility.
-
-### Additional questions (ask only if not already answered)
-
-1. **Signals** — Which signals do they want: traces, metrics, logs, or all? Default to traces if unsure.
-2. **Integrations** — If the action matches an available integration, ask about it:
-   - Commerce webhook handler → suggest `commerceWebhooks()`
-   - Commerce event processor → suggest `commerceEvents()`
-   - Skip this question entirely if no integration matches.
-3. **Specific concerns** — "When this action fails or is slow in production, what would you want to see in your dashboard to understand why?"
-
-### Important API distinction
-
-`instrumentEntrypoint` and `instrument()` have different options:
-
-- **Entrypoint**: `propagation`, `integrations`, `initializeTelemetry` — handled by setup
-- **instrument()**: `spanConfig`, `hooks` (`onResult`, `onError`), `isSuccessful` — this skill's domain
-
-The entrypoint config can also use `params` and `isDev` for conditional behavior (different exporters in dev, params-based sampling, etc.).
+- **Depth** — Essential, Standard, or Comprehensive. Recommend one based on action complexity and use [references/signal-decision.md](references/signal-decision.md) for tradeoffs.
+- **Signals** — traces, metrics, logs, or all. Default to traces if unsure.
+- **Integration** — ask only if the action matches `commerceWebhooks()` or `commerceEvents()`.
+- **Primary question** — "When this action fails or is slow, what do you need to see?"
 
 ## Phase 3: Propose
 
@@ -159,10 +117,18 @@ After approval, implement each item. See [references/implementation-patterns.md]
 ### Implementation order
 
 1. **Metrics definitions** — `defineMetrics()` calls at module level or in a separate metrics file
-2. **Function wrapping** — `instrument()` around target functions (use named functions or provide `spanConfig.spanName`)
+2. **Function wrapping** — `instrument()` around target functions
 3. **Span enrichment** — attributes and events inside already-instrumented functions
 4. **Logging** — `getLogger()` or `getInstrumentationHelpers().logger` calls
 5. **Propagation** — `contextCarrier` in outbound calls to other instrumented services
+
+Minimal pattern:
+
+```ts
+const fetchProductData = instrument(async function fetchProductData(productId) {
+  return commerceClient.getProduct(productId);
+});
+```
 
 ### After implementation
 
@@ -176,31 +142,13 @@ After approval, implement each item. See [references/implementation-patterns.md]
 - Setup problems discovered during implementation → suggest the `aio-telemetry-setup` skill
 - Runtime errors or unexpected behavior after implementation → suggest the `aio-telemetry-troubleshooting` skill
 
-## Documentation Sources
-
-When unsure or doubtful about library behavior, API options, or OTel internals, consult these sources. Assess which is more likely to have the answer and check that one first.
-
-### Library documentation (fetch via raw.githubusercontent.com)
-
-Base URL: `https://raw.githubusercontent.com/adobe/aio-lib-telemetry/refs/heads/main/docs/`
-
-| Doc           | Path                               | Covers                                                                  |
-| ------------- | ---------------------------------- | ----------------------------------------------------------------------- |
-| Usage guide   | `usage.md`                         | Main guide — config, instrumentation, signals, propagation              |
-| API reference | `api-reference/README.md`          | Full API surface (query subdirs for specific functions/types as needed) |
-| OTel concepts | `concepts/open-telemetry.md`       | Library's relationship to OpenTelemetry                                 |
-| Integrations  | `use-cases/integrations/README.md` | Commerce Events/Webhooks integrations                                   |
-
-### OpenTelemetry JS documentation
-
-URL: `https://opentelemetry.io/docs/languages/js/`
-
-Use for: SDK internals, instrumentation libraries, span/metric/log API details, propagation protocol, anything beyond the library's wrapper API.
+For library and OpenTelemetry documentation sources, see [references/documentation-sources.md](references/documentation-sources.md).
 
 ## References
 
 | File                                                                           | When to read                                                         |
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| [references/documentation-sources.md](references/documentation-sources.md)     | Raw GitHub doc paths and OpenTelemetry JS docs                       |
 | [references/signal-decision.md](references/signal-decision.md)                 | Deciding which signal type to use, choosing instrumentation depth    |
 | [references/implementation-patterns.md](references/implementation-patterns.md) | Writing the actual instrumentation code (Phase 4)                    |
 | [references/action-patterns.md](references/action-patterns.md)                 | Classifying the action and building default instrumentation profiles |
