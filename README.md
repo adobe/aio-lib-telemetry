@@ -26,6 +26,7 @@ The [`otel` entrypoint](./docs/api-reference/README.md#opentelemetry-api) re-exp
 
 - **Major versions** are reserved for breaking changes to our library's own API
 - **Minor/patch versions** may include breaking changes to the `otel` entrypoint
+- **Node.js version changes** (drops or additions) do not trigger major versions, they are released as isolated bumps with no other changes, to make the impact easy to assess
 - All breaking changes, including those in `otel`, are documented in release notes with a `[BREAKING]` label
 
 **Recommendation:** Always review release notes before upgrading, especially if you use the `otel` entrypoint directly.
