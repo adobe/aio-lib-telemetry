@@ -1,0 +1,61 @@
+{
+  "context": "Tests whether the agent correctly sets up @adobe/aio-lib-telemetry for an App Builder action, including the critical ENABLE_TELEMETRY flag, shared config file pattern, correct API usage, and proper signal wiring for all three telemetry signals.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "ENABLE_TELEMETRY in yaml",
+      "description": "app.config.yaml includes `ENABLE_TELEMETRY: true` as an input for the process-order action or at the package level",
+      "max_score": 12
+    },
+    {
+      "name": "Shared telemetry file",
+      "description": "A separate file named `telemetry.js` or `telemetry.ts` is created (not inlined into the action file)",
+      "max_score": 8
+    },
+    {
+      "name": "defineTelemetryConfig pattern",
+      "description": "Uses `defineTelemetryConfig((params, isDev) => { ... })` with a callback accepting params and isDev parameters",
+      "max_score": 10
+    },
+    {
+      "name": "sdkConfig wrapper",
+      "description": "The defineTelemetryConfig callback returns an object with `sdkConfig: { ... }` wrapper, not flat properties at the top level",
+      "max_score": 8
+    },
+    {
+      "name": "getAioRuntimeResource",
+      "description": "Uses `getAioRuntimeResource()` (or `getAioRuntimeResourceWithAttributes`) for the `resource` field in sdkConfig",
+      "max_score": 8
+    },
+    {
+      "name": "Correct instrumentation preset",
+      "description": "Uses `getPresetInstrumentations(\"simple\")` (not \"full\") for the `instrumentations` field in sdkConfig",
+      "max_score": 8
+    },
+    {
+      "name": "instrumentEntrypoint wrapping",
+      "description": "The action's main function is wrapped with `instrumentEntrypoint(main, telemetryConfig)` and the result is exported as `main`",
+      "max_score": 10
+    },
+    {
+      "name": "Valid import paths",
+      "description": "All imports use only valid paths: `@adobe/aio-lib-telemetry`, `@adobe/aio-lib-telemetry/otel`, or `@adobe/aio-lib-telemetry/integrations` — no other subpaths",
+      "max_score": 8
+    },
+    {
+      "name": "Correct exporter class names",
+      "description": "Uses `OTLPTraceExporterProto`, `OTLPMetricExporterProto`, `OTLPLogExporterProto` (with protocol suffix) — not `OTLPTraceExporter` or similar",
+      "max_score": 10
+    },
+    {
+      "name": "Correct signal wiring",
+      "description": "Metrics wrapped in `PeriodicExportingMetricReader({ exporter: ... })` assigned to `metricReaders`, and logs wrapped in `SimpleLogRecordProcessor(...)` assigned to `logRecordProcessors` — not passed directly",
+      "max_score": 10
+    },
+    {
+      "name": "Exporter class imports from /otel",
+      "description": "OTLP exporter classes and processors (OTLPTraceExporterProto, PeriodicExportingMetricReader, SimpleLogRecordProcessor, etc.) are imported from `@adobe/aio-lib-telemetry/otel`",
+      "max_score": 8
+    }
+  ]
+}

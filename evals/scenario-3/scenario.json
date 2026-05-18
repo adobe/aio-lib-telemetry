@@ -1,0 +1,1 @@
+{ "description": "Identify and fix broken telemetry configuration", "include": ["./inputs"] }

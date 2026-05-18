@@ -1,0 +1,1 @@
+{ "description": "Basic telemetry setup for App Builder action", "include": ["./inputs"] }

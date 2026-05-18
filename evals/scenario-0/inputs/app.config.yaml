@@ -1,0 +1,15 @@
+application:
+  runtimeManifest:
+    packages:
+      my-ecommerce-app:
+        license: Apache-2.0
+        actions:
+          process-order:
+            function: actions/process-order/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: debug
+              API_TOKEN: $API_TOKEN
+            annotations:
+              require-adobe-auth: true

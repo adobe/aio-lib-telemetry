@@ -1,0 +1,18 @@
+application:
+  runtimeManifest:
+    packages:
+      catalog-service:
+        license: Apache-2.0
+        actions:
+          sync-products:
+            function: actions/sync-products/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: info
+          send-notifications:
+            function: actions/send-notifications/index.js
+            web: 'no'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: info

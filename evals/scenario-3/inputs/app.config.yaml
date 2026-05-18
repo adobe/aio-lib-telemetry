@@ -1,0 +1,21 @@
+application:
+  runtimeManifest:
+    packages:
+      fulfillment-service:
+        license: Apache-2.0
+        actions:
+          fulfill-order:
+            function: actions/fulfill-order/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: info
+              ENABLE_TELEMETRY: TRUE
+              NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
+          update-inventory:
+            function: actions/update-inventory/index.js
+            web: 'no'
+            runtime: nodejs:18
+            inputs:
+              LOG_LEVEL: info
+              NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
