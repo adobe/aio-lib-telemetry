@@ -87,7 +87,7 @@
     "@adobe/aio-lib-core-logging": "^3.0.2",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.208.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.67.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.75.0",
     "@opentelemetry/exporter-logs-otlp-grpc": "^0.208.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.208.0",
     "@opentelemetry/exporter-logs-otlp-proto": "^0.208.0",
