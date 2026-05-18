@@ -16,15 +16,13 @@ description: >-
 
 ## Key Principle
 
-`@adobe/aio-lib-telemetry` is a **thin wrapper** over the OpenTelemetry JS SDK (`@opentelemetry/sdk-node`). The `sdkConfig` object maps directly to OTel's `NodeSDKConfiguration`. When unsure about library API or OTel SDK options, consult the documentation sources listed at the bottom of this file.
-
-Many users write plain JavaScript without TypeScript, so they get **no editor feedback** on invalid config properties. Config validation is a critical part of troubleshooting.
+`@adobe/aio-lib-telemetry` mostly forwards `sdkConfig` to OpenTelemetry's `NodeSDKConfiguration`. Validate config shape directly, especially in JavaScript projects without type checking.
 
 ## Approach
 
 **Do not jump into the codebase.** Start by understanding the user's problem through conversation. Only inspect code after gathering enough context for a targeted search.
 
-The user may not be technical or familiar with OpenTelemetry internals. Adapt explanations to their level. Guide gently, don't assume knowledge.
+For fixed-choice questions, use the runtime's selectable-question tool.
 
 ## Phase 1: Triage
 
@@ -34,8 +32,6 @@ Ask the user to describe their problem. Understand:
 2. **What changed?** (new setup, was working before, after a deploy, after config change)
 3. **Environment?** (local dev with `aio app dev`, or deployed to I/O Runtime)
 4. **Backend?** (Grafana/Docker LGTM, New Relic, Grafana Cloud, other OTLP)
-
-Don't ask all at once — start with "What's happening?" and follow up based on their answer.
 
 ### Quick Wins to Check First
 
@@ -49,7 +45,7 @@ If the user has an **error message**, look it up in [references/error-messages.m
 
 ## Phase 2: Gather Evidence
 
-Try to get diagnostic information. Be proactive — do as much as you can yourself before asking the user.
+Get diagnostic information early and do what you can before asking for more input.
 
 ### Enable diagnostics
 
@@ -65,26 +61,22 @@ See [references/diagnostics-guide.md](references/diagnostics-guide.md) for compl
 
 ### Get activation logs
 
-Be proactive about retrieving logs yourself:
+Retrieve logs yourself when possible:
 
-1. **Find the activation** — Ask the user for the activation ID. If they don't have it, help them find it:
-   - Run `aio rt activation list` to see recent activations
-   - Ask them to identify the relevant one by timestamp or action name
-2. **Query the logs** — Once you have the ID, run `aio rt activation logs <activation_id>` yourself and analyze the output
-3. **Caveat:** Without log forwarding, Runtime only stores logs for failed or async activations
-4. **Log forwarding** — If they use log forwarding (Splunk, Azure Log Analytics, New Relic), ask them to pull logs from there. They can check their setup with `aio app config get log-forwarding`.
-5. **No logs available** — Work with what you have: their code, config, error messages, and whether the backend shows any partial data.
+1. **Find the activation** — Ask for the activation ID or help identify it with `aio rt activation list`.
+2. **Query the logs** — Run `aio rt activation logs <activation_id>` and analyze the output.
+3. **If logs are unavailable** — Check log forwarding with `aio app config get log-forwarding` or fall back to code, config, error messages, and backend evidence.
 
 ### Add temporary logging
 
-You are allowed to **add temporary log statements** to the user's code to help diagnose issues. This is a valid troubleshooting technique. Examples:
+Add temporary log statements when they help verify execution flow or runtime config. Examples:
 
 - `console.log` at key points to verify execution order
 - Logging `params` (sanitized) to verify env vars reach the action
 - Logging exporter config to verify URLs and headers are correct
 - Adding `getLogger()` calls to trace data flow
 
-After adding temporary logs, ask the user to trigger the action and share the output. **Remove all temporary logs once the issue is resolved.**
+After adding temporary logs, have the user trigger the action and share the output. Remove the logs once the issue is resolved.
 
 ### Validate their configuration
 
@@ -120,7 +112,7 @@ Match findings against known scenarios in [references/common-scenarios.md](refer
 - **Works locally, not deployed** — Exporter pointing to localhost, missing env vars
 - **Broken traces** — Context propagation not set up between services
 - **Hot reload weirdness** — Restart dev server
-- **Intermittent data loss** — Ephemeral container shutdown timing
+- **Intermittent data loss** — Shutdown timing
 - **Local setup issues** — Docker not running, tunnel down, ports blocked, tunnel URL stale
 
 ### Local setup troubleshooting
@@ -130,7 +122,7 @@ If the user has a local observability stack (Docker LGTM, tunneling), check thes
 1. **Docker container running?** — `docker ps | grep otel-lgtm`
 2. **Collector reachable?** — `curl -s -o /dev/null -w "%{http_code}" http://localhost:4318/v1/traces` (should return 200 or 405)
 3. **Tunnel alive?** — Check tunnel container logs (`docker logs cloudflared` or `docker logs ngrok`)
-4. **Tunnel URL current?** — Tunnel URLs are ephemeral; if the tunnel restarted, the URL changed. Verify the config still points to the right URL.
+4. **Tunnel URL current?** — If the tunnel restarted, verify the config points to the new URL.
 5. **Port conflicts?** — Another service may be using 3000, 4317, or 4318
 
 For tunnel-specific issues beyond basic connectivity (Cloudflare account issues, ngrok limits, etc.), refer the user to the respective tool's documentation or support channels.
@@ -150,52 +142,26 @@ Diagnostic output tells you exactly what happened:
 
 Provide the specific fix. If the problem is a **setup issue** (missing config, wrong structure), explain what's wrong and suggest the `aio-telemetry-setup` skill can help them set it up correctly from scratch.
 
-When fixing config issues, if you're unsure whether a particular OTel SDK option is valid or what it does, consult the documentation sources listed in the references table below.
+If an OTel SDK option is unclear, consult [references/documentation-sources.md](references/documentation-sources.md).
 
 ### Escalate wisely (last resort, not first instinct)
 
-Before suggesting support escalation, evaluate:
+Before escalating, rule out transient failures, local environment problems, and one-off breakage.
 
-1. **Could this be temporary?** — Timeouts, intermittent failures, and CLI errors are often transient. Ask the user to retry first, especially if the error just started or happened once.
-2. **Could this be a different root cause?** — CLI commands not working might be a local environment issue (wrong Node version, auth expired, network), not a platform bug. Exhaust local troubleshooting first.
-3. **What's the actual impact?** — A one-time timeout is different from consistently broken functionality. Scale the response to the severity.
+Only escalate after configuration, code, and local environment checks are exhausted:
 
-Only escalate after you've exhausted configuration, code, and local environment troubleshooting:
+- **Backend provider support** (New Relic, Grafana, Splunk) — verified config, but data still does not arrive or backend-specific features fail
+- **Adobe support** — Runtime issues such as env vars not reaching actions, log forwarding not taking effect, or repeatable deployment failures unrelated to code
+- **GitHub issue on @adobe/aio-lib-telemetry** — undocumented library errors or reproducible features that do not work as described
 
-- **Backend provider support** (New Relic, Grafana, Splunk) — when config is verified correct but data consistently doesn't arrive, one account works and another doesn't with identical config, or backend-specific features aren't working
-- **Adobe support** — when Runtime environment itself is the issue (env vars not reaching actions after verified correct mapping, log forwarding config not taking effect, consistent action deployment failures unrelated to code)
-- **GitHub issue on @adobe/aio-lib-telemetry** — when a library error doesn't match any documented scenario, diagnostics show internal library errors, or a documented feature reproducibly doesn't work as described
-
-## Documentation Sources
-
-When unsure or doubtful about library behavior, API options, or OTel internals, consult these sources. Assess which is more likely to have the answer and check that one first.
-
-### Library documentation (fetch via raw.githubusercontent.com)
-
-Base URL: `https://raw.githubusercontent.com/adobe/aio-lib-telemetry/refs/heads/main/docs/`
-
-| Doc               | Path                                     | Covers                                                                  |
-| ----------------- | ---------------------------------------- | ----------------------------------------------------------------------- |
-| Usage guide       | `usage.md`                               | Main guide — config, instrumentation, signals, propagation              |
-| API reference     | `api-reference/README.md`                | Full API surface (query subdirs for specific functions/types as needed) |
-| OTel concepts     | `concepts/open-telemetry.md`             | Library's relationship to OpenTelemetry                                 |
-| Grafana setup     | `use-cases/grafana.md`                   | Grafana backend configuration                                           |
-| Grafana advanced  | `use-cases/grafana/advanced.md`          | Advanced Grafana patterns                                               |
-| New Relic setup   | `use-cases/new-relic.md`                 | New Relic backend configuration                                         |
-| Integrations      | `use-cases/integrations/README.md`       | Commerce Events/Webhooks integrations                                   |
-| Tunnel forwarding | `use-cases/support/tunnel-forwarding.md` | Local dev tunneling setup                                               |
-
-### OpenTelemetry JS documentation
-
-URL: `https://opentelemetry.io/docs/languages/js/`
-
-Use for: SDK internals, exporter options, instrumentation libraries, propagation protocol, SDK lifecycle, anything beyond the library's wrapper API.
+For library and OpenTelemetry documentation sources, see [references/documentation-sources.md](references/documentation-sources.md).
 
 ## References
 
-| File                                                               | When to read                                                                       |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| [references/config-validation.md](references/config-validation.md) | Validating user's config — import paths, schema, valid properties, common mistakes |
-| [references/error-messages.md](references/error-messages.md)       | User reports a specific error message                                              |
-| [references/diagnostics-guide.md](references/diagnostics-guide.md) | Need to enable/interpret diagnostic output, or need to ask user for logs           |
-| [references/common-scenarios.md](references/common-scenarios.md)   | Matching symptoms to known causes and fixes                                        |
+| File                                                                       | When to read                                                                       |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [references/documentation-sources.md](references/documentation-sources.md) | Raw GitHub doc paths and OpenTelemetry JS docs                                     |
+| [references/config-validation.md](references/config-validation.md)         | Validating user's config — import paths, schema, valid properties, common mistakes |
+| [references/error-messages.md](references/error-messages.md)               | User reports a specific error message                                              |
+| [references/diagnostics-guide.md](references/diagnostics-guide.md)         | Need to enable/interpret diagnostic output, or need to ask user for logs           |
+| [references/common-scenarios.md](references/common-scenarios.md)           | Matching symptoms to known causes and fixes                                        |

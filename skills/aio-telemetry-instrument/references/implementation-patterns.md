@@ -24,6 +24,24 @@ These are different APIs with different options:
 
 ## Wrapping Functions with instrument()
 
+Use `instrument()` for I/O boundaries, async work you want a named child span for, or functions where hooks add useful observability context.
+
+Do not use `instrument()` for pure computation helpers that only validate, map, aggregate, or format data in memory. Those functions usually add noisy spans without improving diagnosability.
+
+Good candidates:
+
+- outbound HTTP or SDK calls
+- storage reads or writes
+- queue publish or notify operations
+- retry wrappers around external calls
+
+Usually not worth instrumenting:
+
+- `validateInput()`
+- `transformRecord()`
+- `formatResponse()`
+- `average()`
+
 ### Named function (preferred)
 
 ```ts

@@ -27,6 +27,18 @@ my-action:
 
 ## Telemetry config
 
+This sample shows one valid way to configure New Relic. You do not need to preserve the helper function shape, constant names, or property order exactly.
+
+New Relic-specific details that must stay correct:
+
+- The New Relic auth header is `api-key`, not `Authorization`.
+- The license key should come from params/env, not be hardcoded.
+
+Common failure points:
+
+- Using the wrong auth header for New Relic
+- Hardcoding the license key instead of reading it from params/env
+
 ```ts
 import {
   defineTelemetryConfig,
@@ -86,6 +98,8 @@ export const telemetryConfig = defineTelemetryConfig((params, isDev) => {
   };
 });
 ```
+
+If you only need traces, you can omit `metricReaders` and `logRecordProcessors`. If you want all three signals, configure each one explicitly rather than relying on shorthand properties.
 
 ## View in New Relic
 
