@@ -125,22 +125,16 @@
     "@vitest/ui": "^4.1.6",
     "husky": "^9.1.7",
     "knip": "^6.14.1",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.0.5",
     "prettier": "^3.8.3",
     "publint": "^0.3.21",
-    "tsdown": "0.21.5",
+    "tsdown": "^0.22.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^6.0.3",
     "ultracite": "^7.7.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.6"
-  },
-  "overrides": {
-    "@babel/helper-string-parser": "8.0.0-rc.4",
-    "@babel/helper-validator-identifier": "8.0.0-rc.4",
-    "@babel/parser": "8.0.0-rc.4",
-    "@babel/types": "8.0.0-rc.4"
   },
   "sideEffects": false,
   "lint-staged": {
