@@ -1,0 +1,56 @@
+{
+  "context": "Tests whether the agent correctly configures New Relic as the OTLP backend for @adobe/aio-lib-telemetry, including the correct endpoint URL, authentication header name, exporter class names, signal wiring, and environment variable mapping in app.config.yaml.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "New Relic OTLP endpoint",
+      "description": "Uses the US OTLP endpoint `https://otlp.nr-data.net:4318` (or EU endpoint if explicitly chosen) as the base URL for exporters",
+      "max_score": 12
+    },
+    {
+      "name": "api-key header (not Authorization)",
+      "description": "Uses `\"api-key\"` as the header name for the New Relic license key — NOT `Authorization`, `Bearer`, or any other header name",
+      "max_score": 12
+    },
+    {
+      "name": "Correct exporter class names",
+      "description": "Uses `OTLPTraceExporterProto`, `OTLPMetricExporterProto`, `OTLPLogExporterProto` — not `OTLPTraceExporter` or other names without protocol suffix",
+      "max_score": 10
+    },
+    {
+      "name": "Exporter imports from /otel",
+      "description": "Imports OTLP exporter classes from `@adobe/aio-lib-telemetry/otel` (not from `@opentelemetry/*` packages directly or from other subpaths)",
+      "max_score": 8
+    },
+    {
+      "name": "Metrics signal wiring",
+      "description": "Metric exporter is wrapped in `PeriodicExportingMetricReader({ exporter: ... })` and assigned to `metricReaders` array — not passed as `metricExporter` or directly",
+      "max_score": 10
+    },
+    {
+      "name": "Logs signal wiring",
+      "description": "Log exporter is wrapped in `SimpleLogRecordProcessor(...)` and assigned to `logRecordProcessors` array — not as `logExporter` or passed directly",
+      "max_score": 10
+    },
+    {
+      "name": "ENABLE_TELEMETRY in yaml",
+      "description": "app.config.yaml includes `ENABLE_TELEMETRY: true` for both actions (or at the package level)",
+      "max_score": 10
+    },
+    {
+      "name": "Env var with $VAR_NAME syntax",
+      "description": "The New Relic license key is mapped in app.config.yaml using `$VAR_NAME` syntax (e.g., `NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY`) rather than hardcoded",
+      "max_score": 10
+    },
+    {
+      "name": "License key from params",
+      "description": "The New Relic license key is accessed from `params` (e.g., `params.NEW_RELIC_LICENSE_KEY`) inside the defineTelemetryConfig callback",
+      "max_score": 10
+    },
+    {
+      "name": "Correct per-signal endpoint paths",
+      "description": "Each exporter uses the correct path suffix: `/v1/traces` for traces, `/v1/metrics` for metrics, `/v1/logs` for logs",
+      "max_score": 8
+    }
+  ]
+}

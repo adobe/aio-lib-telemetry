@@ -1,0 +1,56 @@
+{
+  "context": "Tests whether the agent correctly uses the commerceEvents() integration (which creates span links, not parent-child) and properly forwards distributed tracing context via contextCarrier in the OpenWhisk params body when invoking another action.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "instrumentEntrypoint used",
+      "description": "The handler is wrapped with `instrumentEntrypoint(handler, ...)` and the result is exported as `main` (not the raw handler function)",
+      "max_score": 10
+    },
+    {
+      "name": "ENABLE_TELEMETRY in app.config.yaml",
+      "description": "app.config.yaml includes `ENABLE_TELEMETRY: true` for the commerce-event-handler action",
+      "max_score": 10
+    },
+    {
+      "name": "commerceEvents() integration used",
+      "description": "Uses `commerceEvents()` integration — imported from `@adobe/aio-lib-telemetry/integrations` — to handle the Commerce event trace linkage",
+      "max_score": 14
+    },
+    {
+      "name": "commerceEvents import path correct",
+      "description": "Imports `commerceEvents` from `@adobe/aio-lib-telemetry/integrations` (not from the main package or any other subpath)",
+      "max_score": 8
+    },
+    {
+      "name": "contextCarrier in OpenWhisk params",
+      "description": "When invoking the `fulfill-order` action via OpenWhisk, passes `...contextCarrier` (or `...getInstrumentationHelpers().contextCarrier`) in the params body — not as HTTP headers",
+      "max_score": 14
+    },
+    {
+      "name": "contextCarrier from getInstrumentationHelpers",
+      "description": "Obtains contextCarrier from `getInstrumentationHelpers()` (or `serializeContextIntoCarrier()`) from `@adobe/aio-lib-telemetry` — not from a deprecated or custom mechanism",
+      "max_score": 10
+    },
+    {
+      "name": "Does NOT use x-telemetry-context",
+      "description": "Does NOT use the deprecated `x-telemetry-context` header or `__telemetryContext` parameter approach for propagation",
+      "max_score": 10
+    },
+    {
+      "name": "Integration placement correct",
+      "description": "The `commerceEvents()` integration is applied either in the `defineTelemetryConfig` return value (global) OR in the `instrumentEntrypoint` call (per-action) — not in both, not outside these locations",
+      "max_score": 8
+    },
+    {
+      "name": "Valid import paths only",
+      "description": "All imports from aio-lib-telemetry use only valid paths: `@adobe/aio-lib-telemetry`, `@adobe/aio-lib-telemetry/otel`, or `@adobe/aio-lib-telemetry/integrations`",
+      "max_score": 8
+    },
+    {
+      "name": "telemetryConfig spread in entrypoint",
+      "description": "The `instrumentEntrypoint` call includes the telemetry config (e.g., `{ ...telemetryConfig, integrations: [...] }` or just `telemetryConfig` if integrations are in the global config)",
+      "max_score": 8
+    }
+  ]
+}

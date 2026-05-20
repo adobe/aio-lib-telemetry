@@ -1,0 +1,61 @@
+{
+  "context": "Tests whether the agent correctly instruments an existing App Builder action using @adobe/aio-lib-telemetry, applying the right signal types for each observability goal, using named functions, placing metric definitions correctly, and following implementation patterns.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "instrument() for I/O functions",
+      "description": "Uses `instrument()` to wrap at least one I/O function (storeEvents and/or notifyDownstream) to create child spans — not for pure computation functions like average() or validateEvent()",
+      "max_score": 12
+    },
+    {
+      "name": "Named functions preferred",
+      "description": "Where instrument() is applied, named functions are used (e.g., `instrument(function storeEvents(...) {...})`) rather than arrow functions without spanName",
+      "max_score": 8
+    },
+    {
+      "name": "Arrow functions have spanName",
+      "description": "Any arrow function passed to instrument() explicitly provides `spanConfig: { spanName: '...' }` — not relying on anonymous function name inference",
+      "max_score": 8
+    },
+    {
+      "name": "defineMetrics at module level",
+      "description": "Custom metrics are defined using `defineMetrics((meter) => ({ ... }))` at module level (outside the handler function), not inside the handler or any per-invocation function",
+      "max_score": 12
+    },
+    {
+      "name": "Counter metric for events",
+      "description": "Defines a counter metric (using meter.createCounter) to track events processed or events rejected over time",
+      "max_score": 10
+    },
+    {
+      "name": "Metric naming conventions",
+      "description": "Metric names use dot-separated namespaces and snake_case, and include units in the suffix when relevant (e.g., `ingest.events_processed`, `ingest.events_rejected`, `ingest.payload_size_bytes`)",
+      "max_score": 8
+    },
+    {
+      "name": "Does NOT instrument pure computation",
+      "description": "Does NOT apply instrument() to pure computation helpers like `validateEvent()`, `transformEvent()`, or `average()` that perform no I/O",
+      "max_score": 10
+    },
+    {
+      "name": "Span attributes for context",
+      "description": "Adds span attributes (e.g., received count, stored count, invalid count) to the root or child spans — not putting high-cardinality data in metric labels",
+      "max_score": 8
+    },
+    {
+      "name": "Valid import paths only",
+      "description": "Any new imports added use only valid paths: `@adobe/aio-lib-telemetry`, `@adobe/aio-lib-telemetry/otel`, or `@adobe/aio-lib-telemetry/integrations`",
+      "max_score": 8
+    },
+    {
+      "name": "No PII in telemetry",
+      "description": "Does NOT include sensitive data such as tokens, bearer credentials, or user-identifiable information in span attributes, events, or metric labels",
+      "max_score": 8
+    },
+    {
+      "name": "instrument() within entrypoint context",
+      "description": "All instrument() calls are used within the handler that is wrapped by instrumentEntrypoint — not at module load time or outside the instrumented call chain",
+      "max_score": 8
+    }
+  ]
+}

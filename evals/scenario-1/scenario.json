@@ -1,0 +1,1 @@
+{ "description": "New Relic backend configuration with env var wiring", "include": ["./inputs"] }

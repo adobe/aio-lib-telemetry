@@ -2,7 +2,15 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core"],
   "files": {
-    "ignoreUnknown": true
+    "ignoreUnknown": true,
+    "includes": [
+      "**/*",
+      "!dist",
+      "!coverage",
+      "!node_modules",
+      "!**/skills",
+      "!**/evals"
+    ]
   },
 
   "javascript": {

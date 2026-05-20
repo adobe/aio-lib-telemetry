@@ -18,82 +18,16 @@ Below is a summary table of the documented use cases. Key terms:
 - `In Cloud`: Runtime actions deployed to the cloud via `aio app deploy`
   - A `Via Tunneling` indicator shows that the guide demonstrates forwarding telemetry from deployed actions to a local observability stack. This is just one possible approach. You're not required to use tunneling (especially not in production). For instance, with hosted solutions like Grafana, you can configure direct data transmission instead.
 
-<table>
-  <thead>
-    <tr>
-      <th>Guide</th>
-      <th>Approach</th>
-      <th>Via</th>
-      <th>Protocol</th>
-      <th>Signals</th>
-      <th>Local Development</th>
-      <th>In Cloud</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <a href="./grafana.md">
-          <strong>Grafana (Quick Start)</strong>
-        </a>
-      </td>
-      <td align="center">⚡ Recommended</td>
-      <td align="center">Docker LGTM</td>
-      <td align="center">HTTP/Protobuf</td>
-      <td align="center">Traces, Metrics, Logs</td>
-      <td align="center">Covered ✅</td>
-      <td align="center">Via Tunneling ⚠️</td>
-    </tr>
-    <tr>
-      <td>
-        <a href="./grafana/advanced.md">
-          <strong>Grafana (Advanced)</strong>
-        </a>
-      </td>
-      <td align="center">🔧 Custom Setup</td>
-      <td align="center">OpenTelemetry Collector</td>
-      <td align="center">HTTP/Protobuf</td>
-      <td align="center">Traces, Metrics, Logs</td>
-      <td align="center">Covered ✅</td>
-      <td align="center">Via Tunneling ⚠️</td>
-    </tr>
-    <tr>
-        <td>
-            <a href="./new-relic.md">
-                <strong>New Relic</strong>
-            </a>
-        </td>
-        <td align="center">☁️ Hosted</td>
-        <td align="center">Direct Export</td>
-        <td align="center">HTTP/Protobuf</td>
-        <td align="center">Traces, Metrics, Logs</td>
-        <td align="center">Covered ✅</td>
-        <td align="center">Covered ✅</td>
-    </tr>
-  </tbody>
-</table>
+| Guide                                           |    Approach     |           Via           |   Protocol    |        Signals        | Local Development |     In Cloud     |
+| :---------------------------------------------- | :-------------: | :---------------------: | :-----------: | :-------------------: | :---------------: | :--------------: |
+| [**Grafana (Quick Start)**](./grafana.md)       | ⚡ Recommended  |       Docker LGTM       | HTTP/Protobuf | Traces, Metrics, Logs |    Covered ✅     | Via Tunneling ⚠️ |
+| [**Grafana (Advanced)**](./grafana/advanced.md) | 🔧 Custom Setup | OpenTelemetry Collector | HTTP/Protobuf | Traces, Metrics, Logs |    Covered ✅     | Via Tunneling ⚠️ |
+| [**New Relic**](./new-relic.md)                 |    ☁️ Hosted    |      Direct Export      | HTTP/Protobuf | Traces, Metrics, Logs |    Covered ✅     |    Covered ✅    |
 
 ## Supporting Guides
 
 These guides provide additional technical details and setup instructions that complement the main observability guides above.
 
-<table>
-  <thead>
-    <tr>
-        <th>Guide</th>
-        <th>Purpose</th>
-        <th>Use Case</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>
-            <a href="./support/tunnel-forwarding.md">
-                <strong>Tunneling for Local Observability</strong>
-            </a>
-        </td>
-        <td>Forward telemetry from deployed actions to local tools</td>
-        <td>Development/Testing ⚠️</td>
-    </tr>
-  </tbody>
-</table>
+| Guide                                                                   | Purpose                                                |        Use Case        |
+| :---------------------------------------------------------------------- | :----------------------------------------------------- | :--------------------: |
+| [**Tunneling for Local Observability**](./support/tunnel-forwarding.md) | Forward telemetry from deployed actions to local tools | Development/Testing ⚠️ |
