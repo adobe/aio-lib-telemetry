@@ -47,7 +47,7 @@
       "automerge": true,
       "separateMajorMinor": false,
       "postUpgradeTasks": {
-        "commands": ["npm run lint:fix", "npm run format"],
+        "commands": ["pnpm run lint:fix", "pnpm run format"],
         "executionMode": "branch"
       }
     }
