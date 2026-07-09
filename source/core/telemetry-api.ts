@@ -75,5 +75,5 @@ export function initializeGlobalTelemetryApi(
     meter = metrics.getMeter(actionName, actionVersion),
   } = config;
 
-  setGlobalTelemetryApi({ tracer, meter });
+  setGlobalTelemetryApi({ meter, tracer });
 }

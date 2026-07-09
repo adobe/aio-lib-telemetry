@@ -59,21 +59,21 @@ export function isTelemetryEnabled() {
 /** Retrieves basic metadata from the runtime environment. */
 function retrieveBasicMetadata() {
   return {
+    actionVersion: process.env.__OW_ACTION_VERSION ?? "0.0.0 (development)",
     activationId: process.env.__OW_ACTIVATION_ID as string,
-    namespace: process.env.__OW_NAMESPACE as string,
     apiHost: process.env.__OW_API_HOST as string,
     apiKey: process.env.__OW_API_KEY as string,
+    cloud: process.env.__OW_CLOUD ?? "local",
+    deadline: process.env.__OW_DEADLINE
+      ? new Date(Number(process.env.__OW_DEADLINE))
+      : null,
     isDevelopment: isDevelopment(),
+    namespace: process.env.__OW_NAMESPACE as string,
 
     // The following are only set on production
     // We provide some arbitrary values for local development
     region: process.env.__OW_REGION ?? "local",
-    cloud: process.env.__OW_CLOUD ?? "local",
     transactionId: process.env.__OW_TRANSACTION_ID ?? "unknown",
-    actionVersion: process.env.__OW_ACTION_VERSION ?? "0.0.0 (development)",
-    deadline: process.env.__OW_DEADLINE
-      ? new Date(Number(process.env.__OW_DEADLINE))
-      : null,
   };
 }
 
@@ -83,24 +83,24 @@ function parseActionName() {
 
   if (!actionName) {
     return {
-      packageName: "unknown",
       actionName: "unknown",
+      packageName: "unknown",
     };
   }
 
   if (actionName.includes("/")) {
     const [, _, packageName, ...action] = actionName.split("/");
     return {
-      packageName,
       actionName: action.join("/"),
+      packageName,
     };
   }
 
   return {
+    actionName: process.env.__OW_ACTION_NAME as string,
     // Old installations of AIO CLI, might use a version `aio app dev`
     // where ACTION_NAME doesn't include a package name.
     packageName: "unknown",
-    actionName: process.env.__OW_ACTION_NAME as string,
   };
 }
 
@@ -133,11 +133,11 @@ function createServiceName(meta: RuntimeMetadata) {
 function createCoreAttributes(meta: RuntimeMetadata) {
   return {
     [ATTR_SERVICE_NAME]: createServiceName(meta),
-    environment: meta.isDevelopment ? "development" : "production",
+    "action.activation_id": meta.activationId,
 
     "action.name": meta.actionName,
     "action.namespace": meta.namespace,
-    "action.activation_id": meta.activationId,
+    environment: meta.isDevelopment ? "development" : "production",
   };
 }
 
@@ -164,8 +164,8 @@ function addKnownValueAttributes(
   meta: RuntimeMetadata,
 ) {
   const potentiallyUnknownAttributes = {
-    "action.transaction_id": meta.transactionId,
     "action.package_name": meta.packageName,
+    "action.transaction_id": meta.transactionId,
   };
 
   for (const [name, value] of Object.entries(potentiallyUnknownAttributes)) {

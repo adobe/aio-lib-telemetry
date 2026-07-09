@@ -73,12 +73,12 @@ function inferContextCarrier(params: Record<string, unknown>) {
   // 1. A `x-telemetry-context` header.
   // 2. A `__telemetryContext` input parameter.
   // 3. A `__telemetryContext` property in `params.data`.
-  const headers = params.__ow_headers as Record<string, string>;
+  const headers = params.__ow_headers as Record<string, string> | undefined;
   const telemetryContext =
     // @deprecated: Remove custom __telemetryContext lookups in a future major release.
     headers?.["x-telemetry-context"] ??
     params.__telemetryContext ??
-    (params.data as Record<string, unknown>)?.__telemetryContext ??
+    (params.data as Record<string, unknown> | undefined)?.__telemetryContext ??
     null;
 
   // If the telemetry context is not found among all the above lookups,

@@ -53,8 +53,8 @@ describe("api/attributes", () => {
   describe("getAioRuntimeResourceWithAttributes", () => {
     test("should merge custom attributes with runtime attributes", () => {
       const customAttributes = {
-        foo: "bar",
         baz: "qux",
+        foo: "bar",
       };
 
       const resource =
@@ -68,17 +68,17 @@ describe("api/attributes", () => {
 
     test("should override runtime attributes with custom attributes", () => {
       const customAttributes = {
-        "some.attribute": "custom-value",
         custom: "value",
+        "some.attribute": "custom-value",
       };
 
       const resource =
         attributesApi.getAioRuntimeResourceWithAttributes(customAttributes);
 
       expect(resource.attributes).toMatchObject({
+        custom: "value",
         "some.attribute": "custom-value",
         "some.other.attribute": "test-value-2",
-        custom: "value",
       });
     });
 

@@ -95,20 +95,20 @@ describe("helpers/runtime", () => {
 
       const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
+        actionName: "test-prod-action-name",
+        actionVersion: "1.0.0",
         activationId: "test-prod-activation-id",
-        namespace: "test-prod-namespace",
         apiHost: "test-prod-api-host",
         apiKey: "test-prod-api-key",
-        isDevelopment: false,
-
-        region: "test-prod-region",
         cloud: "test-prod-cloud",
-        transactionId: "test-prod-transaction-id",
-        actionVersion: "1.0.0",
         deadline: expect.any(Date),
+        isDevelopment: false,
+        namespace: "test-prod-namespace",
 
         packageName: "test-prod-package-name",
-        actionName: "test-prod-action-name",
+
+        region: "test-prod-region",
+        transactionId: "test-prod-transaction-id",
       });
     });
 
@@ -117,20 +117,20 @@ describe("helpers/runtime", () => {
 
       const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
-        activationId: "test-dev-activation-id",
-        namespace: "test-dev-namespace",
-        apiHost: "test-dev-api-host",
-        apiKey: "test-dev-api-key",
-        isDevelopment: true,
-
-        region: "local",
-        cloud: "local",
-        transactionId: "unknown",
-        deadline: null,
-
-        packageName: "test-dev-package-name",
         actionName: "test-dev-action-name",
         actionVersion: "0.0.0 (development)",
+        activationId: "test-dev-activation-id",
+        apiHost: "test-dev-api-host",
+        apiKey: "test-dev-api-key",
+        cloud: "local",
+        deadline: null,
+        isDevelopment: true,
+        namespace: "test-dev-namespace",
+
+        packageName: "test-dev-package-name",
+
+        region: "local",
+        transactionId: "unknown",
       });
     });
 
@@ -139,20 +139,20 @@ describe("helpers/runtime", () => {
 
       const metadata = runtimeHelpers.getRuntimeActionMetadata();
       expect(metadata).toEqual({
-        activationId: "test-dev-activation-id",
-        namespace: "test-dev-namespace",
-        apiHost: "test-dev-api-host",
-        apiKey: "test-dev-api-key",
-        isDevelopment: true,
-
-        region: "local",
-        cloud: "local",
-        transactionId: "unknown",
-        deadline: null,
-
-        packageName: "unknown",
         actionName: "test-dev-action-name",
         actionVersion: "0.0.0 (development)",
+        activationId: "test-dev-activation-id",
+        apiHost: "test-dev-api-host",
+        apiKey: "test-dev-api-key",
+        cloud: "local",
+        deadline: null,
+        isDevelopment: true,
+        namespace: "test-dev-namespace",
+
+        packageName: "unknown",
+
+        region: "local",
+        transactionId: "unknown",
       });
     });
 
@@ -171,16 +171,16 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "service.version": "1.0.0",
-        "service.name": "test-prod-namespace/test-prod-package-name",
-        environment: "production",
+        "action.activation_id": "test-prod-activation-id",
+        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
 
         "action.name": "test-prod-action-name",
-        "action.package_name": "test-prod-package-name",
         "action.namespace": "test-prod-namespace",
-        "action.activation_id": "test-prod-activation-id",
+        "action.package_name": "test-prod-package-name",
         "action.transaction_id": "test-prod-transaction-id",
-        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
+        environment: "production",
+        "service.name": "test-prod-namespace/test-prod-package-name",
+        "service.version": "1.0.0",
       });
     });
 
@@ -190,15 +190,15 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "service.name":
-          "test-dev-namespace-local-development/test-dev-package-name",
-
-        environment: "development",
+        "action.activation_id": "test-dev-activation-id",
 
         "action.name": "test-dev-action-name",
-        "action.package_name": "test-dev-package-name",
         "action.namespace": "test-dev-namespace",
-        "action.activation_id": "test-dev-activation-id",
+        "action.package_name": "test-dev-package-name",
+
+        environment: "development",
+        "service.name":
+          "test-dev-namespace-local-development/test-dev-package-name",
       });
     });
 
@@ -208,13 +208,13 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "service.name": "test-dev-namespace-local-development",
-
-        environment: "development",
+        "action.activation_id": "test-dev-activation-id",
 
         "action.name": "test-dev-action-name",
         "action.namespace": "test-dev-namespace",
-        "action.activation_id": "test-dev-activation-id",
+
+        environment: "development",
+        "service.name": "test-dev-namespace-local-development",
       });
     });
   });

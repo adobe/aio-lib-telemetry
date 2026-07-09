@@ -30,18 +30,18 @@ vi.mock("@opentelemetry/winston-transport", () => ({
 
 vi.mock("@opentelemetry/api", () => ({
   DiagLogLevel: {
-    NONE: 0,
-    ERROR: 1,
-    WARN: 2,
-    INFO: 3,
-    DEBUG: 4,
-    VERBOSE: 5,
     ALL: 6,
+    DEBUG: 4,
+    ERROR: 1,
+    INFO: 3,
+    NONE: 0,
+    VERBOSE: 5,
+    WARN: 2,
   },
   diag: {
-    setLogger: vi.fn(),
-    info: vi.fn(),
     error: vi.fn(),
+    info: vi.fn(),
+    setLogger: vi.fn(),
   },
 }));
 
@@ -55,16 +55,16 @@ vi.mock("~/core/sdk", () => ({
 
 describe("core/logging", () => {
   const mockLogger = {
+    debug: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
     logger: {
       logger: {
         add: vi.fn(),
       },
     },
-    info: vi.fn(),
-    debug: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
     verbose: vi.fn(),
+    warn: vi.fn(),
   };
 
   beforeEach(() => {
@@ -89,8 +89,8 @@ describe("core/logging", () => {
 
       expect(sdkModule.ensureSdkInitialized).toHaveBeenCalled();
       expect(AioLogger).toHaveBeenCalledWith("test-logger", {
-        provider: "winston",
         level: "info",
+        provider: "winston",
       });
     });
 
@@ -133,8 +133,8 @@ describe("core/logging", () => {
     test("should handle undefined log level", () => {
       getLogger("test-logger", { level: undefined });
       expect(AioLogger).toHaveBeenCalledWith("test-logger", {
-        provider: "winston",
         level: "info",
+        provider: "winston",
       });
     });
   });
@@ -142,8 +142,8 @@ describe("core/logging", () => {
   describe("setOtelDiagLogger", () => {
     test("should set diagnostics logger with info level", () => {
       setOtelDiagLogger({
-        logLevel: "info",
         exportLogs: true,
+        logLevel: "info",
       });
 
       expect(AioLogger).toHaveBeenCalledWith("test-action/otel-diagnostics", {
@@ -163,9 +163,9 @@ describe("core/logging", () => {
 
     test("should use custom logger name", () => {
       setOtelDiagLogger({
-        logLevel: "debug",
-        loggerName: "custom-diag-logger",
         exportLogs: true,
+        loggerName: "custom-diag-logger",
+        logLevel: "debug",
       });
 
       expect(AioLogger).toHaveBeenCalledWith("custom-diag-logger", {
@@ -177,15 +177,15 @@ describe("core/logging", () => {
 
     test.each([
       // { input: "none" as const, aioLevel: undefined, diagLevel: "NONE" },
-      { input: "all" as const, aioLevel: "verbose", diagLevel: "ALL" },
-      { input: "error" as const, aioLevel: "error", diagLevel: "ERROR" },
-      { input: "warn" as const, aioLevel: "warn", diagLevel: "WARN" },
-      { input: "info" as const, aioLevel: "info", diagLevel: "INFO" },
-      { input: "debug" as const, aioLevel: "debug", diagLevel: "DEBUG" },
+      { aioLevel: "verbose", diagLevel: "ALL", input: "all" as const },
+      { aioLevel: "error", diagLevel: "ERROR", input: "error" as const },
+      { aioLevel: "warn", diagLevel: "WARN", input: "warn" as const },
+      { aioLevel: "info", diagLevel: "INFO", input: "info" as const },
+      { aioLevel: "debug", diagLevel: "DEBUG", input: "debug" as const },
       {
-        input: "verbose" as const,
         aioLevel: "verbose",
         diagLevel: "VERBOSE",
+        input: "verbose" as const,
       },
     ] as const)("should map log level '$input' to equivalent AIO logger level '$aioLevel' and OpenTelemetry diagnostics logger level '$diagLevel'   correctly", ({
       input,
@@ -193,8 +193,8 @@ describe("core/logging", () => {
       diagLevel,
     }) => {
       setOtelDiagLogger({
-        logLevel: input,
         exportLogs: true,
+        logLevel: input,
       });
 
       expect(AioLogger).toHaveBeenCalledWith(
@@ -213,8 +213,8 @@ describe("core/logging", () => {
       "error",
     ] as const)("should export diagnostic logs for level '%s'", (level) => {
       setOtelDiagLogger({
-        logLevel: level,
         exportLogs: true,
+        logLevel: level,
       });
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
@@ -224,8 +224,8 @@ describe("core/logging", () => {
     test("should export logs only for info, warn, and error levels", () => {
       // Test info level - should export
       setOtelDiagLogger({
-        logLevel: "info",
         exportLogs: true,
+        logLevel: "info",
       });
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
@@ -237,8 +237,8 @@ describe("core/logging", () => {
 
       // Test debug level - should not export
       setOtelDiagLogger({
-        logLevel: "debug",
         exportLogs: true,
+        logLevel: "debug",
       });
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
@@ -249,8 +249,8 @@ describe("core/logging", () => {
 
     test("should not add transport when exportLogs is false", () => {
       setOtelDiagLogger({
-        logLevel: "info",
         exportLogs: false,
+        logLevel: "info",
       });
 
       expect(mockLogger.logger.logger.add).not.toHaveBeenCalled();
@@ -262,8 +262,8 @@ describe("core/logging", () => {
       });
 
       setOtelDiagLogger({
-        logLevel: "info",
         exportLogs: true,
+        logLevel: "info",
       });
 
       expect(diag.error).toHaveBeenCalledWith(
@@ -274,8 +274,8 @@ describe("core/logging", () => {
 
     test("should not call ensureSdkInitialized for diagnostics logger", () => {
       setOtelDiagLogger({
-        logLevel: "info",
         exportLogs: true,
+        logLevel: "info",
       });
 
       expect(sdkModule.ensureSdkInitialized).not.toHaveBeenCalled();

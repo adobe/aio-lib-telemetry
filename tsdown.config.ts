@@ -30,11 +30,18 @@ const ADOBE_LICENSE_BANNER = `
 `.trimStart();
 
 export default defineConfig({
+  banner: {
+    dts: ADOBE_LICENSE_BANNER,
+    js: ADOBE_LICENSE_BANNER,
+  },
+  dts: true,
   entry: [
     "./source/index.ts",
     "./source/otel.ts",
     "./source/integrations/index.ts",
   ],
+
+  failOnWarn: "ci-only",
 
   format: {
     cjs: {
@@ -48,25 +55,18 @@ export default defineConfig({
       },
     },
   },
-
-  publint: true,
-  outputOptions: {
-    legalComments: "inline",
-    dir: OUT_DIR,
-
-    minifyInternalExports: true,
-  },
-
-  failOnWarn: "ci-only",
-  dts: true,
-  treeshake: true,
   minify: {
     compress: true,
   },
 
   nodeProtocol: "strip",
-  banner: {
-    js: ADOBE_LICENSE_BANNER,
-    dts: ADOBE_LICENSE_BANNER,
+  outputOptions: {
+    dir: OUT_DIR,
+    legalComments: "inline",
+
+    minifyInternalExports: true,
   },
+
+  publint: true,
+  treeshake: true,
 });

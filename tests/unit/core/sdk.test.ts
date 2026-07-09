@@ -50,8 +50,8 @@ describe("core/sdk", () => {
   const setOtelDiagLogger = vi.fn();
 
   const mockNodeSdk = {
-    start: startSdk,
     shutdown: shutdownSdk,
+    start: startSdk,
   };
 
   const NodeSdk = vi.fn().mockImplementation(function (this: never) {
@@ -67,9 +67,9 @@ describe("core/sdk", () => {
 
     vi.doMock("@opentelemetry/api", () => ({
       diag: {
-        warn: diagWarn,
-        info: diagInfo,
         error: diagError,
+        info: diagInfo,
+        warn: diagWarn,
       },
     }));
 
@@ -98,9 +98,9 @@ describe("core/sdk", () => {
   describe("initializeDiagnostics", () => {
     test("should initialize diagnostics when SDK is not initialized", () => {
       const diagnosticsConfig = {
-        logLevel: "debug",
-        loggerName: "test-logger",
         exportLogs: true,
+        loggerName: "test-logger",
+        logLevel: "debug",
       } as const;
 
       coreSdk.initializeDiagnostics(diagnosticsConfig);

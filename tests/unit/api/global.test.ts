@@ -20,9 +20,9 @@ describe("api/global", () => {
   const mockContext = {} as Context;
   const mockSpan = {
     addEvent: vi.fn(),
+    end: vi.fn(),
     recordException: vi.fn(),
     setStatus: vi.fn(),
-    end: vi.fn(),
   } as unknown as Span;
 
   const mockContextActive = vi.fn(() => mockContext);
@@ -121,7 +121,7 @@ describe("api/global", () => {
     });
 
     test("should add an event with attributes to the active span", () => {
-      const attributes = { foo: "bar", baz: 42 };
+      const attributes = { baz: 42, foo: "bar" };
       mockContextActive.mockReturnValueOnce(mockContext);
       mockTraceGetSpan.mockReturnValueOnce(mockSpan);
 
@@ -152,7 +152,7 @@ describe("api/global", () => {
     });
 
     test("should add an event with attributes and return true", () => {
-      const attributes = { foo: "bar", baz: 42 };
+      const attributes = { baz: 42, foo: "bar" };
       mockContextActive.mockReturnValueOnce(mockContext);
       mockTraceGetSpan.mockReturnValueOnce(mockSpan);
 

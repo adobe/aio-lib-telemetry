@@ -45,11 +45,11 @@ function main() {
   const webhookBody = JSON.stringify({
     blocks: [
       {
-        type: "section",
         text: {
-          type: "mrkdwn",
           text: announcement,
+          type: "mrkdwn",
         },
+        type: "section",
       },
     ],
   });

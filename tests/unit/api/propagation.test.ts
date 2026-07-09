@@ -25,19 +25,18 @@ describe("api/propagation", () => {
     }
 
     return {
+      deleteValue: vi.fn((key) => {
+        const newState = new Map(state);
+        newState.delete(key);
+
+        return createMockContext();
+      }),
       getValue: vi.fn((key) => state.get(key)),
       setValue: vi.fn((key, value) => {
         const newState = new Map(state);
         newState.set(key, value);
 
         return createMockContext(value);
-      }),
-
-      deleteValue: vi.fn((key) => {
-        const newState = new Map(state);
-        newState.delete(key);
-
-        return createMockContext();
       }),
     } as Context;
   };
@@ -49,20 +48,18 @@ describe("api/propagation", () => {
     vi.clearAllMocks();
 
     vi.doMock("@opentelemetry/api", () => ({
+      context: {
+        active: mockActiveContextGetter,
+      },
       propagation: {
-        inject: vi.fn((ctx, carrier) => {
-          carrier["x-test"] = ctx.getValue(testKey) ?? "";
-        }),
-
         extract: vi.fn((ctx, carrier) =>
           ctx.setValue(testKey, carrier["x-test"]),
         ),
 
         fields: vi.fn(() => ["x-test"]),
-      },
-
-      context: {
-        active: mockActiveContextGetter,
+        inject: vi.fn((ctx, carrier) => {
+          carrier["x-test"] = ctx.getValue(testKey) ?? "";
+        }),
       },
     }));
 
@@ -119,8 +116,8 @@ describe("api/propagation", () => {
 
     test("does not modify carrier", () => {
       const carrier = {
-        "x-test": "original",
         untouched: "yes",
+        "x-test": "original",
       };
 
       const resultCtx = propagationApi.deserializeContextFromCarrier(carrier);

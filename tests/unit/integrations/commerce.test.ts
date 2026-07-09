@@ -35,9 +35,9 @@ describe("integrations/commerce", () => {
   ) {
     let capturedSpanContext: SpanContext | null = null;
     const mockInitializeTelemetry = vi.fn(() => ({
+      meter,
       sdkConfig: {},
       tracer,
-      meter,
     }));
 
     const instrumentedMain = instrumentation.instrumentEntrypoint(
@@ -68,28 +68,28 @@ describe("integrations/commerce", () => {
     tracer = trace.getTracer("test-tracer");
     meter = metrics.getMeter("test-meter");
     vi.stubGlobal("__OTEL_TELEMETRY_API__", {
-      tracer,
       meter,
+      tracer,
     });
 
     vi.doMock("~/helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
-        isDevelopment: false,
-        namespace: "test-namespace",
         activationId: "test-activation",
         apiHost: "test-host",
         apiKey: "test-key",
-        region: "test-region",
         cloud: "test-cloud",
-        transactionId: "test-transaction",
         deadline: null,
+        isDevelopment: false,
+        namespace: "test-namespace",
         packageName: "test-package",
+        region: "test-region",
+        transactionId: "test-transaction",
       })),
+      isDevelopment: vi.fn(() => false),
 
       isTelemetryEnabled: vi.fn(() => true),
-      isDevelopment: vi.fn(() => false),
     }));
 
     await import("~/helpers/runtime");
@@ -107,10 +107,10 @@ describe("integrations/commerce", () => {
     const spy = vi.spyOn(commerceIntegration, "patchInstrumentationConfig");
 
     const mockInitializeTelemetry = vi.fn(() => ({
-      sdkConfig: {},
       integrations: [commerceIntegration],
-      tracer,
       meter,
+      sdkConfig: {},
+      tracer,
     }));
 
     const instrumentedMain = instrumentation.instrumentEntrypoint(
@@ -118,9 +118,9 @@ describe("integrations/commerce", () => {
         return { statusCode: 200 };
       },
       {
+        initializeTelemetry: mockInitializeTelemetry,
         // Override the default integrations with an empty array
         integrations: [],
-        initializeTelemetry: mockInitializeTelemetry,
       },
     );
 
@@ -185,13 +185,13 @@ describe("integrations/commerce", () => {
         createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         data: {
           _metadata: {
             traceparent:
               "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
           },
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
@@ -213,13 +213,13 @@ describe("integrations/commerce", () => {
       const { execute } = createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         data: {
           _metadata: {
             traceparent:
               "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
           },
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
@@ -270,11 +270,11 @@ describe("integrations/commerce", () => {
         createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         __ow_headers: {
           traceparent:
             "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
@@ -296,12 +296,12 @@ describe("integrations/commerce", () => {
         createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         __ow_headers: {
           // Non-sampled trace (last byte is 00 instead of 01)
           traceparent:
             "00-1234567890abcdef1234567890abcdef-1234567890abcdef-00",
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
@@ -323,12 +323,12 @@ describe("integrations/commerce", () => {
         createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         __ow_headers: {
           // Non-sampled trace (last byte is 00 instead of 01)
           traceparent:
             "00-1234567890abcdef1234567890abcdef-1234567890abcdef-00",
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
@@ -350,12 +350,12 @@ describe("integrations/commerce", () => {
       const { execute } = createInstrumentedEntrypointWithCapture(integration);
 
       const params = {
-        ENABLE_TELEMETRY: "true",
         __ow_headers: {
           // Non-sampled trace
           traceparent:
             "00-1234567890abcdef1234567890abcdef-1234567890abcdef-00",
         },
+        ENABLE_TELEMETRY: "true",
       };
 
       execute(params);
