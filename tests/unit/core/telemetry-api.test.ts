@@ -64,7 +64,7 @@ describe("core/telemetry-api", () => {
     });
 
     test("should return the global telemetry API when initialized", () => {
-      const api = { tracer: mockTracer, meter: mockMeter };
+      const api = { meter: mockMeter, tracer: mockTracer };
       vi.stubGlobal("__OTEL_TELEMETRY_API__", api);
 
       const result = coreTelemetryApi.getGlobalTelemetryApi();
@@ -100,8 +100,8 @@ describe("core/telemetry-api", () => {
       const customMeter = { createCounter: vi.fn() };
 
       coreTelemetryApi.initializeGlobalTelemetryApi({
-        tracer: customTracer as unknown as Tracer,
         meter: customMeter as unknown as Meter,
+        tracer: customTracer as unknown as Tracer,
       });
 
       const api = globalThis.__OTEL_TELEMETRY_API__;
@@ -169,13 +169,13 @@ describe("core/telemetry-api", () => {
       const secondMeter = { createCounter: vi.fn() };
 
       const firstApi = {
-        tracer: firstTracer as unknown as Tracer,
         meter: firstMeter as unknown as Meter,
+        tracer: firstTracer as unknown as Tracer,
       };
 
       const secondApi = {
-        tracer: secondTracer as unknown as Tracer,
         meter: secondMeter as unknown as Meter,
+        tracer: secondTracer as unknown as Tracer,
       };
 
       coreTelemetryApi.initializeGlobalTelemetryApi(firstApi);

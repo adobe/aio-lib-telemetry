@@ -33,9 +33,9 @@ describe("core/config", () => {
 
     test("should work with async initialization functions", () => {
       const asyncInitFn = vi.fn().mockImplementation(async () => ({
+        meter: {} as Meter,
         sdkConfig: await new Promise((resolve) => resolve({})),
         tracer: {} as Tracer,
-        meter: {} as Meter,
       }));
 
       const config = coreConfig.defineTelemetryConfig(asyncInitFn);

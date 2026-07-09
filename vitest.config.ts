@@ -16,31 +16,29 @@ import { coverageConfigDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    globals: true,
-    environment: "node",
-
     coverage: {
       enabled: true,
-      provider: "v8",
-      reporter: ["html-spa", "html", "text"],
-
-      reportOnFailure: true,
       exclude: [
         ...coverageConfigDefaults.exclude,
         "source/{index,otel,types}.ts",
         "source/integrations/index.ts",
         "tsdown.config.ts",
       ],
+      provider: "v8",
+      reporter: ["html-spa", "html", "text"],
+
+      reportOnFailure: true,
 
       thresholds: {
-        statements: 100,
-        functions: 100,
-        lines: 100,
-
         // Reduced this from 100 because it complains about a couple of branches
         // not being covered when they actually are. Probably a bug with reporting.
         branches: 98,
+        functions: 100,
+        lines: 100,
+        statements: 100,
       },
     },
+    environment: "node",
+    globals: true,
   },
 });

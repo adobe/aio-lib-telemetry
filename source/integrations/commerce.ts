@@ -127,8 +127,8 @@ export function commerceWebhooks({
 
       updateInstrumentationConfig({
         propagation: {
+          getContextCarrier: () => ({ baseCtx: propagatedCtx, carrier }),
           skip: shouldCreateNewRoot,
-          getContextCarrier: () => ({ carrier, baseCtx: propagatedCtx }),
         },
 
         spanConfig: {

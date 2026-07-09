@@ -114,8 +114,8 @@ describe("core/metrics", () => {
 
       expect(() => proxy.requestCount).toThrow(
         expect.objectContaining({
-          message: expect.stringContaining(error.message),
           cause: error,
+          message: expect.stringContaining(error.message),
         }),
       );
     });
@@ -132,8 +132,8 @@ describe("core/metrics", () => {
 
       expect(() => proxy.requestCount).toThrow(
         expect.objectContaining({
-          message: expect.stringContaining(error.message),
           cause: error,
+          message: expect.stringContaining(error.message),
         }),
       );
     });
@@ -160,8 +160,8 @@ describe("core/metrics", () => {
       mockMeter.createCounter.mockReturnValueOnce(mockCounter);
 
       const createMetricsFn = vi.fn((meter: Meter) => ({
-        requestCount: meter.createCounter("request.count"),
         errorCount: meter.createCounter("error.count"),
+        requestCount: meter.createCounter("request.count"),
       }));
 
       const proxy = coreMetrics.defineMetrics(createMetricsFn);

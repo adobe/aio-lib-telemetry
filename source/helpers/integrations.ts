@@ -48,8 +48,8 @@ export function applyInstrumentationIntegrationPatches(
     for (const integration of integrations) {
       currentIntegration = integration.name;
       integration.patchInstrumentationConfig?.({
-        params,
         instrumentationConfig: initialInstrumentationConfig,
+        params,
         updateInstrumentationConfig: updateInstrumentationConfigHandler,
       });
     }

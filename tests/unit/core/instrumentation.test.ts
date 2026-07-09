@@ -38,28 +38,28 @@ describe("core/instrumentation", () => {
     tracer = trace.getTracer("test-tracer");
     meter = metrics.getMeter("test-meter");
     vi.stubGlobal("__OTEL_TELEMETRY_API__", {
-      tracer,
       meter,
+      tracer,
     });
 
     vi.doMock("~/helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
-        isDevelopment: false,
-        namespace: "test-namespace",
         activationId: "test-activation",
         apiHost: "test-host",
         apiKey: "test-key",
-        region: "test-region",
         cloud: "test-cloud",
-        transactionId: "test-transaction",
         deadline: null,
+        isDevelopment: false,
+        namespace: "test-namespace",
         packageName: "test-package",
+        region: "test-region",
+        transactionId: "test-transaction",
       })),
+      isDevelopment: vi.fn(() => false),
 
       isTelemetryEnabled: vi.fn(() => true),
-      isDevelopment: vi.fn(() => false),
     }));
 
     instrumentation = await import("~/core/instrumentation");
@@ -222,14 +222,14 @@ describe("core/instrumentation", () => {
     });
 
     test("non-throwing functions should use isSuccessful predicate to determine success", () => {
-      const fn = vi.fn(() => ({ success: false, data: "test" }));
+      const fn = vi.fn(() => ({ data: "test", success: false }));
       const isSuccessful = vi.fn(
         (result: { success: boolean }) => result.success === true,
       );
 
       const instrumentedFn = instrumentation.instrument(fn, {
-        spanConfig: { spanName: "predicate-test" },
         isSuccessful,
+        spanConfig: { spanName: "predicate-test" },
       });
 
       instrumentedFn();
@@ -245,10 +245,10 @@ describe("core/instrumentation", () => {
       });
 
       const nonSuccessfulInstrumentedFn = instrumentation.instrument(fn, {
-        isSuccessful: () => false,
         hooks: {
           onResult,
         },
+        isSuccessful: () => false,
       });
 
       const result = instrumentedFn();
@@ -411,8 +411,8 @@ describe("core/instrumentation", () => {
 
       mockInitializeTelemetry = vi.fn(
         (_params: Record<string, unknown>, _isDevelopment: boolean) => ({
-          sdkConfig: {},
           diagnostics: { logLevel: "error" },
+          sdkConfig: {},
         }),
       );
     });
@@ -569,11 +569,11 @@ describe("core/instrumentation", () => {
       );
 
       instrumentedMain({
-        ENABLE_TELEMETRY: "true",
         __telemetryContext: {
           traceparent:
             "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01",
         },
+        ENABLE_TELEMETRY: "true",
       });
 
       if (!capturedSpanContext) {
@@ -592,7 +592,7 @@ describe("core/instrumentation", () => {
         propagation: {
           getContextCarrier: (entrypointParams) => {
             capturedParams = entrypointParams;
-            return { carrier: {}, baseCtx: undefined };
+            return { baseCtx: undefined, carrier: {} };
           },
         },
       });
@@ -605,9 +605,9 @@ describe("core/instrumentation", () => {
 
     test("should use custom base context if provided", () => {
       const baseContext = {
+        deleteValue: vi.fn(),
         getValue: vi.fn(),
         setValue: vi.fn(),
-        deleteValue: vi.fn(),
       } satisfies Context;
 
       const spy = vi.spyOn(tracer, "startActiveSpan");
@@ -618,7 +618,7 @@ describe("core/instrumentation", () => {
         {
           initializeTelemetry: mockInitializeTelemetry,
           propagation: {
-            getContextCarrier: () => ({ carrier: {}, baseCtx: baseContext }),
+            getContextCarrier: () => ({ baseCtx: baseContext, carrier: {} }),
           },
         },
       );
@@ -765,8 +765,8 @@ describe("core/instrumentation", () => {
 
     test("should mark root span as error if the runtime action fails", () => {
       const error = {
-        statusCode: 500,
         message: "Runtime action failed",
+        statusCode: 500,
       };
 
       let spy: MockInstance | null = null;

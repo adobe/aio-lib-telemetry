@@ -163,8 +163,8 @@ export function instrument<T extends AnyFunction>(
 
       const exception = {
         code: UNKNOWN_ERROR_CODE,
-        name: UNKNOWN_ERROR_NAME,
         message: `Unhandled error at span "${spanName}": ${error}`,
+        name: UNKNOWN_ERROR_NAME,
         stack: stackCarrier.stack,
       };
 
@@ -182,16 +182,16 @@ export function instrument<T extends AnyFunction>(
     const { actionName } = getRuntimeActionMetadata();
     const { tracer, meter } = getGlobalTelemetryApi();
     const logger = getLogger(`${actionName}/${spanName}`, {
-      logSourceAction: false,
       level: process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL,
+      logSourceAction: false,
     });
 
     return {
+      contextCarrier: carrier,
       currentSpan: span,
       logger,
-      tracer,
       meter,
-      contextCarrier: carrier,
+      tracer,
     } satisfies InstrumentationHelpers;
   }
 
@@ -293,7 +293,7 @@ export function instrumentEntrypoint<
 
     // Internal calls to initialize the Telemetry SDK.
     initializeSdk(sdkConfig);
-    initializeGlobalTelemetryApi({ tracer, meter });
+    initializeGlobalTelemetryApi({ meter, tracer });
 
     const { propagation, ...instrumentationConfig } =
       applyInstrumentationIntegrationPatches(

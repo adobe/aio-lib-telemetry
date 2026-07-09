@@ -21,9 +21,9 @@ import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation
 import type { TelemetryInstrumentationPreset } from "~/types";
 
 const httpInstrumentationConfig = {
+  disableIncomingRequestInstrumentation: true,
   // Prevent traces from being created by the un-managed logic of `aio app dev`.
   requireParentforIncomingSpans: true,
-  disableIncomingRequestInstrumentation: true,
 } satisfies HttpInstrumentationConfig;
 
 const undiciInstrumentationConfig = {

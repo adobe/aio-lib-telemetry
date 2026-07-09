@@ -62,6 +62,19 @@
           }
         }
       }
+    },
+    {
+      "includes": ["source/api/propagation.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            // False positive: Biome infers property access on the untyped
+            // Record<string, unknown> action params as guaranteed non-nullish,
+            // but these runtime keys are genuinely optional.
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
     }
   ],
 

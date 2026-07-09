@@ -49,10 +49,10 @@ function __getLoggerInternal({
   const level = config?.level ?? DEFAULT_LOG_LEVEL;
   const aioLogger = AioLogger(name, {
     ...config,
+    level,
 
     // Provider must be winston, as it's the one compatible with OpenTelemetry.
     provider: "winston",
-    level,
   });
 
   if (addTransport) {
@@ -84,7 +84,7 @@ function __getLoggerInternal({
  * ```
  */
 export function getLogger(name: string, config?: AioLoggerConfig) {
-  return __getLoggerInternal({ name, config, forceSDKInitialized: true });
+  return __getLoggerInternal({ config, forceSDKInitialized: true, name });
 }
 
 /**
@@ -100,20 +100,20 @@ export function setOtelDiagLogger({
   const logLevels: Partial<
     Record<TelemetryDiagnosticsConfig["logLevel"], string>
   > = {
-    none: undefined,
     all: "verbose",
+    none: undefined,
   };
 
   const aioLogLevel = logLevels[level] ?? level;
   const { actionName } = getRuntimeActionMetadata();
   const logger = __getLoggerInternal({
-    name: loggerName ?? `${actionName}/otel-diagnostics`,
+    addTransport: exportLogs,
     config: {
       level: aioLogLevel,
       logSourceAction: false,
     },
     forceSDKInitialized: false,
-    addTransport: exportLogs,
+    name: loggerName ?? `${actionName}/otel-diagnostics`,
 
     // Only use the OpenTelemetry transport (i.e. export diagnostic logs) if the log level is
     // set to info, warn or error. The other levels are too verbose to be exported and may expose
