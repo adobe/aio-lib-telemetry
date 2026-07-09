@@ -11,7 +11,7 @@
  */
 
 import type { NodeSDK } from "@opentelemetry/sdk-node";
-import type { TelemetryApi } from "~/types";
+import type { TelemetryApi } from "#types";
 
 // These need to be globals, so they can survive across the hot reloads of `aio app dev`.
 // Otherwise their values are lost, and the underlying OpenTelemetry singletons are initialized twice (which leads to errors).

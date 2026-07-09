@@ -13,7 +13,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("api/attributes", () => {
-  let attributesApi: typeof import("~/api/attributes");
+  let attributesApi: typeof import("#api/attributes");
 
   const mockAttributes = {
     "some.attribute": "test-value",
@@ -26,11 +26,11 @@ describe("api/attributes", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    vi.doMock("~/helpers/runtime", () => ({
+    vi.doMock("#helpers/runtime", () => ({
       inferTelemetryAttributesFromRuntimeMetadata,
     }));
 
-    attributesApi = await import("~/api/attributes");
+    attributesApi = await import("#api/attributes");
   });
 
   describe("getAioRuntimeAttributes", () => {

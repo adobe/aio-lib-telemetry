@@ -16,19 +16,19 @@ import {
   setupDevelopmentEnv,
   setupLegacyDevelopmentEnv,
   setupProductionEnv,
-} from "~~/tests/fixtures/environment";
+} from "#test/fixtures/environment";
 
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
 describe("helpers/runtime", () => {
-  let runtimeHelpers: typeof import("~/helpers/runtime");
+  let runtimeHelpers: typeof import("#helpers/runtime");
 
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.unstubAllEnvs();
     vi.resetModules();
 
-    runtimeHelpers = await import("~/helpers/runtime");
+    runtimeHelpers = await import("#helpers/runtime");
   });
 
   describe("isDevelopment", () => {

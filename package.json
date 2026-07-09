@@ -21,6 +21,10 @@
   "engines": {
     "node": ">=22 <=24"
   },
+  "imports": {
+    "#*": "./source/*.ts",
+    "#test/*": "./tests/*.ts"
+  },
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",
   "types": "./dist/cjs/index.d.cts",
@@ -133,7 +137,6 @@
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^6.0.3",
     "ultracite": "^7.9.3",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.6"
   },
   "sideEffects": false,

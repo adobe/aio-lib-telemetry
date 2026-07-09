@@ -12,7 +12,7 @@
 
 import { context, propagation } from "@opentelemetry/api";
 
-import type { TelemetryPropagationConfig } from "~/types";
+import type { TelemetryPropagationConfig } from "#types";
 
 /**
  * Serializes the current context into a carrier.

@@ -20,11 +20,11 @@ import type {
   SpanOptions,
   Tracer,
 } from "@opentelemetry/api";
-import type { TelemetryIntegration } from "~/types";
+import type { TelemetryIntegration } from "#types";
 
 describe("integrations/commerce", () => {
-  let instrumentation: typeof import("~/core/instrumentation");
-  let commerce: typeof import("~/integrations/commerce");
+  let instrumentation: typeof import("#core/instrumentation");
+  let commerce: typeof import("#integrations/commerce");
 
   let tracer: Tracer;
   let meter: Meter;
@@ -72,7 +72,7 @@ describe("integrations/commerce", () => {
       tracer,
     });
 
-    vi.doMock("~/helpers/runtime", () => ({
+    vi.doMock("#helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
@@ -92,10 +92,10 @@ describe("integrations/commerce", () => {
       isTelemetryEnabled: vi.fn(() => true),
     }));
 
-    await import("~/helpers/runtime");
+    await import("#helpers/runtime");
 
-    instrumentation = await import("~/core/instrumentation");
-    commerce = await import("~/integrations/commerce");
+    instrumentation = await import("#core/instrumentation");
+    commerce = await import("#integrations/commerce");
   });
 
   afterEach(() => {

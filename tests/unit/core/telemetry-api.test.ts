@@ -15,7 +15,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Meter, Tracer } from "@opentelemetry/api";
 
 describe("core/telemetry-api", () => {
-  let coreTelemetryApi: typeof import("~/core/telemetry-api");
+  let coreTelemetryApi: typeof import("#core/telemetry-api");
 
   const mockTracer = { startActiveSpan: vi.fn() };
   const mockMeter = { createCounter: vi.fn() };
@@ -47,11 +47,11 @@ describe("core/telemetry-api", () => {
       },
     }));
 
-    vi.doMock("~/helpers/runtime", () => ({
+    vi.doMock("#helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => mockMetadata),
     }));
 
-    coreTelemetryApi = await import("~/core/telemetry-api");
+    coreTelemetryApi = await import("#core/telemetry-api");
   });
 
   describe("getGlobalTelemetryApi", () => {
