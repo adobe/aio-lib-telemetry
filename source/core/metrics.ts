@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { getGlobalTelemetryApi } from "~/core/telemetry-api";
+import { getGlobalTelemetryApi } from "#src/core/telemetry-api";
 
 import type {
   Attributes,

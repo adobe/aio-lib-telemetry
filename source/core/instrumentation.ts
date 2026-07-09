@@ -17,23 +17,23 @@ import { context, SpanStatusCode } from "@opentelemetry/api";
 import {
   getPropagatedContext,
   serializeContextIntoCarrier,
-} from "~/api/propagation";
-import { getLogger } from "~/core/logging";
+} from "#src/api/propagation";
+import { getLogger } from "#src/core/logging";
 import {
   ensureSdkInitialized,
   initializeDiagnostics,
   initializeSdk,
-} from "~/core/sdk";
+} from "#src/core/sdk";
 import {
   getGlobalTelemetryApi,
   initializeGlobalTelemetryApi,
-} from "~/core/telemetry-api";
-import { applyInstrumentationIntegrationPatches } from "~/helpers/integrations";
+} from "#src/core/telemetry-api";
+import { applyInstrumentationIntegrationPatches } from "#src/helpers/integrations";
 import {
   getRuntimeActionMetadata,
   isTelemetryEnabled,
-} from "~/helpers/runtime";
-import { setTelemetryEnv } from "~/helpers/setup";
+} from "#src/helpers/runtime";
+import { setTelemetryEnv } from "#src/helpers/setup";
 
 import type { Span } from "@opentelemetry/api";
 import type {
@@ -41,7 +41,7 @@ import type {
   EntrypointInstrumentationConfig,
   InstrumentationConfig,
   InstrumentationContext as InstrumentationHelpers,
-} from "~/types";
+} from "#src/types";
 
 /** Wildcard signature for a function. */
 // biome-ignore lint/suspicious/noExplicitAny: generic wrapper.

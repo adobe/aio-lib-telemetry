@@ -12,9 +12,9 @@
 
 import { diag, metrics, trace } from "@opentelemetry/api";
 
-import { getRuntimeActionMetadata } from "~/helpers/runtime";
+import { getRuntimeActionMetadata } from "#src/helpers/runtime";
 
-import type { TelemetryApi } from "~/types";
+import type { TelemetryApi } from "#src/types";
 
 /**
  * Gets the global telemetry API.

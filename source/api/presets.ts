@@ -18,7 +18,7 @@ import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import type { Instrumentation } from "@opentelemetry/instrumentation";
 import type { HttpInstrumentationConfig } from "@opentelemetry/instrumentation-http";
 import type { UndiciInstrumentationConfig } from "@opentelemetry/instrumentation-undici";
-import type { TelemetryInstrumentationPreset } from "~/types";
+import type { TelemetryInstrumentationPreset } from "#src/types";
 
 const httpInstrumentationConfig = {
   disableIncomingRequestInstrumentation: true,

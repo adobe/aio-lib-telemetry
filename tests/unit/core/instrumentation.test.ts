@@ -22,11 +22,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Context, Meter, SpanContext, Tracer } from "@opentelemetry/api";
 import type { Mock, MockInstance } from "vitest";
-import type { InstrumentationContext, TelemetryConfig } from "~/types";
+import type { InstrumentationContext, TelemetryConfig } from "#src/types";
 
 describe("core/instrumentation", () => {
-  let instrumentation: typeof import("~/core/instrumentation");
-  let runtimeHelpers: typeof import("~/helpers/runtime");
+  let instrumentation: typeof import("#src/core/instrumentation");
+  let runtimeHelpers: typeof import("#src/helpers/runtime");
 
   let tracer: Tracer;
   let meter: Meter;
@@ -42,7 +42,7 @@ describe("core/instrumentation", () => {
       tracer,
     });
 
-    vi.doMock("~/helpers/runtime", () => ({
+    vi.doMock("#src/helpers/runtime", () => ({
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
@@ -62,8 +62,8 @@ describe("core/instrumentation", () => {
       isTelemetryEnabled: vi.fn(() => true),
     }));
 
-    instrumentation = await import("~/core/instrumentation");
-    runtimeHelpers = await import("~/helpers/runtime");
+    instrumentation = await import("#src/core/instrumentation");
+    runtimeHelpers = await import("#src/helpers/runtime");
   });
 
   afterEach(() => {

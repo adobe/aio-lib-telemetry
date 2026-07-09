@@ -13,10 +13,10 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Counter, Meter } from "@opentelemetry/api";
-import type { MetricTypes } from "~/core/metrics";
+import type { MetricTypes } from "#src/core/metrics";
 
 describe("core/metrics", () => {
-  let coreMetrics: typeof import("~/core/metrics");
+  let coreMetrics: typeof import("#src/core/metrics");
 
   const getTracer = vi.fn();
   const createCounter = vi.fn();
@@ -30,11 +30,11 @@ describe("core/metrics", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    vi.doMock("~/core/telemetry-api", () => ({
+    vi.doMock("#src/core/telemetry-api", () => ({
       getGlobalTelemetryApi,
     }));
 
-    coreMetrics = await import("~/core/metrics");
+    coreMetrics = await import("#src/core/metrics");
   });
 
   describe("createMetricsProxy", () => {

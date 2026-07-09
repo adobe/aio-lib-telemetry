@@ -15,7 +15,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Context, Span } from "@opentelemetry/api";
 
 describe("api/global", () => {
-  let globalApi: typeof import("~/api/global");
+  let globalApi: typeof import("#src/api/global");
 
   const mockContext = {} as Context;
   const mockSpan = {
@@ -35,7 +35,7 @@ describe("api/global", () => {
       trace: { getSpan: mockTraceGetSpan },
     }));
 
-    globalApi = await import("~/api/global");
+    globalApi = await import("#src/api/global");
   });
 
   describe("getActiveSpan", () => {

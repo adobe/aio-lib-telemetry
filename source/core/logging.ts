@@ -14,14 +14,14 @@ import AioLogger from "@adobe/aio-lib-core-logging";
 import { DiagLogLevel, diag } from "@opentelemetry/api";
 import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
 
-import { ensureSdkInitialized } from "~/core/sdk";
-import { getRuntimeActionMetadata } from "~/helpers/runtime";
+import { ensureSdkInitialized } from "#src/core/sdk";
+import { getRuntimeActionMetadata } from "#src/helpers/runtime";
 
 import type { AioLoggerConfig } from "@adobe/aio-lib-core-logging";
 import type WinstonLogger from "@adobe/aio-lib-core-logging/types/WinstonLogger";
 import type { DiagLogger } from "@opentelemetry/api";
 import type Transport from "winston-transport";
-import type { TelemetryDiagnosticsConfig } from "~/types";
+import type { TelemetryDiagnosticsConfig } from "#src/types";
 
 // If no log level is given, use [INFO].
 const DEFAULT_LOG_LEVEL = "info";

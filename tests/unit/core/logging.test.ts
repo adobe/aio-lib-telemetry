@@ -14,9 +14,9 @@ import AioLogger from "@adobe/aio-lib-core-logging";
 import { DiagLogLevel, diag } from "@opentelemetry/api";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import { getLogger, setOtelDiagLogger } from "~/core/logging";
-import * as sdkModule from "~/core/sdk";
-import * as runtimeHelpers from "~/helpers/runtime";
+import { getLogger, setOtelDiagLogger } from "#src/core/logging";
+import * as sdkModule from "#src/core/sdk";
+import * as runtimeHelpers from "#src/helpers/runtime";
 
 const mockOpenTelemetryTransport = vi.hoisted(() => vi.fn());
 
@@ -45,11 +45,11 @@ vi.mock("@opentelemetry/api", () => ({
   },
 }));
 
-vi.mock("~/helpers/runtime", () => ({
+vi.mock("#src/helpers/runtime", () => ({
   getRuntimeActionMetadata: vi.fn(),
 }));
 
-vi.mock("~/core/sdk", () => ({
+vi.mock("#src/core/sdk", () => ({
   ensureSdkInitialized: vi.fn(),
 }));
 

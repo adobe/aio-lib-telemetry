@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import type { EntrypointInstrumentationConfig } from "~/types";
+import type { EntrypointInstrumentationConfig } from "#src/types";
 
 /**
  * Helper to define the telemetry configuration for an entrypoint.

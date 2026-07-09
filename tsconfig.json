@@ -29,8 +29,8 @@
     "verbatimModuleSyntax": true,
 
     "paths": {
-      "~/*": ["./source/*"],
-      "~~/*": ["./*"]
+      "#src/*": ["./source/*"],
+      "#root/*": ["./*"]
     }
   },
   "exclude": ["node_modules", "dist"],

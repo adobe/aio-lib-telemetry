@@ -12,10 +12,10 @@
 
 import { isSpanContextValid, TraceFlags, trace } from "@opentelemetry/api";
 
-import { deserializeContextFromCarrier } from "~/api/propagation";
+import { deserializeContextFromCarrier } from "#src/api/propagation";
 
 import type { Context } from "@opentelemetry/api";
-import type { TelemetryIntegration } from "~/types";
+import type { TelemetryIntegration } from "#src/types";
 
 /** Base configuration options for all Commerce integrations. */
 export type CommerceWebhooksIntegrationConfig = {

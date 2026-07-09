@@ -15,7 +15,7 @@ import deepmerge from "deepmerge";
 import type {
   EntrypointInstrumentationConfig,
   TelemetryIntegration,
-} from "~/types";
+} from "#src/types";
 
 /**
  * Applies the instrumentation integration patches to the given instrumentation configuration.
