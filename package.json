@@ -25,6 +25,7 @@
     "#*": "./source/*.ts",
     "#test/*": "./tests/*.ts"
   },
+  "packageManager": "pnpm@11.1.2",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",
   "types": "./dist/cjs/index.d.cts",
@@ -146,7 +147,7 @@
       "npx ultracite check"
     ],
     "*.md": [
-      "npm run format:markdown"
+      "pnpm run format:markdown"
     ]
   }
 }
