@@ -25,7 +25,7 @@
     "#*": "./source/*.ts",
     "#test/*": "./tests/*.ts"
   },
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@11.8.0",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",
   "types": "./dist/cjs/index.d.cts",
