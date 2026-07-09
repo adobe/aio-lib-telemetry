@@ -19,11 +19,8 @@ import type {
   Tracer,
 } from "@opentelemetry/api";
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-import type {
-  AnyFunction,
-  instrumentEntrypoint,
-} from "#src/core/instrumentation";
-import type { getLogger } from "#src/core/logging";
+import type { AnyFunction, instrumentEntrypoint } from "#core/instrumentation";
+import type { getLogger } from "#core/logging";
 
 /**
  * Available log levels for the OpenTelemetry `DiagLogger`.

@@ -15,7 +15,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { NodeSDK } from "@opentelemetry/sdk-node";
 
 async function simulateShutdown(
-  sdk: typeof import("#src/core/sdk"),
+  sdk: typeof import("#core/sdk"),
   signal: "SIGTERM" | "SIGINT" | "beforeExit",
   onBeforeShutdown?: () => void,
 ) {
@@ -39,7 +39,7 @@ async function simulateShutdown(
 }
 
 describe("core/sdk", () => {
-  let coreSdk: typeof import("#src/core/sdk");
+  let coreSdk: typeof import("#core/sdk");
 
   const startSdk = vi.fn();
   const shutdownSdk = vi.fn();
@@ -77,11 +77,11 @@ describe("core/sdk", () => {
       NodeSDK: NodeSdk,
     }));
 
-    vi.doMock("#src/core/logging", () => ({
+    vi.doMock("#core/logging", () => ({
       setOtelDiagLogger,
     }));
 
-    coreSdk = await import("#src/core/sdk");
+    coreSdk = await import("#core/sdk");
   });
 
   describe("ensureSdkInitialized", () => {

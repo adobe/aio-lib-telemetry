@@ -15,7 +15,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Context } from "@opentelemetry/api";
 
 describe("api/propagation", () => {
-  let propagationApi: typeof import("#src/api/propagation");
+  let propagationApi: typeof import("#api/propagation");
   const testKey = Symbol("x-test-key");
 
   const createMockContext = (initialValue?: string) => {
@@ -63,7 +63,7 @@ describe("api/propagation", () => {
       },
     }));
 
-    propagationApi = await import("#src/api/propagation");
+    propagationApi = await import("#api/propagation");
   });
 
   describe("serializeContextIntoCarrier", () => {

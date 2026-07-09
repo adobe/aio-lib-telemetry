@@ -15,10 +15,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Meter, Tracer } from "@opentelemetry/api";
 
 describe("core/config", () => {
-  let coreConfig: typeof import("#src/core/config");
+  let coreConfig: typeof import("#core/config");
 
   beforeEach(async () => {
-    coreConfig = await import("#src/core/config");
+    coreConfig = await import("#core/config");
   });
 
   describe("defineTelemetryConfig", () => {

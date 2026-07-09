@@ -12,7 +12,7 @@
 
 import { resourceFromAttributes } from "@opentelemetry/resources";
 
-import { inferTelemetryAttributesFromRuntimeMetadata } from "#src/helpers/runtime";
+import { inferTelemetryAttributesFromRuntimeMetadata } from "#helpers/runtime";
 
 /**
  * Infers some useful attributes for the current action from the Adobe I/O Runtime

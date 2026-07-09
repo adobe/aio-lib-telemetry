@@ -14,13 +14,13 @@ import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { beforeEach, describe, expect, test } from "vitest";
 
-import type { TelemetryInstrumentationPreset } from "#src/types";
+import type { TelemetryInstrumentationPreset } from "#types";
 
 describe("api/presets", () => {
-  let apiPresets: typeof import("#src/api/presets");
+  let apiPresets: typeof import("#api/presets");
 
   beforeEach(async () => {
-    apiPresets = await import("#src/api/presets");
+    apiPresets = await import("#api/presets");
   });
 
   describe("getPresetInstrumentations", () => {

@@ -22,8 +22,8 @@
     "node": ">=22 <=24"
   },
   "imports": {
-    "#src/*": "./source/*.ts",
-    "#root/*": "./*.ts"
+    "#*": "./source/*.ts",
+    "#test/*": "./tests/*.ts"
   },
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",

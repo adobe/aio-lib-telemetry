@@ -13,10 +13,10 @@
 import { diag } from "@opentelemetry/api";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 
-import { setOtelDiagLogger } from "#src/core/logging";
+import { setOtelDiagLogger } from "#core/logging";
 
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node";
-import type { TelemetryDiagnosticsConfig } from "#src/types";
+import type { TelemetryDiagnosticsConfig } from "#types";
 
 /**
  * Set the global SDK instance.
