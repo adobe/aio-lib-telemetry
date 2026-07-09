@@ -45,11 +45,7 @@
       "groupName": "biome and ultracite",
       "matchPackageNames": ["@biomejs/biome", "ultracite"],
       "automerge": true,
-      "separateMajorMinor": false,
-      "postUpgradeTasks": {
-        "commands": ["pnpm run lint:fix", "pnpm run format"],
-        "executionMode": "branch"
-      }
+      "separateMajorMinor": false
     }
   ]
 }
