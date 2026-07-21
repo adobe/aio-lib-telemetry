@@ -136,7 +136,7 @@
     "tsdown": "^0.22.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.0",
     "ultracite": "^7.9.3",
     "vitest": "^4.1.6"
   },
