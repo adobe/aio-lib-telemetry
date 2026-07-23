@@ -25,7 +25,7 @@
     "#*": "./source/*.ts",
     "#test/*": "./tests/*.ts"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.15.1",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",
   "types": "./dist/cjs/index.d.cts",
@@ -121,7 +121,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.2",
     "@changesets/changelog-github": "0.7.0",
-    "@changesets/cli": "2.31.0",
+    "@changesets/cli": "2.31.1",
     "@tsconfig/node-lts": "^24.0.0",
     "@tsconfig/node-ts": "^23.6.4",
     "@tsconfig/recommended": "^1.0.13",
