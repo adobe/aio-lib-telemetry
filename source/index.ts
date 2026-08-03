@@ -15,7 +15,9 @@
 
 export {
   getAioRuntimeAttributes,
+  getAioRuntimeInvocationAttributes,
   getAioRuntimeResource,
+  getAioRuntimeResourceAttributes,
   getAioRuntimeResourceWithAttributes,
 } from "./api/attributes";
 export {

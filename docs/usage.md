@@ -130,12 +130,19 @@ The `sdkConfig` has the `resource` property. This is essentially a key-value map
 
 Resource attributes describe the action and remain stable for the lifetime of its runtime container. Invocation-specific values such as the activation ID, transaction ID, deadline, and execution region are instead attached to spans and logs. This keeps them current when a warm container is reused and avoids adding high-cardinality dimensions to metrics.
 
+Invocation attributes are added to spans created through `instrumentEntrypoint` or `instrument`, and to logs exported through `getLogger`. Spans created directly through OpenTelemetry APIs or by auto-instrumentations do not receive these attributes automatically. This is intentional: the library provides a thin App Builder integration layer and does not augment telemetry produced outside its helpers.
+
 The library provides two helpers that you can use to easily create a resource:
 
 | Helper                                | Description                                                                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `getAioRuntimeResource`               | Returns a resource with some default attributes inferred from the I/O runtime                                                                 | [API reference](./api-reference/functions/getAioRuntimeResource.md)               |
 | `getAioRuntimeResourceWithAttributes` | Returns a resource with some default attributes inferred from the I/O runtime like `getAioRuntimeResource`, but you can add custom attributes | [API reference](./api-reference/functions/getAioRuntimeResourceWithAttributes.md) |
+
+If you need the raw attributes instead of a resource, use `getAioRuntimeResourceAttributes` for stable action and service attributes, or `getAioRuntimeInvocationAttributes` for values associated with the current invocation.
+
+> [!WARNING]
+> The existing `getAioRuntimeAttributes` helper is deprecated. It continues to return both sets of attributes for compatibility, but its combined output must not be used to construct a resource. Doing so captures invocation-specific values for the lifetime of a warm container (causing attributes that become stale across warm runs) and adds high-cardinality dimensions to metrics.
 
 For example, consider a scenario where you have two different environments, `prod` and `stage`, and you want to produce telemetry signals (such as `logs`) and have this information automatically attached so you can filter logs per-environment. This is a perfect use case for resource attributes. See the configuration for this example below:
 

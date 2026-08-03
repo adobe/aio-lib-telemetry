@@ -146,9 +146,16 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
   return attributes;
 }
 
+type RuntimeInvocationAttributes = {
+  "action.activation_id": string;
+  "action.region": string;
+  "action.deadline"?: string;
+  "action.transaction_id"?: string;
+};
+
 /** Gets telemetry attributes that can change between runtime invocations. */
-export function getRuntimeInvocationAttributes() {
-  const attributes: Record<string, string> = {
+export function getRuntimeInvocationAttributes(): RuntimeInvocationAttributes {
+  const attributes: RuntimeInvocationAttributes = {
     "action.activation_id": process.env.__OW_ACTIVATION_ID as string,
     "action.region": process.env.__OW_REGION ?? "local",
   };
