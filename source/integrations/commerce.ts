@@ -50,8 +50,9 @@ export type CommerceWebhooksIntegrationConfig = {
 function tryExtractRemoteSpanContext(ctx: Context) {
   const span = trace.getSpan(ctx);
   const spanContext = span?.spanContext();
-  const valid = spanContext?.isRemote && isSpanContextValid(spanContext);
 
+  // biome-ignore lint/suspicious/noUnnecessaryConditions: False positive
+  const valid = spanContext?.isRemote && isSpanContextValid(spanContext);
   return valid ? spanContext : null;
 }
 

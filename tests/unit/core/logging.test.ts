@@ -187,39 +187,37 @@ describe("core/logging", () => {
         diagLevel: "VERBOSE",
         input: "verbose" as const,
       },
-    ] as const)("should map log level '$input' to equivalent AIO logger level '$aioLevel' and OpenTelemetry diagnostics logger level '$diagLevel'   correctly", ({
-      input,
-      aioLevel,
-      diagLevel,
-    }) => {
-      setOtelDiagLogger({
-        exportLogs: true,
-        logLevel: input,
-      });
+    ] as const)(
+      "should map log level '$input' to equivalent AIO logger level '$aioLevel' and OpenTelemetry diagnostics logger level '$diagLevel'   correctly",
+      ({ input, aioLevel, diagLevel }) => {
+        setOtelDiagLogger({
+          exportLogs: true,
+          logLevel: input,
+        });
 
-      expect(AioLogger).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ level: aioLevel }),
-      );
+        expect(AioLogger).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({ level: aioLevel }),
+        );
 
-      expect(diag.setLogger).toHaveBeenCalledWith(expect.anything(), {
-        logLevel: DiagLogLevel[diagLevel as keyof typeof DiagLogLevel],
-      });
-    });
+        expect(diag.setLogger).toHaveBeenCalledWith(expect.anything(), {
+          logLevel: DiagLogLevel[diagLevel as keyof typeof DiagLogLevel],
+        });
+      },
+    );
 
-    test.each([
-      "info",
-      "warn",
-      "error",
-    ] as const)("should export diagnostic logs for level '%s'", (level) => {
-      setOtelDiagLogger({
-        exportLogs: true,
-        logLevel: level,
-      });
+    test.each(["info", "warn", "error"] as const)(
+      "should export diagnostic logs for level '%s'",
+      (level) => {
+        setOtelDiagLogger({
+          exportLogs: true,
+          logLevel: level,
+        });
 
-      expect(mockLogger.logger.logger.add).toHaveBeenCalled();
-      expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({ level });
-    });
+        expect(mockLogger.logger.logger.add).toHaveBeenCalled();
+        expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({ level });
+      },
+    );
 
     test("should export logs only for info, warn, and error levels", () => {
       // Test info level - should export
