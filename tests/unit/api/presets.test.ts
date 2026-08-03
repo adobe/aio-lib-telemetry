@@ -51,52 +51,53 @@ describe("api/presets", () => {
       expect(instrumentations.length).toBeGreaterThan(0);
     });
 
-    test.each(["unknown", "invalid", undefined, null] as const)(
-      "should throw for invalid preset '%s'",
-      (preset) => {
-        expect(() =>
-          apiPresets.getPresetInstrumentations(
-            preset as TelemetryInstrumentationPreset,
-          ),
-        ).toThrow(`Unknown instrumentation preset: ${preset}`);
-      },
-    );
+    test.each([
+      "unknown",
+      "invalid",
+      undefined,
+      null,
+    ] as const)("should throw for invalid preset '%s'", (preset) => {
+      expect(() =>
+        apiPresets.getPresetInstrumentations(
+          preset as TelemetryInstrumentationPreset,
+        ),
+      ).toThrow(`Unknown instrumentation preset: ${preset}`);
+    });
 
-    test.each(["simple", "full"] as const)(
-      "preset '%s' should configure http instrumentation with requireParentforIncomingSpans",
-      (preset) => {
-        const instrumentations = apiPresets.getPresetInstrumentations(preset);
-        const httpInstrumentation = instrumentations.find(
-          (i) =>
-            i.instrumentationName === "@opentelemetry/instrumentation-http",
-        );
+    test.each([
+      "simple",
+      "full",
+    ] as const)("preset '%s' should configure http instrumentation with requireParentforIncomingSpans", (preset) => {
+      const instrumentations = apiPresets.getPresetInstrumentations(preset);
+      const httpInstrumentation = instrumentations.find(
+        (i) => i.instrumentationName === "@opentelemetry/instrumentation-http",
+      );
 
-        expect(httpInstrumentation).toBeDefined();
-        expect(httpInstrumentation).toBeInstanceOf(HttpInstrumentation);
+      expect(httpInstrumentation).toBeDefined();
+      expect(httpInstrumentation).toBeInstanceOf(HttpInstrumentation);
 
-        const config = (httpInstrumentation as HttpInstrumentation).getConfig();
-        expect(config.requireParentforIncomingSpans).toBe(true);
-      },
-    );
+      const config = (httpInstrumentation as HttpInstrumentation).getConfig();
+      expect(config.requireParentforIncomingSpans).toBe(true);
+    });
 
-    test.each(["simple", "full"] as const)(
-      "preset '%s' should configure undici instrumentation with requireParentforSpans",
-      (preset) => {
-        const instrumentations = apiPresets.getPresetInstrumentations(preset);
-        const undiciInstrumentation = instrumentations.find(
-          (i) =>
-            i.instrumentationName === "@opentelemetry/instrumentation-undici",
-        );
+    test.each([
+      "simple",
+      "full",
+    ] as const)("preset '%s' should configure undici instrumentation with requireParentforSpans", (preset) => {
+      const instrumentations = apiPresets.getPresetInstrumentations(preset);
+      const undiciInstrumentation = instrumentations.find(
+        (i) =>
+          i.instrumentationName === "@opentelemetry/instrumentation-undici",
+      );
 
-        expect(undiciInstrumentation).toBeDefined();
-        expect(undiciInstrumentation).toBeInstanceOf(UndiciInstrumentation);
+      expect(undiciInstrumentation).toBeDefined();
+      expect(undiciInstrumentation).toBeInstanceOf(UndiciInstrumentation);
 
-        const config = (
-          undiciInstrumentation as UndiciInstrumentation
-        ).getConfig();
+      const config = (
+        undiciInstrumentation as UndiciInstrumentation
+      ).getConfig();
 
-        expect(config.requireParentforSpans).toBe(true);
-      },
-    );
+      expect(config.requireParentforSpans).toBe(true);
+    });
   });
 });

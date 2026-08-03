@@ -448,22 +448,19 @@ describe("core/instrumentation", () => {
     test.each([
       { isDevelopment: true, logLevel: "debug" },
       { isDevelopment: false, logLevel: "info" },
-    ])(
-      "should default log level parameter when not provided depending on the environment",
-      ({ isDevelopment, logLevel }) => {
-        vi.mocked(runtimeHelpers.isDevelopment).mockReturnValue(isDevelopment);
+    ])("should default log level parameter when not provided depending on the environment", ({
+      isDevelopment,
+      logLevel,
+    }) => {
+      vi.mocked(runtimeHelpers.isDevelopment).mockReturnValue(isDevelopment);
 
-        const instrumentedMain = instrumentation.instrumentEntrypoint(
-          mockMain,
-          {
-            initializeTelemetry: mockInitializeTelemetry,
-          },
-        );
+      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
+        initializeTelemetry: mockInitializeTelemetry,
+      });
 
-        instrumentedMain({});
-        expect(process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL).toBe(logLevel);
-      },
-    );
+      instrumentedMain({});
+      expect(process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL).toBe(logLevel);
+    });
 
     test("should pass through when telemetry is disabled", async () => {
       // Temporarily override the telemetry enabled mock.
@@ -648,23 +645,20 @@ describe("core/instrumentation", () => {
       expect(spy.mock.calls[0][2]).toEqual(ROOT_CONTEXT);
     });
 
-    test.each([new Error("Unexpected error"), "Unexpected string error"])(
-      "should throw if there's some unexpected error during instrumentation",
-      (error) => {
-        vi.mocked(mockInitializeTelemetry).mockImplementation(() => {
-          throw error;
-        });
+    test.each([
+      new Error("Unexpected error"),
+      "Unexpected string error",
+    ])("should throw if there's some unexpected error during instrumentation", (error) => {
+      vi.mocked(mockInitializeTelemetry).mockImplementation(() => {
+        throw error;
+      });
 
-        const instrumentedMain = instrumentation.instrumentEntrypoint(
-          mockMain,
-          {
-            initializeTelemetry: mockInitializeTelemetry,
-          },
-        );
+      const instrumentedMain = instrumentation.instrumentEntrypoint(mockMain, {
+        initializeTelemetry: mockInitializeTelemetry,
+      });
 
-        expect(() => instrumentedMain({})).toThrow();
-      },
-    );
+      expect(() => instrumentedMain({})).toThrow();
+    });
 
     test("should bubble up sync runtime errors", () => {
       const error = new Error("Runtime error");
