@@ -130,7 +130,7 @@ The `sdkConfig` has the `resource` property. This is essentially a key-value map
 
 Resource attributes describe the action and remain stable for the lifetime of its runtime container. Invocation-specific values such as the activation ID, transaction ID, deadline, and execution region are instead attached to spans and logs. This keeps them current when a warm container is reused and avoids adding high-cardinality dimensions to metrics.
 
-Invocation attributes are added to spans created through `instrumentEntrypoint` or `instrument`, and to logs exported through `getLogger`. Spans created directly through OpenTelemetry APIs or by auto-instrumentations do not receive these attributes automatically. This is intentional: the library provides a thin App Builder integration layer and does not augment telemetry produced outside its helpers.
+Invocation attributes are added to spans created through `instrumentEntrypoint` or `instrument`, and to logs exported through `getLogger`. Spans created directly through OpenTelemetry APIs or by auto-instrumentations do not receive these attributes automatically. This is intentional: the library provides a thin App Builder integration layer and does not augment telemetry produced outside its helpers.If you need these attributes on every span, see [Adding Invocation Attributes to All Spans](./examples/invocation-attributes-on-all-spans.md).
 
 The library provides two helpers that you can use to easily create a resource:
 
@@ -500,90 +500,12 @@ This function receives the following helpers:
 
 ## Advanced Usage
 
-### Configuring a Custom Tracer and Meter
+For advanced OpenTelemetry customization beyond the library's helpers, see the following examples:
 
-The library automatically creates a default tracer and meter if none are provided alongside the `sdkConfig`. However, you can supply your own custom implementations if you need more specific functionality.
-
-> [!NOTE]
-> Generally you shouldn't need more than one tracer and meter per app. That's why this library only works with a single instance of both. If you want different tracer/meter names per runtime action you can use environment variables.
-
-```ts
-// telemetry.{js|ts}
-
-import { defineTelemetryConfig } from "@adobe/aio-lib-telemetry";
-import { trace, metrics } from "@adobe/aio-lib-telemetry/otel";
-
-const telemetryConfig = defineTelemetryConfig((params, isDev) => {
-  const tracer = trace.getTracer("my-custom-tracer");
-  const meter = metrics.getMeter("my-custom-meter");
-
-  return {
-    sdkConfig: {/* SDK Configuration */},
-
-    tracer,
-    meter,
-  };
-});
-
-export { telemetryConfig };
-```
-
-See more about the `otel` import path in the API Reference: [OpenTelemetry Re-Exports](./api-reference/README.md#opentelemetry-api).
-
-### Instrumentation Configuration
-
-In most cases, instrumenting your functions works seamlessly without additional configuration. However, certain scenarios, such as customizing the span name, configuring automatic span events or reacting to the result of a wrapped function, may require further customization.
-
-The `instrument` helper accepts an optional **second argument** that allows you to fine-tune the instrumentation.
-
-```ts
-// somewhere/in_your/codebase/somefile.{js|ts}
-
-import { instrument } from "@adobe/aio-lib-telemetry";
-
-function externalApiRequest() {
-  /* ... */
-}
-instrument(externalApiRequest, {
-  // Place instrumentation options here.
-});
-```
-
-> [!NOTE]
-> The `instrumentEntrypoint` helper also supports instrumentation options, but since its second parameter is also used for the telemetry configuration, you must merge both (see below). Find the entrypoint configuration reference in: [`EntrypointInstrumentationConfig`](./api-reference/interfaces/EntrypointInstrumentationConfig.md)
->
-> ```ts
-> import { telemetryConfig } from "./telemetry";
->
-> // Implementation of your main function
-> function main(params) {
->   /* ... */
-> }
-> instrumentEntrypoint(main, {
->   ...telemetryConfig,
->   // Place instrumentation options here.
-> });
-> ```
-
-Example use cases on when you might want to use these options are:
-
-- **Customizing Span Names**: If you want to use a custom span name for a function, you can set the [`spanConfig.spanName`](./api-reference/type-aliases/InstrumentationConfig.md#spanname) option. There are other span configuration options available, see the API reference for [`SpanConfig`](./api-reference/type-aliases/InstrumentationConfig.md#spanconfig) for more details.
-- **Reacting to the Result**: If you want to react to the result of a function, you can set the [`onResult`](./api-reference/type-aliases/InstrumentationConfig.md#onresult) option.
-- **Handling Errors**: If you want to handle errors of a function, you can set the [`onError`](./api-reference/type-aliases/InstrumentationConfig.md#onerror) option.
-- **Handling Success/Failure**: See the [Span Status](#span-status) section below for more details.
-
-See the API reference for the configuration options available: [`InstrumentationConfig`](./api-reference/type-aliases/InstrumentationConfig.md).
-
-### Span Status
-
-By default, the library considers a function successful if it doesn't throw an error. You can customize this behavior using the [`isSuccessful`](./api-reference/type-aliases/InstrumentationConfig.md#issuccessful) option.
-
-- This option accepts a function that receives the result and returns a boolean indicating whether the operation succeeded.
-- The success/failure state may not be relevant to your use case. Internally, it determines when to trigger the [`onError`](./api-reference/type-aliases/InstrumentationConfig.md#onerror) and [`onResult`](./api-reference/type-aliases/InstrumentationConfig.md#onresult) hooks, and whether to [set the span status](https://opentelemetry.io/docs/concepts/signals/traces/#span-status) to `OK` or `ERROR`. Note that different observability backends may interpret these statuses differently.
-
-#### Runtime Action Success/Failure
-
-App Builder determines action failure by looking for an `error` property in the result (see [this section](https://developer.adobe.com/app-builder/docs/guides/runtime_guides/creating-actions#unsuccessful-response) of the App Builder documentation for more details). When using the `instrumentEntrypoint` helper (the one applied to the `main` function), this behavior is replicated to evaluate the success/failure state of the root span. The helper reads the response object and sets the span status accordingly by providing a default implementation for the [`isSuccessful`](./api-reference/type-aliases/InstrumentationConfig.md#issuccessful) option that performs this `error` property check. You can override this behavior if needed by setting a custom `isSuccessful` function.
+- [Add Runtime Invocation Attributes to All Spans](./examples/invocation-attributes-on-all-spans.md)
+- [Configure a Custom Tracer and Meter](./examples/custom-tracer-and-meter.md)
+- [Customize Instrumentation](./examples/instrumentation-configuration.md)
+- [Customize Span Status](./examples/span-status.md)
 
 ## Additional Resources
 
