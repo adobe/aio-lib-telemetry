@@ -1,0 +1,4 @@
+{
+  "description": "Troubleshoot invocation attributes missing from auto-instrumented spans",
+  "include": ["./inputs"]
+}
