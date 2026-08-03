@@ -155,7 +155,7 @@ Symptom-based lookup for the most frequent issues users encounter.
 
 - Restart the dev server (`Ctrl+C` then `aio app dev` again)
 - This is a known limitation documented in the library
-- Only affects development; production actions are always fresh containers
+- Only affects development hot reloads; production containers can also be reused, but action code is not hot-reloaded within them
 
 ---
 
@@ -195,7 +195,11 @@ Symptom-based lookup for the most frequent issues users encounter.
 ### Data appears in New Relic but looks wrong
 
 - Service name: check `serviceName` in `sdkConfig`
-- Missing attributes: check `resource` configuration
+- Missing stable action or service attributes: check `resource` configuration
+- Missing activation ID, transaction ID, deadline, or execution region:
+  - Expect them on spans created through `instrumentEntrypoint` or `instrument`, and logs exported through `getLogger`
+  - Do not expect them on auto-instrumented spans, directly created OpenTelemetry spans, the resource, or metrics
+  - If every span requires them, configure an OpenTelemetry `SpanProcessor` that adds `getAioRuntimeInvocationAttributes()` when each span starts
 - Traces show in "Services - OpenTelemetry" (not regular APM)
 
 ---

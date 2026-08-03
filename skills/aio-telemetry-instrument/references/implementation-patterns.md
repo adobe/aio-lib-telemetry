@@ -212,7 +212,7 @@ metrics.payloadSize.record(JSON.stringify(params).length);
 
 ### Metric temporality
 
-In serverless environments like App Builder runtime, actions are ephemeral — each invocation starts fresh. This means **delta temporality** is usually the right choice for metric readers, because cumulative metrics would reset on every invocation. Configure the metric reader accordingly:
+App Builder runtime containers are ephemeral, but a warm container can process multiple invocations. Metric instruments and their cumulative state are reused within that container and reset only when a new container starts. Choose delta or cumulative temporality based on the exporter and backend requirements rather than assuming metrics reset on every invocation:
 
 ```ts
 import { PeriodicExportingMetricReader } from "@adobe/aio-lib-telemetry/otel";
@@ -245,16 +245,20 @@ logger.warn("Retrying external call", { attempt: retryCount, url });
 logger.error("Failed to process", { orderId: order.id, error: err.message });
 ```
 
-### Standalone (outside instrumented context)
+### Standalone logger (created lazily after SDK initialization)
 
 ```ts
 import { getLogger } from "@adobe/aio-lib-telemetry";
 
-const logger = getLogger("order-processor");
-logger.info("Processing started");
+let logger;
+
+function processOrder(order) {
+  logger ??= getLogger("order-processor");
+  logger.info("Processing started", { orderId: order.id });
+}
 ```
 
-Logs from `getInstrumentationHelpers().logger` automatically correlate with the active trace. Standalone `getLogger` logs are independent.
+Call code that creates a standalone logger only after `instrumentEntrypoint` has initialized the SDK. Creating it lazily also allows the instance to be reused safely by warm-container invocations. Logs from `getInstrumentationHelpers().logger` automatically correlate with the active trace. Standalone `getLogger` logs are independent.
 
 ## Context Propagation for Outbound Calls
 

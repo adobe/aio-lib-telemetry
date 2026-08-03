@@ -187,9 +187,7 @@ Enable diagnostics for debugging:
 
 ```ts
 defineTelemetryConfig((params, isDev) => ({
-  sdkConfig: {
-    /* ... */
-  },
+  sdkConfig: {/* ... */},
   diagnostics: { logLevel: "debug" },
 }));
 ```

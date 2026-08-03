@@ -8,9 +8,7 @@ Add `diagnostics` to the telemetry config:
 
 ```ts
 export const telemetryConfig = defineTelemetryConfig((params, isDev) => ({
-  sdkConfig: {
-    /* ... */
-  },
+  sdkConfig: {/* ... */},
   diagnostics: {
     logLevel: isDev ? "debug" : "info",
     // exportLogs: true,    // default: true (send diag logs to backend)
