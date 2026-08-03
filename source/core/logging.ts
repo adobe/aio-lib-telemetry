@@ -15,7 +15,10 @@ import { DiagLogLevel, diag } from "@opentelemetry/api";
 import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
 
 import { ensureSdkInitialized } from "#core/sdk";
-import { getRuntimeActionMetadata } from "#helpers/runtime";
+import {
+  getRuntimeActionMetadata,
+  getRuntimeInvocationAttributes,
+} from "#helpers/runtime";
 
 import type { AioLoggerConfig } from "@adobe/aio-lib-core-logging";
 import type WinstonLogger from "@adobe/aio-lib-core-logging/types/WinstonLogger";
@@ -33,6 +36,13 @@ type GetLoggerInternalConfig = {
   addTransport?: boolean;
   telemetryTransportOptions?: Transport.TransportStreamOptions;
 };
+
+const runtimeInvocationAttributesFormat = {
+  transform(info) {
+    Object.assign(info, getRuntimeInvocationAttributes());
+    return info;
+  },
+} satisfies NonNullable<Transport.TransportStreamOptions["format"]>;
 
 /** @internal */
 function __getLoggerInternal({
@@ -61,6 +71,7 @@ function __getLoggerInternal({
     const innerLogger = (aioLogger.logger as WinstonLogger).logger;
     innerLogger.add(
       new OpenTelemetryTransportV3({
+        format: runtimeInvocationAttributesFormat,
         level,
         ...telemetryTransportOptions,
       }),
@@ -71,7 +82,8 @@ function __getLoggerInternal({
 }
 
 /**
- * Gets a logger instance that can export OpenTelemetry logs.
+ * Gets a logger instance that can export OpenTelemetry logs with the current
+ * runtime invocation attributes.
  *
  * @param name - The name of the logger
  * @param config - The configuration for the logger

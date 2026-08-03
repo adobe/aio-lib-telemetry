@@ -17,17 +17,10 @@ import {
 
 /** Metadata associated with a runtime action. */
 type RuntimeMetadata = {
-  activationId: string;
   namespace: string;
-  apiHost: string;
-  apiKey: string;
   isDevelopment: boolean;
 
-  region: string;
-  cloud: string;
-  transactionId: string;
   actionVersion: string;
-  deadline: Date | null;
 
   packageName: string;
   actionName: string;
@@ -60,20 +53,8 @@ export function isTelemetryEnabled() {
 function retrieveBasicMetadata() {
   return {
     actionVersion: process.env.__OW_ACTION_VERSION ?? "0.0.0 (development)",
-    activationId: process.env.__OW_ACTIVATION_ID as string,
-    apiHost: process.env.__OW_API_HOST as string,
-    apiKey: process.env.__OW_API_KEY as string,
-    cloud: process.env.__OW_CLOUD ?? "local",
-    deadline: process.env.__OW_DEADLINE
-      ? new Date(Number(process.env.__OW_DEADLINE))
-      : null,
     isDevelopment: isDevelopment(),
     namespace: process.env.__OW_NAMESPACE as string,
-
-    // The following are only set on production
-    // We provide some arbitrary values for local development
-    region: process.env.__OW_REGION ?? "local",
-    transactionId: process.env.__OW_TRANSACTION_ID ?? "unknown",
   };
 }
 
@@ -133,8 +114,6 @@ function createServiceName(meta: RuntimeMetadata) {
 function createCoreAttributes(meta: RuntimeMetadata) {
   return {
     [ATTR_SERVICE_NAME]: createServiceName(meta),
-    "action.activation_id": meta.activationId,
-
     "action.name": meta.actionName,
     "action.namespace": meta.namespace,
     environment: meta.isDevelopment ? "development" : "production",
@@ -152,26 +131,8 @@ function addConditionalAttributes(
     attributes[ATTR_SERVICE_VERSION] = meta.actionVersion;
   }
 
-  // Add deadline if present
-  if (meta.deadline) {
-    attributes["action.deadline"] = meta.deadline.toISOString();
-  }
-}
-
-/** Adds attributes that should be excluded if they have "unknown" values. */
-function addKnownValueAttributes(
-  attributes: Record<string, string>,
-  meta: RuntimeMetadata,
-) {
-  const potentiallyUnknownAttributes = {
-    "action.package_name": meta.packageName,
-    "action.transaction_id": meta.transactionId,
-  };
-
-  for (const [name, value] of Object.entries(potentiallyUnknownAttributes)) {
-    if (value !== "unknown") {
-      attributes[name] = value;
-    }
+  if (meta.packageName !== "unknown") {
+    attributes["action.package_name"] = meta.packageName;
   }
 }
 
@@ -181,7 +142,29 @@ export function inferTelemetryAttributesFromRuntimeMetadata() {
   const attributes = createCoreAttributes(meta);
 
   addConditionalAttributes(attributes, meta);
-  addKnownValueAttributes(attributes, meta);
+
+  return attributes;
+}
+
+/** Gets telemetry attributes that can change between runtime invocations. */
+export function getRuntimeInvocationAttributes() {
+  const attributes: Record<string, string> = {
+    "action.activation_id": process.env.__OW_ACTIVATION_ID as string,
+    "action.region": process.env.__OW_REGION ?? "local",
+  };
+
+  if (process.env.__OW_DEADLINE) {
+    attributes["action.deadline"] = new Date(
+      Number(process.env.__OW_DEADLINE),
+    ).toISOString();
+  }
+
+  if (
+    process.env.__OW_TRANSACTION_ID &&
+    process.env.__OW_TRANSACTION_ID !== "unknown"
+  ) {
+    attributes["action.transaction_id"] = process.env.__OW_TRANSACTION_ID;
+  }
 
   return attributes;
 }

@@ -29,7 +29,11 @@ import {
   initializeGlobalTelemetryApi,
 } from "#core/telemetry-api";
 import { applyInstrumentationIntegrationPatches } from "#helpers/integrations";
-import { getRuntimeActionMetadata, isTelemetryEnabled } from "#helpers/runtime";
+import {
+  getRuntimeActionMetadata,
+  getRuntimeInvocationAttributes,
+  isTelemetryEnabled,
+} from "#helpers/runtime";
 import { setTelemetryEnv } from "#helpers/setup";
 
 import type { Span } from "@opentelemetry/api";
@@ -87,7 +91,7 @@ export function getInstrumentationHelpers(): InstrumentationHelpers {
 }
 
 /**
- * Instruments a function.
+ * Instruments a function and adds the current runtime invocation attributes to its span.
  *
  * @param fn - The function to instrument.
  * @param config - The configuration for the instrumentation.
@@ -199,7 +203,13 @@ export function instrument<T extends AnyFunction>(
 
     return {
       currentCtx,
-      spanConfig: spanOptions,
+      spanConfig: {
+        ...spanOptions,
+        attributes: {
+          ...getRuntimeInvocationAttributes(),
+          ...spanOptions.attributes,
+        },
+      },
       tracer,
     };
   }

@@ -46,16 +46,13 @@ describe("core/instrumentation", () => {
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
-        activationId: "test-activation",
-        apiHost: "test-host",
-        apiKey: "test-key",
-        cloud: "test-cloud",
-        deadline: null,
         isDevelopment: false,
         namespace: "test-namespace",
         packageName: "test-package",
-        region: "test-region",
-        transactionId: "test-transaction",
+      })),
+      getRuntimeInvocationAttributes: vi.fn(() => ({
+        "action.activation_id": "test-activation",
+        "action.region": "test-region",
       })),
       isDevelopment: vi.fn(() => false),
 
@@ -143,6 +140,50 @@ describe("core/instrumentation", () => {
 
       expect(result).toBe(5);
       expect(originalFn).toHaveBeenCalledWith(2, 3);
+    });
+
+    test("should attach current invocation attributes to each span", () => {
+      const spy = vi.spyOn(tracer, "startActiveSpan");
+      const instrumentedFn = instrumentation.instrument(
+        vi.fn(function testFn() {
+          return "result";
+        }),
+        {
+          spanConfig: {
+            attributes: {
+              custom: "value",
+            },
+          },
+        },
+      );
+
+      vi.mocked(runtimeHelpers.getRuntimeInvocationAttributes)
+        .mockReturnValueOnce({
+          "action.activation_id": "first-activation",
+          "action.region": "first-region",
+        })
+        .mockReturnValueOnce({
+          "action.activation_id": "second-activation",
+          "action.region": "second-region",
+        });
+
+      instrumentedFn();
+      instrumentedFn();
+
+      expect(spy.mock.calls[0][1]).toMatchObject({
+        attributes: {
+          "action.activation_id": "first-activation",
+          "action.region": "first-region",
+          custom: "value",
+        },
+      });
+      expect(spy.mock.calls[1][1]).toMatchObject({
+        attributes: {
+          "action.activation_id": "second-activation",
+          "action.region": "second-region",
+          custom: "value",
+        },
+      });
     });
 
     test("should use function name as span name by default", () => {

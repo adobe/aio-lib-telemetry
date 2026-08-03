@@ -15,8 +15,9 @@ import { resourceFromAttributes } from "@opentelemetry/resources";
 import { inferTelemetryAttributesFromRuntimeMetadata } from "#helpers/runtime";
 
 /**
- * Infers some useful attributes for the current action from the Adobe I/O Runtime
- * and returns them as a record of key-value pairs.
+ * Infers stable attributes for the current action from the Adobe I/O Runtime
+ * and returns them as a record of key-value pairs. Invocation-specific attributes
+ * are excluded so the result is safe to use as an OpenTelemetry resource.
  *
  * @since 0.1.0
  * @example
@@ -31,7 +32,7 @@ export function getAioRuntimeAttributes() {
 
 /**
  * Creates a [resource](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.resources.Resource.html)
- * from the attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
+ * from stable attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
  *
  * @see https://opentelemetry.io/docs/languages/js/resources/
  *

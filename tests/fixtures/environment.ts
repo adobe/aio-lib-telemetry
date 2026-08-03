@@ -34,21 +34,16 @@ export function setupDevelopmentEnv() {
 export function setupLegacyDevelopmentEnv() {
   // In older versions of the AIO runtime, the AIO_DEV environment variable was not set
   // This "legacy" fixture is used to test the behavior of the library in these older versions
-  vi.stubEnv("__OW_API_KEY", "test-dev-api-key");
   vi.stubEnv("__OW_NAMESPACE", "test-dev-namespace");
-  vi.stubEnv("__OW_API_HOST", "test-dev-api-host");
   vi.stubEnv("__OW_ACTIVATION_ID", "test-dev-activation-id");
   vi.stubEnv("__OW_ACTION_NAME", "test-dev-action-name");
 }
 
 /** Sets up a fake environment used within deployed runtime action runs. */
 export function setupProductionEnv() {
-  vi.stubEnv("__OW_API_KEY", "test-prod-api-key");
   vi.stubEnv("__OW_NAMESPACE", "test-prod-namespace");
-  vi.stubEnv("__OW_API_HOST", "test-prod-api-host");
   vi.stubEnv("__OW_ACTIVATION_ID", "test-prod-activation-id");
   vi.stubEnv("__OW_REGION", "test-prod-region");
-  vi.stubEnv("__OW_CLOUD", "test-prod-cloud");
   vi.stubEnv("__OW_TRANSACTION_ID", "test-prod-transaction-id");
   vi.stubEnv("__OW_ACTION_VERSION", "1.0.0");
   vi.stubEnv(

@@ -126,7 +126,11 @@ Refer to the API reference documentation of this library for more information ab
 
 #### Resource Attributes
 
-The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue. The library provides two helpers that you can use to easily create a `resource`:
+The `sdkConfig` has the `resource` property. This is essentially a key-value map of global attributes that will be attached to all of the signals that are exported by your instrumented actions. These attributes can be ingested by an OTLP backend to provide filtering capabilities, so that you can narrow down a search when, for example, debugging an issue.
+
+Resource attributes describe the action and remain stable for the lifetime of its runtime container. Invocation-specific values such as the activation ID, transaction ID, deadline, and execution region are instead attached to spans and logs. This keeps them current when a warm container is reused and avoids adding high-cardinality dimensions to metrics.
+
+The library provides two helpers that you can use to easily create a resource:
 
 | Helper                                | Description                                                                                                                                   | Documentation                                                                     |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -507,9 +511,7 @@ const telemetryConfig = defineTelemetryConfig((params, isDev) => {
   const meter = metrics.getMeter("my-custom-meter");
 
   return {
-    sdkConfig: {
-      /* SDK Configuration */
-    },
+    sdkConfig: {/* SDK Configuration */},
 
     tracer,
     meter,
@@ -602,9 +604,7 @@ import { defineTelemetryConfig } from "@adobe/aio-lib-telemetry";
 
 const telemetryConfig = defineTelemetryConfig((params, isDev) => {
   return {
-    sdkConfig: {
-      /* SDK Configuration */
-    },
+    sdkConfig: {/* SDK Configuration */},
     diagnostics: {
       logLevel: "debug",
 

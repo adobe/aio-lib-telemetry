@@ -76,16 +76,14 @@ describe("integrations/commerce", () => {
       getRuntimeActionMetadata: vi.fn(() => ({
         actionName: "test-action",
         actionVersion: "1.0.0",
-        activationId: "test-activation",
-        apiHost: "test-host",
-        apiKey: "test-key",
-        cloud: "test-cloud",
-        deadline: null,
         isDevelopment: false,
         namespace: "test-namespace",
         packageName: "test-package",
-        region: "test-region",
-        transactionId: "test-transaction",
+      })),
+      getRuntimeInvocationAttributes: vi.fn(() => ({
+        "action.activation_id": "test-activation",
+        "action.region": "test-region",
+        "action.transaction_id": "test-transaction",
       })),
       isDevelopment: vi.fn(() => false),
 
