@@ -19,16 +19,14 @@ import { isDevelopment } from "./runtime";
 export function setTelemetryEnv(params: Record<string, unknown>) {
   const { ENABLE_TELEMETRY = false } = params;
   const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
-  process.env = {
+
+  if (process.env.OTEL_NODE_RESOURCE_DETECTORS === undefined) {
     // Disable automatic resource detection to avoid leaking
     // information about the runtime environment by default.
-    OTEL_NODE_RESOURCE_DETECTORS: "none",
+    process.env.OTEL_NODE_RESOURCE_DETECTORS = "none";
+  }
 
-    ...process.env,
-
-    // Setting process.env.ENABLE_TELEMETRY directly won't work.
-    // This is due to webpack automatic env inline replacement.
-    __AIO_LIB_TELEMETRY_ENABLE_TELEMETRY: enableTelemetry,
-    __AIO_LIB_TELEMETRY_LOG_LEVEL: `${params.LOG_LEVEL ?? (isDevelopment() ? "debug" : "info")}`,
-  };
+  process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY = enableTelemetry;
+  process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL =
+    `${params.LOG_LEVEL ?? ""}` || (isDevelopment() ? "debug" : "info");
 }
