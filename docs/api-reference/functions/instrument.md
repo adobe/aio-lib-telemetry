@@ -7,9 +7,9 @@ function instrument<T>(
 ): (...args: Parameters<T>) => ReturnType<T>;
 ```
 
-Defined in: [core/instrumentation.ts:114](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/core/instrumentation.ts#L114)
+Defined in: [core/instrumentation.ts:115](https://github.com/adobe/aio-lib-telemetry/blob/41c5ec13ca6d2cc9f732e352a472d47c3a0d240c/source/core/instrumentation.ts#L115)
 
-Instruments a function.
+Instruments a function and adds the current runtime invocation attributes to its span.
 
 ## Type Parameters
 

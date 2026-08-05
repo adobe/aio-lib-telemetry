@@ -16,7 +16,7 @@ type TelemetryIntegration = {
 };
 ```
 
-Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L167)
+Defined in: [types.ts:167](https://github.com/adobe/aio-lib-telemetry/blob/41c5ec13ca6d2cc9f732e352a472d47c3a0d240c/source/types.ts#L167)
 
 A telemetry integration.
 
@@ -32,7 +32,7 @@ A telemetry integration.
 name: string;
 ```
 
-Defined in: [types.ts:172](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L172)
+Defined in: [types.ts:172](https://github.com/adobe/aio-lib-telemetry/blob/41c5ec13ca6d2cc9f732e352a472d47c3a0d240c/source/types.ts#L172)
 
 The name of the integration.
 
@@ -52,7 +52,7 @@ optional patchInstrumentationConfig?: (payload: {
 }) => void;
 ```
 
-Defined in: [types.ts:183](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/types.ts#L183)
+Defined in: [types.ts:183](https://github.com/adobe/aio-lib-telemetry/blob/41c5ec13ca6d2cc9f732e352a472d47c3a0d240c/source/types.ts#L183)
 
 A function that patches the [EntrypointInstrumentationConfig](../interfaces/EntrypointInstrumentationConfig.md) provided in [defineTelemetryConfig](../functions/defineTelemetryConfig.md) or in the [instrumentEntrypoint](../functions/instrumentEntrypoint.md) function.
 

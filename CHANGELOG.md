@@ -1,5 +1,21 @@
 # `@adobe/aio-lib-telemetry`
 
+## 1.3.0
+
+### Minor Changes
+
+- [#132](https://github.com/adobe/aio-lib-telemetry/pull/132) [`5de8996`](https://github.com/adobe/aio-lib-telemetry/commit/5de89960e09a53190d17990a7b628ff2de0cc152) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Expose stable resource attributes through `getAioRuntimeResourceAttributes` and current invocation attributes through `getAioRuntimeInvocationAttributes`. Deprecate `getAioRuntimeAttributes` while preserving its combined output for compatibility.
+
+- [#132](https://github.com/adobe/aio-lib-telemetry/pull/132) [`5de8996`](https://github.com/adobe/aio-lib-telemetry/commit/5de89960e09a53190d17990a7b628ff2de0cc152) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Expose the region selected at execution time as `action.region` through `getAioRuntimeInvocationAttributes`, on spans created through the library's instrumentation helpers, and on logs exported through `getLogger`. The value may differ between invocations because Runtime routes each invocation independently.
+
+### Patch Changes
+
+- [#132](https://github.com/adobe/aio-lib-telemetry/pull/132) [`5de8996`](https://github.com/adobe/aio-lib-telemetry/commit/5de89960e09a53190d17990a7b628ff2de0cc152) Thanks [@iivvaannxx](https://github.com/iivvaannxx)! - Correct runtime metadata across warm container invocations:
+
+  - Keep only stable action and service attributes on the shared OpenTelemetry resource, avoiding high-cardinality metric dimensions.
+  - Attach the current activation ID, transaction ID, and deadline to spans created through the library's instrumentation helpers and logs exported through `getLogger` for every invocation.
+  - Ensure logs emitted through reused logger instances use the current invocation attributes.
+
 ## 1.2.0
 
 ### Minor Changes
