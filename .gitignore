@@ -10,3 +10,5 @@ coverage/
 
 .cursor/*
 !.cursor/rules
+
+.pnpm-store/

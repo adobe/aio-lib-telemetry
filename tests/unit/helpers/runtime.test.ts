@@ -97,18 +97,10 @@ describe("helpers/runtime", () => {
       expect(metadata).toEqual({
         actionName: "test-prod-action-name",
         actionVersion: "1.0.0",
-        activationId: "test-prod-activation-id",
-        apiHost: "test-prod-api-host",
-        apiKey: "test-prod-api-key",
-        cloud: "test-prod-cloud",
-        deadline: expect.any(Date),
         isDevelopment: false,
         namespace: "test-prod-namespace",
 
         packageName: "test-prod-package-name",
-
-        region: "test-prod-region",
-        transactionId: "test-prod-transaction-id",
       });
     });
 
@@ -119,18 +111,10 @@ describe("helpers/runtime", () => {
       expect(metadata).toEqual({
         actionName: "test-dev-action-name",
         actionVersion: "0.0.0 (development)",
-        activationId: "test-dev-activation-id",
-        apiHost: "test-dev-api-host",
-        apiKey: "test-dev-api-key",
-        cloud: "local",
-        deadline: null,
         isDevelopment: true,
         namespace: "test-dev-namespace",
 
         packageName: "test-dev-package-name",
-
-        region: "local",
-        transactionId: "unknown",
       });
     });
 
@@ -141,18 +125,10 @@ describe("helpers/runtime", () => {
       expect(metadata).toEqual({
         actionName: "test-dev-action-name",
         actionVersion: "0.0.0 (development)",
-        activationId: "test-dev-activation-id",
-        apiHost: "test-dev-api-host",
-        apiKey: "test-dev-api-key",
-        cloud: "local",
-        deadline: null,
         isDevelopment: true,
         namespace: "test-dev-namespace",
 
         packageName: "unknown",
-
-        region: "local",
-        transactionId: "unknown",
       });
     });
 
@@ -171,13 +147,9 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "action.activation_id": "test-prod-activation-id",
-        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
-
         "action.name": "test-prod-action-name",
         "action.namespace": "test-prod-namespace",
         "action.package_name": "test-prod-package-name",
-        "action.transaction_id": "test-prod-transaction-id",
         environment: "production",
         "service.name": "test-prod-namespace/test-prod-package-name",
         "service.version": "1.0.0",
@@ -190,8 +162,6 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "action.activation_id": "test-dev-activation-id",
-
         "action.name": "test-dev-action-name",
         "action.namespace": "test-dev-namespace",
         "action.package_name": "test-dev-package-name",
@@ -208,13 +178,43 @@ describe("helpers/runtime", () => {
         runtimeHelpers.inferTelemetryAttributesFromRuntimeMetadata();
 
       expect(attributes).toEqual({
-        "action.activation_id": "test-dev-activation-id",
-
         "action.name": "test-dev-action-name",
         "action.namespace": "test-dev-namespace",
 
         environment: "development",
         "service.name": "test-dev-namespace-local-development",
+      });
+    });
+  });
+
+  describe("getRuntimeInvocationAttributes", () => {
+    test("should read invocation attributes from the current environment", () => {
+      setupProductionEnv();
+
+      expect(runtimeHelpers.getRuntimeInvocationAttributes()).toEqual({
+        "action.activation_id": "test-prod-activation-id",
+        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
+        "action.region": "test-prod-region",
+        "action.transaction_id": "test-prod-transaction-id",
+      });
+
+      vi.stubEnv("__OW_ACTIVATION_ID", "next-activation-id");
+      vi.stubEnv("__OW_TRANSACTION_ID", "next-transaction-id");
+
+      expect(runtimeHelpers.getRuntimeInvocationAttributes()).toEqual({
+        "action.activation_id": "next-activation-id",
+        "action.deadline": expect.stringMatching(ISO_DATE_REGEX),
+        "action.region": "test-prod-region",
+        "action.transaction_id": "next-transaction-id",
+      });
+    });
+
+    test("should omit optional invocation attributes when unavailable", () => {
+      vi.stubEnv("__OW_ACTIVATION_ID", "test-activation-id");
+
+      expect(runtimeHelpers.getRuntimeInvocationAttributes()).toEqual({
+        "action.activation_id": "test-activation-id",
+        "action.region": "local",
       });
     });
   });

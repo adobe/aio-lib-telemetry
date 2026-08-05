@@ -21,9 +21,7 @@ import { commerceEvents } from "@adobe/aio-lib-telemetry/integrations";
 
 ```ts
 export const telemetryConfig = defineTelemetryConfig((params, isDev) => ({
-  sdkConfig: {
-    /* ... */
-  },
+  sdkConfig: {/* ... */},
   integrations: [commerceEvents()],
 }));
 ```
@@ -78,9 +76,7 @@ Integrations are applied sequentially. Later integrations can override earlier o
 
 ```ts
 const telemetryConfig = defineTelemetryConfig((params, isDev) => ({
-  sdkConfig: {
-    /* ... */
-  },
+  sdkConfig: {/* ... */},
   integrations: [commerceEvents()],
 }));
 ```

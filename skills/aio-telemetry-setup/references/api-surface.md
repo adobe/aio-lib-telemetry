@@ -21,8 +21,9 @@ import { ... } from "@adobe/aio-lib-telemetry/integrations";
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `defineTelemetryConfig(callback)`            | Create telemetry config. Callback receives `(params, isDev)` and returns `TelemetryConfig`          |
 | `getPresetInstrumentations(preset)`          | Get instrumentation set. `"simple"` = HTTP + Undici + GraphQL. `"full"` = all auto-instrumentations |
-| `getAioRuntimeResource()`                    | Create OTel Resource with App Builder runtime attributes                                            |
+| `getAioRuntimeResource()`                    | Create OTel Resource with stable App Builder action and service attributes                          |
 | `getAioRuntimeResourceWithAttributes(attrs)` | Same as above but merge custom attributes                                                           |
+| `getAioRuntimeResourceAttributes()`          | Get stable action and service attributes that are safe to use on a resource                         |
 
 ### Instrumentation
 
@@ -57,10 +58,11 @@ import { ... } from "@adobe/aio-lib-telemetry/integrations";
 
 ### Global API
 
-| Function                    | Purpose                                                                              |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| `getGlobalTelemetryApi()`   | Get `{ tracer, meter }` outside instrumented context. Throws if SDK not initialized. |
-| `getAioRuntimeAttributes()` | Get runtime attributes as key-value object (action name, namespace, region, etc.)    |
+| Function                              | Purpose                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------ |
+| `getGlobalTelemetryApi()`             | Get `{ tracer, meter }` outside instrumented context. Throws if SDK not initialized. |
+| `getAioRuntimeInvocationAttributes()` | Get attributes associated with the current Runtime invocation                        |
+| `getAioRuntimeAttributes()`           | Deprecated compatibility helper that combines resource and invocation attributes     |
 
 ## Key Types
 
@@ -94,8 +96,7 @@ type InstrumentationConfig<T> = {
 };
 
 // Entrypoint extends InstrumentationConfig with:
-interface EntrypointInstrumentationConfig
-  extends InstrumentationConfig<EntrypointFunction> {
+interface EntrypointInstrumentationConfig extends InstrumentationConfig<EntrypointFunction> {
   propagation?: {
     skip?: boolean;
     getContextCarrier?: (params) => { carrier; baseCtx? };

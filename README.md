@@ -38,7 +38,7 @@ See the [Usage Guide](./docs/usage.md) for more information.
 
 ## Using AI
 
-This repository has some skills to help you work with AI when instrumenting your App Builder code. It provides skills to help you [`setup`](./skills/aio-telemetry-setup)  the library, [`instrument`](./skills/aio-telemetry-instrument) your code, and [`troubleshoot`](./skills/aio-telemetry-troubleshooting) any issues. Install using the following command:
+This repository has some skills to help you work with AI when instrumenting your App Builder code. It provides skills to help you [`setup`](./skills/aio-telemetry-setup) the library, [`instrument`](./skills/aio-telemetry-instrument) your code, and [`troubleshoot`](./skills/aio-telemetry-troubleshooting) any issues. Install using the following command:
 
 ```sh
 npx skills add adobe/aio-lib-telemetry

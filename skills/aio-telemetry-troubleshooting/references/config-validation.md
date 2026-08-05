@@ -36,7 +36,8 @@ getLogger, defineMetrics,
 serializeContextIntoCarrier, deserializeContextFromCarrier,
 getActiveSpan, tryGetActiveSpan,
 addEventToActiveSpan, tryAddEventToActiveSpan,
-getGlobalTelemetryApi, getAioRuntimeAttributes
+getGlobalTelemetryApi, getAioRuntimeResourceAttributes,
+getAioRuntimeInvocationAttributes, getAioRuntimeAttributes
 ```
 
 ### OTel re-exports (`@adobe/aio-lib-telemetry/otel`)

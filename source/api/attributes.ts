@@ -12,11 +12,20 @@
 
 import { resourceFromAttributes } from "@opentelemetry/resources";
 
-import { inferTelemetryAttributesFromRuntimeMetadata } from "#helpers/runtime";
+import {
+  getRuntimeInvocationAttributes,
+  inferTelemetryAttributesFromRuntimeMetadata,
+} from "#helpers/runtime";
 
 /**
- * Infers some useful attributes for the current action from the Adobe I/O Runtime
+ * Infers attributes for the current action and invocation from the Adobe I/O Runtime
  * and returns them as a record of key-value pairs.
+ *
+ * @deprecated Use {@link getAioRuntimeResourceAttributes} for stable attributes or
+ * {@link getAioRuntimeInvocationAttributes} for invocation-specific attributes.
+ * Do not use this combined output to construct an OpenTelemetry resource because
+ * invocation-specific values become stale when a warm container is reused and add
+ * high-cardinality dimensions to metrics.
  *
  * @since 0.1.0
  * @example
@@ -26,12 +35,46 @@ import { inferTelemetryAttributesFromRuntimeMetadata } from "#helpers/runtime";
  * ```
  */
 export function getAioRuntimeAttributes() {
+  return {
+    ...getAioRuntimeResourceAttributes(),
+    ...getAioRuntimeInvocationAttributes(),
+  };
+}
+
+/**
+ * Infers stable attributes for the current action from the Adobe I/O Runtime.
+ * The result is safe to use as an OpenTelemetry resource across warm container
+ * invocations.
+ *
+ * @since 1.3.0
+ * @example
+ * ```ts
+ * const attributes = getAioRuntimeResourceAttributes();
+ * // attributes = { action.namespace: "my-namespace", action.name: "my-action", ... }
+ * ```
+ */
+export function getAioRuntimeResourceAttributes() {
   return inferTelemetryAttributesFromRuntimeMetadata();
 }
 
 /**
+ * Returns attributes for the current Adobe I/O Runtime invocation. Call this
+ * during each invocation so warm containers use the current values.
+ *
+ * @since 1.3.0
+ * @example
+ * ```ts
+ * const attributes = getAioRuntimeInvocationAttributes();
+ * // attributes = { action.activation_id: "activation-id", action.region: "region", ... }
+ * ```
+ */
+export function getAioRuntimeInvocationAttributes() {
+  return getRuntimeInvocationAttributes();
+}
+
+/**
  * Creates a [resource](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.resources.Resource.html)
- * from the attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
+ * from stable attributes inferred from the Adobe I/O Runtime and returns it as an OpenTelemetry Resource object.
  *
  * @see https://opentelemetry.io/docs/languages/js/resources/
  *
@@ -43,13 +86,13 @@ export function getAioRuntimeAttributes() {
  * ```
  */
 export function getAioRuntimeResource() {
-  return resourceFromAttributes(getAioRuntimeAttributes());
+  return resourceFromAttributes(getAioRuntimeResourceAttributes());
 }
 
 /**
  * Creates a [resource](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.resources.Resource.html)
- * that combines the attributes inferred from the Adobe I/O Runtime with the provided attributes.
- * @param attributes - The attributes to combine with the attributes inferred from the Adobe I/O Runtime.
+ * that combines stable attributes inferred from the Adobe I/O Runtime with the provided attributes.
+ * @param attributes - The attributes to combine with the stable attributes inferred from the Adobe I/O Runtime.
  *
  * @see https://opentelemetry.io/docs/languages/js/resources/
  *
@@ -65,7 +108,7 @@ export function getAioRuntimeResourceWithAttributes(
   attributes: Record<string, string>,
 ) {
   return resourceFromAttributes({
-    ...getAioRuntimeAttributes(),
+    ...getAioRuntimeResourceAttributes(),
     ...attributes,
   });
 }

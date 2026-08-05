@@ -55,16 +55,14 @@ export default defineConfig({
       },
     },
   },
-  minify: {
-    compress: true,
-  },
 
+  minify: false,
   nodeProtocol: "strip",
   outputOptions: {
     dir: OUT_DIR,
     legalComments: "inline",
 
-    minifyInternalExports: true,
+    minifyInternalExports: false,
   },
 
   publint: true,

@@ -1,0 +1,56 @@
+{
+  "context": "Tests whether the agent understands the intentional boundary between stable resource attributes and invocation-scoped span/log attributes, correctly diagnoses missing invocation attributes on auto-instrumented spans, and uses an opt-in OpenTelemetry SpanProcessor without breaking trace export or metric cardinality.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Warm-container resource diagnosis",
+      "description": "Explains that an OpenTelemetry resource is initialized once and reused by a warm container, so invocation IDs, deadlines, transaction IDs, and execution region would become stale if placed on it",
+      "max_score": 12
+    },
+    {
+      "name": "Library-managed telemetry behavior",
+      "description": "Recognizes that invocation attributes are expected on spans created through instrumentEntrypoint or instrument and on logs exported through getLogger",
+      "max_score": 10
+    },
+    {
+      "name": "Auto-instrumentation boundary",
+      "description": "Explains that direct OpenTelemetry and auto-instrumented spans do not receive the library's invocation attributes automatically, and identifies this as intentional thin-wrapper scope rather than broken configuration",
+      "max_score": 12
+    },
+    {
+      "name": "Metric cardinality preserved",
+      "description": "Explains that invocation attributes are intentionally absent from the resource and metrics to prevent a time series per invocation, and does not add them as metric attributes",
+      "max_score": 12
+    },
+    {
+      "name": "Uses explicit invocation helper",
+      "description": "Uses getAioRuntimeInvocationAttributes() to obtain current invocation attributes and does not use deprecated getAioRuntimeAttributes()",
+      "max_score": 10
+    },
+    {
+      "name": "Custom SpanProcessor",
+      "description": "Configures a custom OpenTelemetry SpanProcessor whose onStart hook sets the current invocation attributes on every recording span",
+      "max_score": 12
+    },
+    {
+      "name": "Exporter processor preserved",
+      "description": "Replaces traceExporter with spanProcessors containing both the custom attribute processor and an exporting processor such as BatchSpanProcessor wrapping the original trace exporter",
+      "max_score": 12
+    },
+    {
+      "name": "Stable resource retained",
+      "description": "Keeps getAioRuntimeResource() or another stable resource configuration and does not rebuild, mutate, or reinitialize the resource per invocation",
+      "max_score": 8
+    },
+    {
+      "name": "Action handler left unchanged",
+      "description": "Does not unnecessarily modify the correctly instrumented action handler or replace the existing getLogger and instrumentEntrypoint usage",
+      "max_score": 6
+    },
+    {
+      "name": "Late background span caveat",
+      "description": "Notes that unawaited work spanning invocation boundaries can be attributed to a later invocation when attributes are read as each span starts",
+      "max_score": 6
+    }
+  ]
+}

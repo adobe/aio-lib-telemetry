@@ -47,6 +47,10 @@ vi.mock("@opentelemetry/api", () => ({
 
 vi.mock("#helpers/runtime", () => ({
   getRuntimeActionMetadata: vi.fn(),
+  getRuntimeInvocationAttributes: vi.fn(() => ({
+    "action.activation_id": "test-activation",
+    "action.region": "test-region",
+  })),
 }));
 
 vi.mock("#core/sdk", () => ({
@@ -119,6 +123,7 @@ describe("core/logging", () => {
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalledWith(mockTransport);
       expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        format: expect.any(Object),
         level: "info",
       });
     });
@@ -126,7 +131,40 @@ describe("core/logging", () => {
     test("should use custom log level for transport", () => {
       getLogger("test-logger", { level: "warn" });
       expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        format: expect.any(Object),
         level: "warn",
+      });
+    });
+
+    test("should add current invocation attributes to every log record", () => {
+      getLogger("test-logger");
+
+      const [{ format }] = mockOpenTelemetryTransport.mock.calls[0];
+      vi.mocked(runtimeHelpers.getRuntimeInvocationAttributes)
+        .mockReturnValueOnce({
+          "action.activation_id": "first-activation",
+          "action.region": "first-region",
+        })
+        .mockReturnValueOnce({
+          "action.activation_id": "second-activation",
+          "action.region": "second-region",
+        });
+
+      expect(
+        format.transform({
+          "action.activation_id": "stale-activation",
+          message: "first",
+        }),
+      ).toMatchObject({
+        "action.activation_id": "first-activation",
+        "action.region": "first-region",
+        message: "first",
+      });
+
+      expect(format.transform({ message: "second" })).toMatchObject({
+        "action.activation_id": "second-activation",
+        "action.region": "second-region",
+        message: "second",
       });
     });
 
@@ -215,7 +253,10 @@ describe("core/logging", () => {
         });
 
         expect(mockLogger.logger.logger.add).toHaveBeenCalled();
-        expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({ level });
+        expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+          format: expect.any(Object),
+          level,
+        });
       },
     );
 
@@ -228,6 +269,7 @@ describe("core/logging", () => {
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
       expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        format: expect.any(Object),
         level: "info",
       });
 
@@ -241,6 +283,7 @@ describe("core/logging", () => {
 
       expect(mockLogger.logger.logger.add).toHaveBeenCalled();
       expect(mockOpenTelemetryTransport).toHaveBeenCalledWith({
+        format: expect.any(Object),
         level: "info",
       });
     });
