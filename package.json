@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aio-lib-telemetry",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A utility module for easy instrumentation of Adobe App Builder runtime actions via OpenTelemetry.",
   "keywords": [
     "aio",
