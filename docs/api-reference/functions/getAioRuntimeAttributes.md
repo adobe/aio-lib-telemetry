@@ -1,18 +1,21 @@
-# `getAioRuntimeAttributes()`
+# ~~`getAioRuntimeAttributes()`~~
 
 ```ts
 function getAioRuntimeAttributes(): {
   action.activation_id: string;
+  action.deadline?: string;
   action.name: string;
   action.namespace: string;
+  action.region: string;
+  action.transaction_id?: string;
   environment: string;
   service.name: string;
 };
 ```
 
-Defined in: [api/attributes.ts:28](https://github.com/adobe/aio-lib-telemetry/blob/251e841bc40ec2c3d9101b1aa24a65d5160e2dd2/source/api/attributes.ts#L28)
+Defined in: [api/attributes.ts:37](https://github.com/adobe/aio-lib-telemetry/blob/41c5ec13ca6d2cc9f732e352a472d47c3a0d240c/source/api/attributes.ts#L37)
 
-Infers some useful attributes for the current action from the Adobe I/O Runtime
+Infers attributes for the current action and invocation from the Adobe I/O Runtime
 and returns them as a record of key-value pairs.
 
 ## Returns
@@ -20,42 +23,71 @@ and returns them as a record of key-value pairs.
 ```ts
 {
   action.activation_id: string;
+  action.deadline?: string;
   action.name: string;
   action.namespace: string;
+  action.region: string;
+  action.transaction_id?: string;
   environment: string;
   service.name: string;
 }
 ```
 
-#### action.activation_id
+#### ~~action.activation\_id~~
 
 ```ts
-action.activation_id: string = meta.activationId;
+action.activation_id: string;
 ```
 
-#### action.name
+#### ~~action.deadline?~~
+
+```ts
+optional action.deadline?: string;
+```
+
+#### ~~action.name~~
 
 ```ts
 action.name: string = meta.actionName;
 ```
 
-#### action.namespace
+#### ~~action.namespace~~
 
 ```ts
 action.namespace: string = meta.namespace;
 ```
 
-### environment
+#### ~~action.region~~
+
+```ts
+action.region: string;
+```
+
+#### ~~action.transaction\_id?~~
+
+```ts
+optional action.transaction_id?: string;
+```
+
+### ~~environment~~
 
 ```ts
 environment: string;
 ```
 
-#### service.name
+#### ~~service.name~~
 
 ```ts
 service.name: string;
 ```
+
+## Deprecated
+
+Use [getAioRuntimeResourceAttributes](getAioRuntimeResourceAttributes.md) for stable attributes or
+[getAioRuntimeInvocationAttributes](getAioRuntimeInvocationAttributes.md) for invocation-specific attributes.
+Do not use this combined output to construct an OpenTelemetry resource because
+invocation-specific values become stale when a warm container is reused and add
+high-cardinality dimensions to metrics.
 
 ## Since
 
