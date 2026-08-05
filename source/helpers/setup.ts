@@ -20,11 +20,9 @@ export function setTelemetryEnv(params: Record<string, unknown>) {
   const { ENABLE_TELEMETRY = false } = params;
   const enableTelemetry = `${ENABLE_TELEMETRY}`.toLowerCase();
 
-  if (process.env.OTEL_NODE_RESOURCE_DETECTORS === undefined) {
-    // Disable automatic resource detection to avoid leaking
-    // information about the runtime environment by default.
-    process.env.OTEL_NODE_RESOURCE_DETECTORS = "none";
-  }
+  // Disable automatic resource detection to avoid leaking
+  // information about the runtime environment by default.
+  process.env.OTEL_NODE_RESOURCE_DETECTORS ??= "none";
 
   process.env.__AIO_LIB_TELEMETRY_ENABLE_TELEMETRY = enableTelemetry;
   process.env.__AIO_LIB_TELEMETRY_LOG_LEVEL =
