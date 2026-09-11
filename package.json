@@ -146,7 +146,7 @@
     "ultracite": "^7.9.3",
     "vitest": "^4.1.6"
   },
-  "packageManager": "pnpm@11.18.0",
+  "packageManager": "pnpm@12.4.0",
   "engines": {
     "node": ">=22 <=24"
   }
