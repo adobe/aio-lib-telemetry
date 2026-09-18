@@ -36,10 +36,10 @@ jobs:
         id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          version: pnpm run changeset -- version
-          publish: pnpm run changeset -- publish
-          commit: "ci: release package"
-          title: "[CI] Release Package"
+          version-script: pnpm run changeset -- version
+          publish-script: pnpm run changeset -- publish
+          commit-message: "ci: release package"
+          pr-title: "[CI] Release Package"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
         run: |
           # From Node v22.18.0, the node command is able to run .ts files directly (if it only needs type stripping).
           # As of August 2025, Node v22.18.0 is already LTS (the version used by this workflow).
-          SLACK_WEBHOOK_PAYLOAD="$(node .github/scripts/announce.ts '${{ steps.changesets.outputs.publishedPackages }}')"
+          SLACK_WEBHOOK_PAYLOAD="$(node .github/scripts/announce.ts '${{ steps.changesets.outputs.published-packages }}')"
           echo "SLACK_WEBHOOK_PAYLOAD=$SLACK_WEBHOOK_PAYLOAD" >> "$GITHUB_OUTPUT"
       
       - name: Notify on Slack
