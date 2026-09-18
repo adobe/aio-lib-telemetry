@@ -50,7 +50,7 @@ jobs:
         run: |
           # From Node v22.18.0, the node command is able to run .ts files directly (if it only needs type stripping).
           # As of August 2025, Node v22.18.0 is already LTS (the version used by this workflow).
-          SLACK_WEBHOOK_PAYLOAD="$(node .github/scripts/announce.ts '${{ steps.changesets.outputs.publishedPackages }}')"
+          SLACK_WEBHOOK_PAYLOAD="$(node .github/scripts/announce.ts '${{ steps.changesets.outputs.published-packages }}')"
           echo "SLACK_WEBHOOK_PAYLOAD=$SLACK_WEBHOOK_PAYLOAD" >> "$GITHUB_OUTPUT"
       
       - name: Notify on Slack
