@@ -139,14 +139,14 @@
     "lint-staged": "^17.0.5",
     "prettier": "^3.8.3",
     "publint": "^0.3.21",
-    "tsdown": "0.22.3",
+    "tsdown": "0.23.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^6.0.3",
     "ultracite": "^7.9.3",
     "vitest": "^5.0.0"
   },
-  "packageManager": "pnpm@12.4.1",
+  "packageManager": "pnpm@12.4.2",
   "engines": {
     "node": ">=22 <=24"
   }
