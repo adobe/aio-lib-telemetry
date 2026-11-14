@@ -128,7 +128,7 @@
     "@biomejs/biome": "^2.5.2",
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
-    "@tsconfig/node-lts": "^24.0.0",
+    "@tsconfig/node-lts": "^26.0.0",
     "@tsconfig/node-ts": "^23.6.4",
     "@tsconfig/recommended": "^1.0.13",
     "@types/node": "^25.8.0",
